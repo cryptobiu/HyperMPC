@@ -191,11 +191,13 @@ TFieldElement* HIM::MatrixMult2(TFieldElement* vector)
 }
 
 // vector with padding 0
-vector<TFieldElement> HIM::MatrixMult(vector<TFieldElement> vector)
+vector<TFieldElement> HIM::MatrixMult(std::vector<TFieldElement> vector)
 {
+
 	TFieldElement temp;
 	TFieldElement temp1;
 	std::vector<TFieldElement> answer;
+
 	cout << "123  " <<  vector.size()<< endl;
 
 	for(int i = 0; i < m_m; i++)
@@ -211,6 +213,35 @@ vector<TFieldElement> HIM::MatrixMult(vector<TFieldElement> vector)
 		answer.push_back(temp);
 
 	//	answer[i].setPoly(temp.getElement());
+
+	}
+
+	return answer;
+}
+
+
+vector<TFieldElement*> HIM::MatrixMult3(std::vector<TFieldElement*> vector)
+{
+
+	TFieldElement* temp;
+	TFieldElement temp1;
+	std::vector<TFieldElement*> answer;
+
+	cout << "123  " <<  vector.size()<< endl;
+
+	for(int i = 0; i < m_m; i++)
+	{
+		temp = new TFieldElement(GF2X::zero());
+		for(int j=0; j < m_n; j++)
+		{
+
+			temp1 = m_matrix[i][j] * *vector[j];
+			*temp = *temp + temp1;
+		}
+
+		answer.push_back(temp);
+
+		//	answer[i].setPoly(temp.getElement());
 
 	}
 

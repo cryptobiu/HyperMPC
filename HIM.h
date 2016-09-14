@@ -47,6 +47,7 @@ public:
 	TFieldElement** CheckInitHIM();
 	vector<TFieldElement> MatrixMult(vector<TFieldElement> vector);
 	TFieldElement* MatrixMult2(TFieldElement* vector);
+	vector<TFieldElement*> MatrixMult3(std::vector<TFieldElement*> vector);
 	virtual ~HIM();
 };
 
