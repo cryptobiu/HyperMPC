@@ -12,25 +12,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5a967074-de61-4011-8835-bdc1244a7c73" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/HIM.cpp.o" afterPath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/HIM.cpp.o" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/TParty.cpp.o" afterPath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/TParty.cpp.o" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/main.cpp.o" afterPath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/main.cpp.o" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Secret_Sharing" afterPath="$PROJECT_DIR$/Secret_Sharing" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeFiles/Makefile2" afterPath="$PROJECT_DIR$/CMakeFiles/Makefile2" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/CXX.includecache" afterPath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/CXX.includecache" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/DependInfo.cmake" afterPath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/DependInfo.cmake" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/build.make" afterPath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/build.make" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/cmake_clean.cmake" afterPath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/cmake_clean.cmake" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/depend.internal" afterPath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/depend.internal" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/depend.make" afterPath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/depend.make" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/link.txt" afterPath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/link.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/progress.make" afterPath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/progress.make" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeFiles/progress.marks" afterPath="$PROJECT_DIR$/CMakeFiles/progress.marks" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/HIM.cpp" afterPath="$PROJECT_DIR$/HIM.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/HIM.h" afterPath="$PROJECT_DIR$/HIM.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Makefile" afterPath="$PROJECT_DIR$/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TParty.cpp" afterPath="$PROJECT_DIR$/TParty.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.cpp" afterPath="$PROJECT_DIR$/main.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/oldmain.cpp" afterPath="$PROJECT_DIR$/oldmain.cpp" />
     </list>
@@ -65,18 +49,19 @@
       <file leaf-file-name="main.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="467">
-              <caret line="537" column="5" selection-start-line="537" selection-start-column="5" selection-end-line="537" selection-end-column="5" />
+            <state relative-caret-position="619">
+              <caret line="513" column="25" selection-start-line="513" selection-start-column="25" selection-end-line="513" selection-end-column="25" />
               <folding>
                 <element signature="e#1#20#0" expanded="true" />
-                <element signature="e#1198#2807#0" expanded="false" />
-                <element signature="e#2809#2928#0" expanded="false" />
-                <element signature="e#2930#3017#0" expanded="false" />
-                <element signature="e#3019#3214#0" expanded="false" />
-                <element signature="e#3217#3342#0" expanded="false" />
-                <element signature="e#3344#4254#0" expanded="false" />
-                <element signature="e#5032#5820#0" expanded="false" />
-                <element signature="e#8179#9064#0" expanded="false" />
+                <element signature="e#1378#2987#0" expanded="false" />
+                <element signature="e#2989#3108#0" expanded="false" />
+                <element signature="e#3110#3197#0" expanded="false" />
+                <element signature="e#3199#3394#0" expanded="false" />
+                <element signature="e#3397#3522#0" expanded="false" />
+                <element signature="e#3524#4434#0" expanded="false" />
+                <element signature="e#5247#6035#0" expanded="false" />
+                <element signature="e#6925#8392#0" expanded="false" />
+                <element signature="e#8394#9279#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -441,7 +426,7 @@
       <workItem from="1473653621928" duration="12193000" />
       <workItem from="1473752727311" duration="15621000" />
       <workItem from="1473827810621" duration="27611000" />
-      <workItem from="1473912519326" duration="13311000" />
+      <workItem from="1473912519326" duration="14391000" />
     </task>
     <task id="LOCAL-00001" summary="broadcast">
       <created>1473844671640</created>
@@ -450,11 +435,18 @@
       <option name="project" value="LOCAL" />
       <updated>1473844671640</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="finish broadcast">
+      <created>1473930252748</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1473930252748</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="105495000" />
+    <option name="totallyTimeSpent" value="106575000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="24" width="1855" height="1056" extended-state="6" />
@@ -493,7 +485,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="broadcast" />
-    <option name="LAST_COMMIT_MESSAGE" value="broadcast" />
+    <MESSAGE value="finish broadcast" />
+    <option name="LAST_COMMIT_MESSAGE" value="finish broadcast" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -525,7 +518,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/main.cpp</url>
-          <line>329</line>
+          <line>332</line>
           <option name="timeStamp" value="73" />
         </line-breakpoint>
       </breakpoints>
@@ -943,18 +936,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="467">
-          <caret line="537" column="5" selection-start-line="537" selection-start-column="5" selection-end-line="537" selection-end-column="5" />
+        <state relative-caret-position="619">
+          <caret line="513" column="25" selection-start-line="513" selection-start-column="25" selection-end-line="513" selection-end-column="25" />
           <folding>
             <element signature="e#1#20#0" expanded="true" />
-            <element signature="e#1198#2807#0" expanded="false" />
-            <element signature="e#2809#2928#0" expanded="false" />
-            <element signature="e#2930#3017#0" expanded="false" />
-            <element signature="e#3019#3214#0" expanded="false" />
-            <element signature="e#3217#3342#0" expanded="false" />
-            <element signature="e#3344#4254#0" expanded="false" />
-            <element signature="e#5032#5820#0" expanded="false" />
-            <element signature="e#8179#9064#0" expanded="false" />
+            <element signature="e#1378#2987#0" expanded="false" />
+            <element signature="e#2989#3108#0" expanded="false" />
+            <element signature="e#3110#3197#0" expanded="false" />
+            <element signature="e#3199#3394#0" expanded="false" />
+            <element signature="e#3397#3522#0" expanded="false" />
+            <element signature="e#3524#4434#0" expanded="false" />
+            <element signature="e#5247#6035#0" expanded="false" />
+            <element signature="e#6925#8392#0" expanded="false" />
+            <element signature="e#8394#9279#0" expanded="false" />
           </folding>
         </state>
       </provider>

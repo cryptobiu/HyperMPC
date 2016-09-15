@@ -34,6 +34,8 @@ vector<string> vec;
 vector<string> vecRecForCheck;
 
 
+void RunTheProtocol(int party_id, MQTTClient &m_client, MQTTClient_message &m_pubmsg,
+                    MQTTClient_deliveryToken &m_token, char** &topic, int &m_rc, string &s3);
 
 void ConnectHandler(const char *topicName, MQTTClient_message *&message, const string &str) {
     int elem = stoi(str);
@@ -181,8 +183,9 @@ void ConnectionToServer(const MQTTClient &m_client, const string &s, string &myT
     cout << "Let's start!" << endl;
 }
 
-void SendD(string &myMessage, MQTTClient const &m_client, string &myTopicForMessage, MQTTClient_message &m_pubmsg,
-           MQTTClient_deliveryToken &m_token, const string &s, const vector<string> &buffers) {// buffers[i] = the buffer of party i+1
+void SendTheResult(string &myMessage, MQTTClient const &m_client, string &myTopicForMessage,
+                   MQTTClient_message &m_pubmsg,
+                   MQTTClient_deliveryToken &m_token, const string &s, const vector<string> &buffers) {// buffers[i] = the buffer of party i+1
     // buffers[0] = party 1
     for(int i=0; i<buffers.size(); i++)
     {
@@ -230,8 +233,8 @@ void Broadcaster(string &myMessage, const MQTTClient &m_client, char *const *top
 
     string temp = myMessage;
     vec[PARTYID-1] = temp;
-    SendXVectorToAllParties(myMessage, m_client, topic, myTopicForMessage, m_pubmsg, m_token, s);
 
+    SendXVectorToAllParties(myMessage, m_client, topic, myTopicForMessage, m_pubmsg, m_token, s);
     // Round Function
     while (countXRecieve < N-1) {}
 
@@ -372,23 +375,17 @@ bool broadcast(int party_id, string myMessage ,MQTTClient &m_client, MQTTClient_
     vector<string> buffers;
     buffers.resize(N);
     vecRecForCheck.resize(N);
-    bool bit_is_happy;
     string myTopicForMessage="";
-
     string s = to_string(PARTYID);
-
-    ConnectionToServer(m_client, s, myTopicForMessage, m_pubmsg, m_token);
 
     Broadcaster(myMessage, m_client, topic, myTopicForMessage, m_pubmsg, m_token, s);
 
     ConcatenateEverything(buffers, no_buckets);
 
-    SendD(myMessage, m_client, myTopicForMessage, m_pubmsg, m_token, s, buffers);
+    SendTheResult(myMessage, m_client, myTopicForMessage, m_pubmsg, m_token, s, buffers);
 
-    bit_is_happy = CheckIfHappyOrCry(no_buckets);
+    return CheckIfHappyOrCry(no_buckets);
 
-
-    return m_rc;
 }
 
 int main(int argc, char* argv[])
@@ -403,10 +400,69 @@ int main(int argc, char* argv[])
     N = atoi(argv[2]);
     T = N/3 -1;
     vec.resize(N);
-    int partypid = atoi(argv[1]);
-    //int is_Ps = atoi(argv[3]);
+    PARTYID = atoi(argv[1]);
 
-    TParty t(partypid);
+    ////////////////////////////////////////////////////////
+    // start intialize the connection to server
+
+    MQTTClient m_client;
+    static MQTTClient_connectOptions m_conn_opts = MQTTClient_connectOptions_initializer;
+    int m_rc;
+    int m_ch;
+    char** topic = new char*[3];
+    int len;
+    MQTTClient_message m_pubmsg;
+    MQTTClient_deliveryToken m_token;
+
+    // messages
+    m_pubmsg = MQTTClient_message_initializer;
+
+    // create client object
+
+    const char* c ="party" +PARTYID;
+    MQTTClient_create(&m_client, ADDRESS, c,
+                      MQTTCLIENT_PERSISTENCE_NONE, NULL);
+
+    m_conn_opts.keepAliveInterval = 60;
+    m_conn_opts.cleansession = 1;
+
+
+    // msgarrvd - handle function
+    MQTTClient_setCallbacks(m_client, NULL, connlost, msgarrvd, delivered);
+
+    // try to connect to server
+    if ((m_rc = MQTTClient_connect(m_client, &m_conn_opts)) != MQTTCLIENT_SUCCESS)
+    {
+        printf("Failed to connect, return code %d\n", m_rc);
+        //   exit(EXIT_FAILURE);
+    }
+
+    //free topic
+    // create topics
+    string s1 = "SHARE_Ps_VECTOR";
+    string s2 = "SHARE_Yjk_VECTOR"+to_string(PARTYID);
+    string s3 = "CONNECT";
+
+    topic[0] = (char*)s1.c_str();
+    topic[1] = (char*)s2.c_str();
+    topic[2] = (char*)s3.c_str();
+    int QQS_ARR[3] = {1, 1, 1};
+
+    // update the topics
+    MQTTClient_subscribeMany(m_client,  3, topic, QQS_ARR);
+
+    // finish intialize the connection to server
+    ////////////////////////////////////////////////////////
+
+    RunTheProtocol(PARTYID,m_client, m_pubmsg, m_token, topic, m_rc, s3);
+
+}
+
+void RunTheProtocol(int party_id, MQTTClient &m_client, MQTTClient_message &m_pubmsg,
+                    MQTTClient_deliveryToken &m_token, char** &topic, int &m_rc, string &s3) {
+    //////////////////////////////////////////////////////
+
+    TParty t(party_id);
 
     GF2X irreduciblePolynomial = BuildSparseIrred_GF2X(8);
     GF2E::init(irreduciblePolynomial);
@@ -468,69 +524,15 @@ int main(int argc, char* argv[])
 
     cout << x << endl;
 
-    // ^^^^^^^^^^^^^^6
-
-    PARTYID = atoi(argv[1]);
-
-    ////
-
-    MQTTClient m_client;
-    static MQTTClient_connectOptions m_conn_opts = MQTTClient_connectOptions_initializer;
-    int m_rc;
-    int m_ch;
-    char** topic = new char*[3];
-    int len;
-    MQTTClient_message m_pubmsg;
-    MQTTClient_deliveryToken m_token;
-
-    // messages
-    m_pubmsg = MQTTClient_message_initializer;
-
-    // create client object
-
-    const char* c ="party" +PARTYID;
-    MQTTClient_create(&m_client, ADDRESS, c,
-                      MQTTCLIENT_PERSISTENCE_NONE, NULL);
-
-    m_conn_opts.keepAliveInterval = 60;
-    m_conn_opts.cleansession = 1;
+    /////////////////////////////////////////////////////
 
 
-    // msgarrvd - handle function
-    MQTTClient_setCallbacks(m_client, NULL, connlost, msgarrvd, delivered);
+    string s = to_string(PARTYID);
 
-    // try to connect to server
-    if ((m_rc = MQTTClient_connect(m_client, &m_conn_opts)) != MQTTCLIENT_SUCCESS)
-    {
-        printf("Failed to connect, return code %d\n", m_rc);
-        //   exit(EXIT_FAILURE);
-    }
+    ConnectionToServer(m_client, s, s3, m_pubmsg, m_token);
 
-    //free topic
-    // create topics
-    string s1 = "SHARE_Ps_VECTOR";
-    string s2 = "SHARE_Yjk_VECTOR"+to_string(PARTYID);
-    string s3 = "CONNECT";
-
-    topic[0] = (char*)s1.c_str();
-    topic[1] = (char*)s2.c_str();
-    topic[2] = (char*)s3.c_str();
-    int QQS_ARR[3] = {1, 1, 1};
-
-
-
-    // update the topics
-    MQTTClient_subscribeMany(m_client,  3, topic, QQS_ARR);
-
-
-    //while(1){}
-    // start broadcast
-    bool flag;
-
-    flag = broadcast(partypid, x, m_client, m_pubmsg, m_token, topic, m_rc);
-
-    // cheating - halt
-    if(flag == false) {
+    // start broadcast if cheating - halt
+    if(broadcast(party_id, x, m_client, m_pubmsg, m_token, topic, m_rc) == false) {
 
         cout << "cheating!!!" << endl;
         MQTTClient_disconnect(m_client, 10000);
@@ -539,5 +541,4 @@ int main(int argc, char* argv[])
     else{
         cout << "no cheating!!!" << endl;
     }
-
 }

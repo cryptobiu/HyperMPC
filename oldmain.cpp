@@ -57,7 +57,7 @@
 //void SendYVectorResult(string &myMessage, MQTTClient const &m_client, char *const *topic, string &myTopicForMessage,
 //                       MQTTClient_message &m_pubmsg, MQTTClient_deliveryToken &m_token, const string &s, vector<string> &buffers);
 //
-//void SendD(string &myMessage, MQTTClient const &m_client, string &myTopicForMessage, MQTTClient_message &m_pubmsg,
+//void SendTheResult(string &myMessage, MQTTClient const &m_client, string &myTopicForMessage, MQTTClient_message &m_pubmsg,
 //           MQTTClient_deliveryToken &m_token, const string &s, const vector<string> &buffers);
 //
 //void delivered(void *context, MQTTClient_deliveryToken dt)
@@ -427,7 +427,7 @@
 //        calculate();
 //        SendYVectorResult(myMessage, m_client, topic, myTopicForMessage, m_pubmsg, m_token, s, buffers);
 //
-//        SendD(myMessage, m_client, myTopicForMessage, m_pubmsg, m_token, s,
+//        SendTheResult(myMessage, m_client, myTopicForMessage, m_pubmsg, m_token, s,
 //              buffers);
 //        while (vecRec.size() < N - 1) {}
 // //   }
@@ -446,7 +446,7 @@
 //        SendYVectorResult(myMessage, m_client, topic, myTopicForMessage, m_pubmsg, m_token, s, buffers);
 //        cout << "size" <<vecRec.size() << endl;
 //
-//        SendD(myMessage, m_client, myTopicForMessage, m_pubmsg, m_token, s,
+//        SendTheResult(myMessage, m_client, myTopicForMessage, m_pubmsg, m_token, s,
 //              buffers);
 //        while (vecRec.size() < N - 2 || vecRec.size() == 0) {}
 //        cout << "size" <<vecRec.size() << endl;
@@ -490,7 +490,7 @@
 //
 //}
 //
-//void SendD(string &myMessage, MQTTClient const &m_client, string &myTopicForMessage, MQTTClient_message &m_pubmsg,
+//void SendTheResult(string &myMessage, MQTTClient const &m_client, string &myTopicForMessage, MQTTClient_message &m_pubmsg,
 //           MQTTClient_deliveryToken &m_token, const string &s, const vector<string> &buffers) {// buffers[i] = the buffer of party i+1
 //    // buffers[0] = party 1
 //    for(int i=0; i<buffers.size(); i++)
