@@ -2,24 +2,13 @@
 #include "stdlib.h"
 #include "../../workspace/paho/src/MQTTClient.h"
 #include "TParty.h"
-#include <stdio.h>
-#include <iostream>
-#include <string>
-#include <iostream>
-#include <vector>
-#include <map>
-#include <iostream>
-#include <cassert>
-#include <cstring>
+#include "VDM.h"
+#include "TGate.h"
 
 using namespace std;
 
 #define ADDRESS     "tcp://localhost:1883"
-#define COUNT_TOPIC 3
-
-#define PAYLOAD     "Hello World!"
 #define QOS         1
-#define TIMEOUT     10000L
 
 int PARTYID;
 //bool finish_sending_x_part = false;
@@ -27,15 +16,17 @@ volatile MQTTClient_deliveryToken deliveredtoken;
 
 int countXRecieve =0;
 int countYRecieve =0;
-int N, T;
+int N, T, M;
 vector<int> vecConn;
 vector<TFieldElement*> vecRecX;
 vector<string> vec;
 vector<string> vecRecForCheck;
 
-
 void RunTheProtocol(int party_id, MQTTClient &m_client, MQTTClient_message &m_pubmsg,
                     MQTTClient_deliveryToken &m_token, char** &topic, int &m_rc, string &s3);
+
+void InitializationPhase(vector<TGate> &GateValueArr, vector<TGate> &GateShareArr, vector<bool> &GateDoneArr,
+                         HIM &matrix_him,  VDM &matrix_vand);
 
 void ConnectHandler(const char *topicName, MQTTClient_message *&message, const string &str) {
     int elem = stoi(str);
@@ -261,14 +252,13 @@ void getXVector(string str, int pid)
     }
 
 }
-void ConcatenateEverything(vector<string> &buffers, int &no_buckets)
+void ConcatenateEverything(vector<string> &buffers, int &no_buckets, HIM &matrix)
 {
     vector<TFieldElement*> X1;
     vector<TFieldElement*> Y1;
 
     X1.resize(N);
     Y1.resize(N);
-    HIM matrix(N,N);
     matrix.InitHIM();
 
     for(int i=0; i<N; i++)
@@ -369,7 +359,7 @@ bool CheckIfHappyOrCry(int &no_buckets)
 }
 
 bool broadcast(int party_id, string myMessage ,MQTTClient &m_client, MQTTClient_message &m_pubmsg,
-                  MQTTClient_deliveryToken &m_token, char** &topic, int &m_rc)
+                  MQTTClient_deliveryToken &m_token, char** &topic, int &m_rc, HIM &him_matrix)
 {
     int no_buckets;
     vector<string> buffers;
@@ -380,7 +370,7 @@ bool broadcast(int party_id, string myMessage ,MQTTClient &m_client, MQTTClient_
 
     Broadcaster(myMessage, m_client, topic, myTopicForMessage, m_pubmsg, m_token, s);
 
-    ConcatenateEverything(buffers, no_buckets);
+    ConcatenateEverything(buffers, no_buckets, him_matrix);
 
     SendTheResult(myMessage, m_client, myTopicForMessage, m_pubmsg, m_token, s, buffers);
 
@@ -456,6 +446,11 @@ int main(int argc, char* argv[])
 
     RunTheProtocol(PARTYID,m_client, m_pubmsg, m_token, topic, m_rc, s3);
 
+    MQTTClient_disconnect(m_client, 10000);
+    MQTTClient_destroy(&m_client);
+
+
+
 }
 
 void RunTheProtocol(int party_id, MQTTClient &m_client, MQTTClient_message &m_pubmsg,
@@ -526,19 +521,55 @@ void RunTheProtocol(int party_id, MQTTClient &m_client, MQTTClient_message &m_pu
 
     /////////////////////////////////////////////////////
 
+    // the value of the gate (for my input and output gates)
+    vector<TGate> GateValueArr;
+    // my share of the gate (for all gates)
+    vector<TGate> GateShareArr;
+    // true is the gate is processed
+    vector<bool> GateDoneArr;
+    HIM matrix_him(N,N);
+    VDM matrix_vand(N,N);
 
     string s = to_string(PARTYID);
 
     ConnectionToServer(m_client, s, s3, m_pubmsg, m_token);
 
-    // start broadcast if cheating - halt
-    if(broadcast(party_id, x, m_client, m_pubmsg, m_token, topic, m_rc) == false) {
+    InitializationPhase(GateValueArr, GateShareArr, GateDoneArr, matrix_him, matrix_vand);
 
+    // start broadcast if cheating - halt
+    if(broadcast(party_id, x, m_client, m_pubmsg, m_token, topic, m_rc, matrix_him) == false) {
         cout << "cheating!!!" << endl;
-        MQTTClient_disconnect(m_client, 10000);
-        MQTTClient_destroy(&m_client);
+        return;
     }
     else{
         cout << "no cheating!!!" << endl;
     }
+}
+
+void InputAdjustment()
+{
+
+}
+
+void InitializationPhase(vector<TGate> &GateValueArr, vector<TGate> &GateShareArr, vector<bool> &GateDoneArr,
+                         HIM &matrix_him,  VDM &matrix_vand)
+{
+    // Compute Vandermonde matrix VDM
+    matrix_vand.InitVDM();
+    matrix_vand.Print();
+
+    // Prepare an N-by-N hyper-invertible matrix
+
+    matrix_him.InitHIM();
+
+    // Initialize the array to keep shares and values of gates
+    GateValueArr.resize(M);
+    GateShareArr.resize(M);
+    GateDoneArr.resize(M);
+
+    for(int i=0; i<GateDoneArr.size(); i++)
+    {
+        GateDoneArr[i] = false;
+    }
+
 }

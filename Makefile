@@ -210,6 +210,30 @@ TFieldElement.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldElement.cpp.s
 .PHONY : TFieldElement.cpp.s
 
+TGate.o: TGate.cpp.o
+.PHONY : TGate.o
+
+# target to build an object file
+TGate.cpp.o:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TGate.cpp.o
+.PHONY : TGate.cpp.o
+
+TGate.i: TGate.cpp.i
+.PHONY : TGate.i
+
+# target to preprocess a source file
+TGate.cpp.i:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TGate.cpp.i
+.PHONY : TGate.cpp.i
+
+TGate.s: TGate.cpp.s
+.PHONY : TGate.s
+
+# target to generate assembly for a file
+TGate.cpp.s:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TGate.cpp.s
+.PHONY : TGate.cpp.s
+
 TParty.o: TParty.cpp.o
 .PHONY : TParty.o
 
@@ -233,6 +257,30 @@ TParty.s: TParty.cpp.s
 TParty.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TParty.cpp.s
 .PHONY : TParty.cpp.s
+
+VDM.o: VDM.cpp.o
+.PHONY : VDM.o
+
+# target to build an object file
+VDM.cpp.o:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/VDM.cpp.o
+.PHONY : VDM.cpp.o
+
+VDM.i: VDM.cpp.i
+.PHONY : VDM.i
+
+# target to preprocess a source file
+VDM.cpp.i:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/VDM.cpp.i
+.PHONY : VDM.cpp.i
+
+VDM.s: VDM.cpp.s
+.PHONY : VDM.s
+
+# target to generate assembly for a file
+VDM.cpp.s:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/VDM.cpp.s
+.PHONY : VDM.cpp.s
 
 main.o: main.cpp.o
 .PHONY : main.o
@@ -303,9 +351,15 @@ help:
 	@echo "... TFieldElement.o"
 	@echo "... TFieldElement.i"
 	@echo "... TFieldElement.s"
+	@echo "... TGate.o"
+	@echo "... TGate.i"
+	@echo "... TGate.s"
 	@echo "... TParty.o"
 	@echo "... TParty.i"
 	@echo "... TParty.s"
+	@echo "... VDM.o"
+	@echo "... VDM.i"
+	@echo "... VDM.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

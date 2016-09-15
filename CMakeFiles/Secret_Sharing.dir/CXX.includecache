@@ -88,6 +88,12 @@ NTL/GF2XFactoring.h
 sstream
 -
 
+/home/hila/ClionProjects/Secret-Sharing/TGate.cpp
+TGate.h
+/home/hila/ClionProjects/Secret-Sharing/TGate.h
+
+/home/hila/ClionProjects/Secret-Sharing/TGate.h
+
 /home/hila/ClionProjects/Secret-Sharing/TParty.cpp
 TParty.h
 /home/hila/ClionProjects/Secret-Sharing/TParty.h
@@ -124,6 +130,20 @@ cassert
 ProtocolBroadcast.h
 /home/hila/ClionProjects/Secret-Sharing/ProtocolBroadcast.h
 
+/home/hila/ClionProjects/Secret-Sharing/VDM.cpp
+VDM.h
+/home/hila/ClionProjects/Secret-Sharing/VDM.h
+
+/home/hila/ClionProjects/Secret-Sharing/VDM.h
+TFieldElement.h
+/home/hila/ClionProjects/Secret-Sharing/TFieldElement.h
+TField.h
+/home/hila/ClionProjects/Secret-Sharing/TField.h
+vector
+-
+stdio.h
+-
+
 /home/hila/ClionProjects/Secret-Sharing/aes_locl.h
 openssl/e_os2.h
 -
@@ -141,24 +161,10 @@ stdlib.h
 /home/hila/workspace/paho/src/MQTTClient.h
 TParty.h
 /home/hila/ClionProjects/Secret-Sharing/TParty.h
-stdio.h
--
-iostream
--
-string
--
-iostream
--
-vector
--
-map
--
-iostream
--
-cassert
--
-cstring
--
+VDM.h
+/home/hila/ClionProjects/Secret-Sharing/VDM.h
+TGate.h
+/home/hila/ClionProjects/Secret-Sharing/TGate.h
 
 /home/hila/ClionProjects/Secret-Sharing/oldmain.cpp
 

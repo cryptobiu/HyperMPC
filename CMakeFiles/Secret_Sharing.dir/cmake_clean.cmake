@@ -6,6 +6,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/Secret_Sharing.dir/TFieldElement.cpp.o"
   "CMakeFiles/Secret_Sharing.dir/TParty.cpp.o"
   "CMakeFiles/Secret_Sharing.dir/main.cpp.o"
+  "CMakeFiles/Secret_Sharing.dir/VDM.cpp.o"
+  "CMakeFiles/Secret_Sharing.dir/TGate.cpp.o"
   "Secret_Sharing.pdb"
   "Secret_Sharing"
 )
