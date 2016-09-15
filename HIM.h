@@ -33,7 +33,7 @@ public:
 	 * the function init the matrix for that maps
 	 * evaluations points over alpha to evaluation points over beta
 	 */
-	TFieldElement** InitHIMByVectors(TFieldElement* alpha, TFieldElement* beta);
+	TFieldElement** InitHIMByVectors(vector<TFieldElement*> &alpha, vector<TFieldElement*> &beta);
 	/**
 	 * the function create 2 vectors of polynomial
 	 * and init the matrix according it
@@ -47,7 +47,9 @@ public:
 	TFieldElement** CheckInitHIM();
 	vector<TFieldElement> MatrixMult(vector<TFieldElement> vector);
 	TFieldElement* MatrixMult2(TFieldElement* vector);
-	vector<TFieldElement*> MatrixMult3(std::vector<TFieldElement*> vector);
+	void MatrixMult3(std::vector<TFieldElement*> vector, std::vector<TFieldElement*> &answer);
+	bool CheckConsistency(TFieldElement* alpha, int d, int size_of_alpha, int n);
+	TFieldElement Interpolate (vector<TFieldElement*> alpha, int n, vector<TFieldElement*> x);
 	virtual ~HIM();
 };
 

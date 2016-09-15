@@ -189,16 +189,18 @@ TParty::TParty(int num) {
  * input:
  * n - size of alpha
  */
-TFieldElement TParty::Interpolate (TFieldElement* alpha, int n, TFieldElement* x)
-{
-	TFieldElement y;
-	TFieldElement* beta = new TFieldElement[1];
-	beta[0] = *(TField::getInstance()->GetZero());
-	HIM* matrix = new HIM(n, 1);
-	matrix->InitHIMByVectors(alpha, beta);
-	y = *(matrix->MatrixMult2(x));
-	return y;
-}
+//TFieldElement TParty::Interpolate (vector<TFieldElement*> alpha, int n, vector<TFieldElement*> x)
+//{
+//	TFieldElement y;
+//	vector<TFieldElement*> beta;
+//	/////////////////////////////////
+//	beta.resize(1);
+//	beta[0] = (TField::getInstance()->GetZero());
+//	HIM* matrix = new HIM(n, 1);
+//	matrix->InitHIMByVectors(alpha, beta);
+////	y = *(matrix->MatrixMult2(x));
+//	return y;
+//}
 
 void TParty::f(string myMessage){
 

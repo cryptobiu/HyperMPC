@@ -43,3 +43,5 @@ CMakeFiles/Secret_Sharing.dir/main.cpp.o: main.cpp
 CMakeFiles/Secret_Sharing.dir/main.cpp.o: /home/hila/workspace/paho/src/MQTTClient.h
 CMakeFiles/Secret_Sharing.dir/main.cpp.o: /home/hila/workspace/paho/src/MQTTClientPersistence.h
 
+CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o: oldmain.cpp
+

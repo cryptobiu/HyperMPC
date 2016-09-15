@@ -10,6 +10,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/hila/ClionProjects/Secret-Sharing/TFieldElement.cpp" "/home/hila/ClionProjects/Secret-Sharing/CMakeFiles/Secret_Sharing.dir/TFieldElement.cpp.o"
   "/home/hila/ClionProjects/Secret-Sharing/TParty.cpp" "/home/hila/ClionProjects/Secret-Sharing/CMakeFiles/Secret_Sharing.dir/TParty.cpp.o"
   "/home/hila/ClionProjects/Secret-Sharing/main.cpp" "/home/hila/ClionProjects/Secret-Sharing/CMakeFiles/Secret_Sharing.dir/main.cpp.o"
+  "/home/hila/ClionProjects/Secret-Sharing/oldmain.cpp" "/home/hila/ClionProjects/Secret-Sharing/CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

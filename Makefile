@@ -258,6 +258,30 @@ main.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+oldmain.o: oldmain.cpp.o
+.PHONY : oldmain.o
+
+# target to build an object file
+oldmain.cpp.o:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o
+.PHONY : oldmain.cpp.o
+
+oldmain.i: oldmain.cpp.i
+.PHONY : oldmain.i
+
+# target to preprocess a source file
+oldmain.cpp.i:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/oldmain.cpp.i
+.PHONY : oldmain.cpp.i
+
+oldmain.s: oldmain.cpp.s
+.PHONY : oldmain.s
+
+# target to generate assembly for a file
+oldmain.cpp.s:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/oldmain.cpp.s
+.PHONY : oldmain.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -285,6 +309,9 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... oldmain.o"
+	@echo "... oldmain.i"
+	@echo "... oldmain.s"
 .PHONY : help
 
 

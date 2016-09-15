@@ -25,54 +25,83 @@ HIM::HIM(int m, int n) {
 	}
 }
 
+/*
+ * before you need to create matrixHIM (d+1, (n-1)-(d+1)+1)
+ * n-1-d-1+1
+ * n-1-d
+ * HIM(d+1, n-d-1)
+ */
+bool HIM::CheckConsistency(TFieldElement* alpha, int d, int size_of_alpha, int n)
+{
+    // Interpolate first d+1 positions of (alpha,x)
+    vector<TFieldElement*> Y;
+    vector<TFieldElement*> X;
+    MatrixMult3(X, Y);
+    for(int i=0; i< n-d-1; i++)
+    {
+        if(Y[i] != X[d+1+i])
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+
 /**
  * input: vectors
  * the function init the matrix for that maps
  * evaluations points over alpha to evaluation points over beta
  */
-TFieldElement** HIM::InitHIMByVectors(TFieldElement* alpha, TFieldElement* beta)
+TFieldElement** HIM::InitHIMByVectors(vector<TFieldElement*> &alpha, vector<TFieldElement*> &beta)
 {
 	TFieldElement lambda;
 	TFieldElement temp;
 	TFieldElement temp1;
 	TFieldElement temp2;
 
-	for (int i = 0; i < m_m; i++)
+    int m = beta.size();
+    int n = alpha.size();
+	for (int i = 0; i < m; i++)
 	{
-		for (int j = 0; j < m_n; j++)
+		for (int j = 0; j < n; j++)
 		{
 			//lambda = TFieldElement(GF2X::zero());
 			lambda = *(TField::getInstance()->GetOne());
 
 			// calculate lambda i,j
-			for (int k = 0; k < m_n; k++)
+			for (int k = 0; k < n; k++)
 			{
 				if (k == j)
 				{
 					continue;
 				}
-			//	cout <<"           " << i << j << k << endl;
-				temp1 = (beta[i]) - (alpha[k]);
-				temp2 = (alpha[j]) - (alpha[k]);
-			//	cout << i <<"bi" << (beta[i]).getElement() << endl;
-		//		cout << i << " k->" << k <<"ak" << (alpha[k]).getElement() << endl;
-				//cout << i << " j->" << j <<"aj" << (alpha[j]).getElement() << endl;
-			//	cout <<i <<"temp1"<< temp1.getElement() << endl;
-		//		cout <<i <<"temp2"<< temp2.getElement() << endl;
+				temp1 = *(beta[i]) - *(alpha[k]);
+				temp2 = *(alpha[j]) - *(alpha[k]);
 				temp = temp1 / temp2;
-				//cout <<"temp"<< temp.getElement() << endl;
-			//	cout<< "h";
 				lambda = lambda * temp;
-		//		cout <<"lambda"<< lambda.getElement() << endl;
 			}
-			// matrix[i][j] = lambda0
 			(m_matrix[i][j]).setPoly(lambda.getElement());
 		}
 	}
 
 	// to do: delete alpha and beta
-
 	return m_matrix;
+}
+
+/*
+ * HIM* matrix = new HIM(n, 1);
+ */
+TFieldElement HIM::Interpolate (vector<TFieldElement*> alpha, int n, vector<TFieldElement*> x)
+{
+    vector<TFieldElement*> y;
+	vector<TFieldElement*> beta;
+	beta.resize(1);
+	beta[0] = (TField::getInstance()->GetZero());
+    InitHIMByVectors(alpha, beta);
+    MatrixMult3(x, y);
+	return *y[0];
 }
 
 /**
@@ -82,9 +111,10 @@ TFieldElement** HIM::InitHIMByVectors(TFieldElement* alpha, TFieldElement* beta)
 TFieldElement** HIM::CheckInitHIM()
 {
 	int i;
-	TFieldElement* alpha = new TFieldElement[m_n];
-	TFieldElement* beta = new TFieldElement[m_m];
-
+	vector<TFieldElement*> alpha;
+    alpha.resize(m_n);
+	vector<TFieldElement*> beta;
+    beta.resize(m_m);
 	// check if valid
 	if (256 <= m_m*m_n)
 	{
@@ -96,8 +126,8 @@ TFieldElement** HIM::CheckInitHIM()
 	// Let alpha_j and beta_i be arbitrary field elements
 	for (i = 0; i < m_n; i++)
 	{
-		 alpha[i] = *(TField::getInstance()->GetElement(i));
-		 cout << alpha[i].getElement() << "  ";
+		 alpha[i] = (TField::getInstance()->GetElement(i));
+		 cout << alpha[i]->getElement() << "  ";
 	}
 
 	cout << endl;
@@ -105,8 +135,8 @@ TFieldElement** HIM::CheckInitHIM()
 	cout << "vector: beta: ";
 	for (i = 0; i < m_m; i++)
 	{
-		beta[i] = *(TField::getInstance()->GetElement(m_n+i));
-		 cout << beta[i].getElement() << "  ";
+		beta[i] = (TField::getInstance()->GetElement(m_n+i));
+		 cout << beta[i]->getElement() << "  ";
 	}
 	cout << endl;
 	return(InitHIMByVectors(alpha,beta));
@@ -115,8 +145,10 @@ TFieldElement** HIM::CheckInitHIM()
 TFieldElement** HIM::InitHIM()
 {
 	int i;
-	TFieldElement* alpha = new TFieldElement[m_n];
-	TFieldElement* beta = new TFieldElement[m_m];
+    vector<TFieldElement*> alpha;
+    alpha.resize(m_n);
+    vector<TFieldElement*> beta;
+    beta.resize(m_m);
 
 	// check if valid
 	if (256 <= m_m*m_n)
@@ -127,12 +159,12 @@ TFieldElement** HIM::InitHIM()
 	// Let alpha_j and beta_i be arbitrary field elements
 	for (i = 0; i < m_n; i++)
 	{
-		 alpha[i] = *(TField::getInstance()->GetElement(i));
+		 alpha[i] = (TField::getInstance()->GetElement(i));
 	}
 
 	for (i = 0; i < m_m; i++)
 	{
-		beta[i] = *(TField::getInstance()->GetElement(m_n+i));
+		beta[i] = (TField::getInstance()->GetElement(m_n+i));
 	}
 
 	return(InitHIMByVectors(alpha,beta));
@@ -220,12 +252,11 @@ vector<TFieldElement> HIM::MatrixMult(std::vector<TFieldElement> vector)
 }
 
 
-vector<TFieldElement*> HIM::MatrixMult3(std::vector<TFieldElement*> vector)
+void HIM::MatrixMult3(std::vector<TFieldElement*> vector, std::vector<TFieldElement*> &answer)
 {
 
 	TFieldElement* temp;
 	TFieldElement temp1;
-	std::vector<TFieldElement*> answer;
 
 	cout << "123  " <<  vector.size()<< endl;
 
@@ -239,13 +270,12 @@ vector<TFieldElement*> HIM::MatrixMult3(std::vector<TFieldElement*> vector)
 			*temp = *temp + temp1;
 		}
 
-		answer.push_back(temp);
+		answer[i]=temp;
 
 		//	answer[i].setPoly(temp.getElement());
 
 	}
 
-	return answer;
 }
 
 
