@@ -16,7 +16,8 @@ private:
     TGateType GateType;
 public:
     TGate();
-
+    TGateType getTGateType();
+    int getParty();
 };
 
 #endif /* TGATE_H_ */

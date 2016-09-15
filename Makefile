@@ -138,6 +138,30 @@ AES_PRG.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/AES_PRG.cpp.s
 .PHONY : AES_PRG.cpp.s
 
+TCircuit.o: TCircuit.cpp.o
+.PHONY : TCircuit.o
+
+# target to build an object file
+TCircuit.cpp.o:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o
+.PHONY : TCircuit.cpp.o
+
+TCircuit.i: TCircuit.cpp.i
+.PHONY : TCircuit.i
+
+# target to preprocess a source file
+TCircuit.cpp.i:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.i
+.PHONY : TCircuit.cpp.i
+
+TCircuit.s: TCircuit.cpp.s
+.PHONY : TCircuit.s
+
+# target to generate assembly for a file
+TCircuit.cpp.s:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.s
+.PHONY : TCircuit.cpp.s
+
 HIM.o: HIM.cpp.o
 .PHONY : HIM.o
 
@@ -330,6 +354,30 @@ oldmain.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/oldmain.cpp.s
 .PHONY : oldmain.cpp.s
 
+protocol.o: protocol.cpp.o
+.PHONY : protocol.o
+
+# target to build an object file
+protocol.cpp.o:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/protocol.cpp.o
+.PHONY : protocol.cpp.o
+
+protocol.i: protocol.cpp.i
+.PHONY : protocol.i
+
+# target to preprocess a source file
+protocol.cpp.i:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/protocol.cpp.i
+.PHONY : protocol.cpp.i
+
+protocol.s: protocol.cpp.s
+.PHONY : protocol.s
+
+# target to generate assembly for a file
+protocol.cpp.s:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/protocol.cpp.s
+.PHONY : protocol.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -342,6 +390,9 @@ help:
 	@echo "... AES_PRG.o"
 	@echo "... AES_PRG.i"
 	@echo "... AES_PRG.s"
+	@echo "... TCircuit.o"
+	@echo "... TCircuit.i"
+	@echo "... TCircuit.s"
 	@echo "... HIM.o"
 	@echo "... HIM.i"
 	@echo "... HIM.s"
@@ -366,6 +417,9 @@ help:
 	@echo "... oldmain.o"
 	@echo "... oldmain.i"
 	@echo "... oldmain.s"
+	@echo "... protocol.o"
+	@echo "... protocol.i"
+	@echo "... protocol.s"
 .PHONY : help
 
 

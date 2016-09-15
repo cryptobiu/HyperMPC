@@ -256,6 +256,52 @@ CMakeFiles/Secret_Sharing.dir/TGate.cpp.o.provides: CMakeFiles/Secret_Sharing.di
 
 CMakeFiles/Secret_Sharing.dir/TGate.cpp.o.provides.build: CMakeFiles/Secret_Sharing.dir/TGate.cpp.o
 
+CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o: CMakeFiles/Secret_Sharing.dir/flags.make
+CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o: TCircuit.cpp
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_10)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o -c /home/hila/ClionProjects/Secret-Sharing/TCircuit.cpp
+
+CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/hila/ClionProjects/Secret-Sharing/TCircuit.cpp > CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.i
+
+CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/hila/ClionProjects/Secret-Sharing/TCircuit.cpp -o CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.s
+
+CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o.requires:
+.PHONY : CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o.requires
+
+CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o.provides: CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o.requires
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o.provides.build
+.PHONY : CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o.provides
+
+CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o.provides.build: CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o
+
+CMakeFiles/Secret_Sharing.dir/protocol.cpp.o: CMakeFiles/Secret_Sharing.dir/flags.make
+CMakeFiles/Secret_Sharing.dir/protocol.cpp.o: protocol.cpp
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_11)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/Secret_Sharing.dir/protocol.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/Secret_Sharing.dir/protocol.cpp.o -c /home/hila/ClionProjects/Secret-Sharing/protocol.cpp
+
+CMakeFiles/Secret_Sharing.dir/protocol.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Secret_Sharing.dir/protocol.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/hila/ClionProjects/Secret-Sharing/protocol.cpp > CMakeFiles/Secret_Sharing.dir/protocol.cpp.i
+
+CMakeFiles/Secret_Sharing.dir/protocol.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Secret_Sharing.dir/protocol.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/hila/ClionProjects/Secret-Sharing/protocol.cpp -o CMakeFiles/Secret_Sharing.dir/protocol.cpp.s
+
+CMakeFiles/Secret_Sharing.dir/protocol.cpp.o.requires:
+.PHONY : CMakeFiles/Secret_Sharing.dir/protocol.cpp.o.requires
+
+CMakeFiles/Secret_Sharing.dir/protocol.cpp.o.provides: CMakeFiles/Secret_Sharing.dir/protocol.cpp.o.requires
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/protocol.cpp.o.provides.build
+.PHONY : CMakeFiles/Secret_Sharing.dir/protocol.cpp.o.provides
+
+CMakeFiles/Secret_Sharing.dir/protocol.cpp.o.provides.build: CMakeFiles/Secret_Sharing.dir/protocol.cpp.o
+
 # Object files for target Secret_Sharing
 Secret_Sharing_OBJECTS = \
 "CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o" \
@@ -266,7 +312,9 @@ Secret_Sharing_OBJECTS = \
 "CMakeFiles/Secret_Sharing.dir/TParty.cpp.o" \
 "CMakeFiles/Secret_Sharing.dir/main.cpp.o" \
 "CMakeFiles/Secret_Sharing.dir/VDM.cpp.o" \
-"CMakeFiles/Secret_Sharing.dir/TGate.cpp.o"
+"CMakeFiles/Secret_Sharing.dir/TGate.cpp.o" \
+"CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o" \
+"CMakeFiles/Secret_Sharing.dir/protocol.cpp.o"
 
 # External object files for target Secret_Sharing
 Secret_Sharing_EXTERNAL_OBJECTS =
@@ -280,6 +328,8 @@ Secret_Sharing: CMakeFiles/Secret_Sharing.dir/TParty.cpp.o
 Secret_Sharing: CMakeFiles/Secret_Sharing.dir/main.cpp.o
 Secret_Sharing: CMakeFiles/Secret_Sharing.dir/VDM.cpp.o
 Secret_Sharing: CMakeFiles/Secret_Sharing.dir/TGate.cpp.o
+Secret_Sharing: CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o
+Secret_Sharing: CMakeFiles/Secret_Sharing.dir/protocol.cpp.o
 Secret_Sharing: CMakeFiles/Secret_Sharing.dir/build.make
 Secret_Sharing: /home/hila/workspace/paho/src/libpaho-mqtt3a.so
 Secret_Sharing: /home/hila/workspace/paho/src/libpaho-mqtt3c.so
@@ -300,6 +350,8 @@ CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/TParty.cpp
 CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/main.cpp.o.requires
 CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/VDM.cpp.o.requires
 CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/TGate.cpp.o.requires
+CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o.requires
+CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/protocol.cpp.o.requires
 .PHONY : CMakeFiles/Secret_Sharing.dir/requires
 
 CMakeFiles/Secret_Sharing.dir/clean:
