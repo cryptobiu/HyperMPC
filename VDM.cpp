@@ -44,22 +44,28 @@ void VDM::Print()
 }
 
 
-//FOR k := 0 TO no_buckets-1 DO
-//        BEGIN
-//FOR i := 0 TO T DO x1[i] := Field.random(); // random degree-T polynomial
-//x2[0] := x1[0];
-//// same secret
-//FOR i := 1 TO 2*T DO x2[i] := Field.random(); // otherwise random
-//y1 := MatrixMult(VDM,x1);
-//// eval poly at alpha-positions
-//y2 := MatrixMult(VDM,x2);
-//// eval poly at alpha-positions
-//FOR i := 0 TO N-1 DO
-//        BEGIN
-//// prepare shares to be sent
-//Write(SendBufs[i],y1[i]);
-//// the degree-t shares of my poly
-//Write(SendBufs[i],y2[i]);
-//// the degree 2t shares of my poly
-//END;
-//END;
+void VDM::MatrixMult3(std::vector<TFieldElement*> vector, std::vector<TFieldElement*> &answer)
+{
+
+    TFieldElement* temp;
+    TFieldElement temp1;
+
+    cout << "123  " <<  vector.size()<< endl;
+
+    for(int i = 0; i < m_n; i++)
+    {
+        temp = new TFieldElement(GF2X::zero());
+        for(int j=0; j < m_m; j++)
+        {
+
+            temp1 = m_matrix[i][j] * *vector[j];
+            *temp = *temp + temp1;
+        }
+
+        answer[i]=temp;
+
+        //	answer[i].setPoly(temp.getElement());
+
+    }
+
+}

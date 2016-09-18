@@ -14,6 +14,7 @@ public:
     VDM(int n, int m);
     void InitVDM();
     void Print();
+    void MatrixMult3(std::vector<TFieldElement*> vector, std::vector<TFieldElement*> &answer);
 
 };
 

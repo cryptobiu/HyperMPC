@@ -16,6 +16,9 @@ private:
     int numOfAdditionGates;
 public:
     TCircuit();
+    int getnumOfMultiplicationGates();
+    int getnumOfRandomGates();
+    int getnumOfInputGates();
 };
 
 #endif /* CIRCUIT_H_ */

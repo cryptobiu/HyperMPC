@@ -56,6 +56,7 @@ void ConnectHandler(const char *topicName, MQTTClient_message *&message, const s
  * the function handle when message arrive
  */
 int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *message) {
+
     string topic(topicName);
     string str_message = "";
     int i;
@@ -367,7 +368,6 @@ int createObjectOfCommunicationAndStartTheProtocol(int argc, char* argv[])
     vec.resize(N);
     PARTYID = atoi(argv[1]);
 
-    ////////////////////////////////////////////////////////
     // start intialize the connection to server
 
     MQTTClient m_client;
@@ -422,7 +422,6 @@ int createObjectOfCommunicationAndStartTheProtocol(int argc, char* argv[])
 
     MQTTClient_disconnect(m_client, 10000);
     MQTTClient_destroy(&m_client);
-
 
 
 }
@@ -576,7 +575,6 @@ void InitializationPhase(vector<TGate> &GateValueArr, vector<TGate> &GateShareAr
     matrix_vand.Print();
 
     // Prepare an N-by-N hyper-invertible matrix
-
     matrix_him.InitHIM();
 
     // Initialize the array to keep shares and values of gates
@@ -589,4 +587,163 @@ void InitializationPhase(vector<TGate> &GateValueArr, vector<TGate> &GateShareAr
         GateDoneArr[i] = false;
     }
 
+}
+
+// for multiplication - will do after
+void publicReconstruction(vector<TFieldElement*> alpha)
+{
+    //  Length(MyShares)
+    int count;
+    int no_buckets = count / (N-T) + 1;
+
+    HIM m(T, N-T);
+
+    vector<TFieldElement*> alpha1;
+    vector<TFieldElement*> alpha2;
+
+    for(int i = 0; i < N-T; i++)
+    {
+        alpha1[i] = alpha[i];
+    }
+    for(int i = N-T; i < alpha.size(); i++)
+    {
+        alpha2[i] = alpha[i];
+    }
+
+    m.InitHIMByVectors(alpha1, alpha2);
+
+
+    for(int k=0; k < no_buckets; k++)
+    {
+        for(int i = 0; i < N-T; i++)
+        {
+            if( k*(N-T)+i < count)
+            {
+                // Read(MyShares,x1[i])
+            } else {
+                // x1[i] := ZERO;
+            }
+
+        }
+        // y1 := MatrixMul(M,x1[0..N-T-1]);
+        for(int i = 0; i < T; i++)
+        {
+            // x1[N-T+i] := y1[i];
+        }
+        for(int i = 0; i < N; i++)
+        {
+            // Write(SendBufs[i],x1[i]);
+        }
+    }
+
+    // RoundFunction(SendBufs,RecBufs);
+
+    for(int k=0; k < no_buckets; k++) {
+        for (int i = 0; i < N - 1; i++) {
+            // Read(RecBufs[i],x1[i]);
+        }
+        // y1 := MatrixMul(M,x1[0..N-T-1]);
+        for (int i = 0; i < T; i++) {
+          //  if (x1[N - T + i] != y1[i]) {
+                // Halt
+          //  }
+        }
+        for(int i = 0; i < N-T; i++)
+        {
+            if( k*(N-T)+i < count)
+            {
+                // Write(ValBuf,x1[i])
+            }
+        }
+    }
+}
+
+void preparationPhase(VDM &matrix_vand, HIM &matrix_him)
+{
+    TCircuit circuit;
+    int no_random = circuit.getnumOfMultiplicationGates() + circuit.getnumOfRandomGates() + circuit.getnumOfInputGates();
+
+    vector<TFieldElement*> x1,x2,y1,y2;
+    vector<string> sendBufs;
+
+    x1.resize(T+1);
+    x2.resize(2*T+1);
+    y1.resize(T+1);
+    y2.resize(2*T+1);
+
+    // the number of buckets (each bucket requires one double-sharing
+    // from each party and gives N-2T random double-sharings)
+    // ASK MEYTAL why this is n and not N !!!
+    int no_buckets = (no_random / (N-2*T))+1;
+    PRG prg =PRG::instance();
+    // return int 32 bit
+    uint8_t b = prg.getRandom();
+
+
+    sendBufs.resize(no_buckets*2);
+
+
+
+    for(int k=0; k < no_buckets; k++)
+    {
+        // generate random degree-T polynomial
+        for(int i = 0; i < T+1; i++)
+        {
+            b = prg.getRandom();
+            x1[i] = TField::getInstance()->GetElement(b);
+        }
+        // same secret
+        x2[0] = x1[0];
+        for(int i = 1; i < 2*T+1; i++)
+        {
+            b = prg.getRandom();
+            x2[i] = TField::getInstance()->GetElement(b);
+        }
+        matrix_vand.MatrixMult3(x1, y1);
+        matrix_vand.MatrixMult3(x2, y2);
+        for(int i=0; i < N; i++)
+        {
+            sendBufs[i] = y1[i]->toString() + "*";
+            sendBufs[i] += y2[i]->toString();
+        }
+    }
+
+    // RoundFunction(SendBufs,RecBufs)
+
+    vector<string> recBufs;
+    string sharingBuf = "";
+    int robin = 0;
+    string strX1, strX2, str;
+
+
+    for(int k=0; k < no_buckets; k++) {
+        // generate random degree-T polynomial
+        for (int i = 0; i < N; i++) {
+            //    Read(RecBufs[i],x1[i]);
+            //    Read(RecBufs[i],x2[i]);
+            str = recBufs[i];
+            //
+//            strX1 = recBufs[i];
+//            strX2 = recBufs[i];
+
+        }
+        matrix_him.MatrixMult3(x1, y1);
+        matrix_him.MatrixMult3(x2, y2);
+        for (int i = 0; i < 2 * T; i++) {
+            sendBufs[robin] = y1[i]->toString() + "*";
+            sendBufs[robin] += y2[i]->toString();
+            robin = (robin+1)%N;
+        }
+        for (int i = 2 * T; i < N; i++) {
+            sharingBuf += y1[i]->toString() + "*" + y2[i]->toString();
+        }
+    }
+
+    // RoundFunction(SendBufs,RecBufs);
+
+    int count = no_buckets * (2*T) / N;
+    if(no_buckets * (2*T)%N > PARTYID)
+    {
+        count++;
+    }
 }
