@@ -30,10 +30,24 @@ openssl/evp.h
 aes_locl.h
 /home/hila/ClionProjects/Secret-Sharing/aes_locl.h
 
-/home/hila/ClionProjects/Secret-Sharing/TCircuit.cpp
-TCircuit.h
-/home/hila/ClionProjects/Secret-Sharing/TCircuit.h
+/home/hila/ClionProjects/Secret-Sharing/Communication.cpp
+Communication.h
+/home/hila/ClionProjects/Secret-Sharing/Communication.h
+thread
+-
 
+/home/hila/ClionProjects/Secret-Sharing/Communication.h
+stdlib.h
+/home/hila/ClionProjects/Secret-Sharing/stdlib.h
+../../workspace/paho/src/MQTTClient.h
+/home/hila/workspace/paho/src/MQTTClient.h
+TParty.h
+/home/hila/ClionProjects/Secret-Sharing/TParty.h
+VDM.h
+/home/hila/ClionProjects/Secret-Sharing/VDM.h
+TGate.h
+/home/hila/ClionProjects/Secret-Sharing/TGate.h
+TCircuit.h
 /home/hila/ClionProjects/Secret-Sharing/TCircuit.h
 
 /home/hila/ClionProjects/Secret-Sharing/HIM.cpp
@@ -57,6 +71,16 @@ array
 -
 
 /home/hila/ClionProjects/Secret-Sharing/ProtocolBroadcast.h
+
+/home/hila/ClionProjects/Secret-Sharing/TCircuit.cpp
+TCircuit.h
+/home/hila/ClionProjects/Secret-Sharing/TCircuit.h
+
+/home/hila/ClionProjects/Secret-Sharing/TCircuit.h
+TGate.h
+/home/hila/ClionProjects/Secret-Sharing/TGate.h
+vector
+-
 
 /home/hila/ClionProjects/Secret-Sharing/TField.cpp
 TField.h
@@ -173,6 +197,10 @@ TGate.h
 /home/hila/ClionProjects/Secret-Sharing/TGate.h
 protocol.h
 /home/hila/ClionProjects/Secret-Sharing/protocol.h
+Communication.h
+/home/hila/ClionProjects/Secret-Sharing/Communication.h
+thread
+-
 
 /home/hila/ClionProjects/Secret-Sharing/oldmain.cpp
 
@@ -187,6 +215,10 @@ VDM.h
 /home/hila/ClionProjects/Secret-Sharing/VDM.h
 TGate.h
 /home/hila/ClionProjects/Secret-Sharing/TGate.h
+TCircuit.h
+/home/hila/ClionProjects/Secret-Sharing/TCircuit.h
+Communication.h
+/home/hila/ClionProjects/Secret-Sharing/Communication.h
 
 /home/hila/ClionProjects/Secret-Sharing/protocol.h
 ../../workspace/paho/src/MQTTClient.h

@@ -5,8 +5,9 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/hila/ClionProjects/Secret-Sharing/AES_PRG.cpp" "/home/hila/ClionProjects/Secret-Sharing/CMakeFiles/Secret_Sharing.dir/AES_PRG.cpp.o"
-  "/home/hila/ClionProjects/Secret-Sharing/Circuit.cpp" "/home/hila/ClionProjects/Secret-Sharing/CMakeFiles/Secret_Sharing.dir/Circuit.cpp.o"
+  "/home/hila/ClionProjects/Secret-Sharing/Communication.cpp" "/home/hila/ClionProjects/Secret-Sharing/CMakeFiles/Secret_Sharing.dir/Communication.cpp.o"
   "/home/hila/ClionProjects/Secret-Sharing/HIM.cpp" "/home/hila/ClionProjects/Secret-Sharing/CMakeFiles/Secret_Sharing.dir/HIM.cpp.o"
+  "/home/hila/ClionProjects/Secret-Sharing/TCircuit.cpp" "/home/hila/ClionProjects/Secret-Sharing/CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o"
   "/home/hila/ClionProjects/Secret-Sharing/TField.cpp" "/home/hila/ClionProjects/Secret-Sharing/CMakeFiles/Secret_Sharing.dir/TField.cpp.o"
   "/home/hila/ClionProjects/Secret-Sharing/TFieldElement.cpp" "/home/hila/ClionProjects/Secret-Sharing/CMakeFiles/Secret_Sharing.dir/TFieldElement.cpp.o"
   "/home/hila/ClionProjects/Secret-Sharing/TGate.cpp" "/home/hila/ClionProjects/Secret-Sharing/CMakeFiles/Secret_Sharing.dir/TGate.cpp.o"

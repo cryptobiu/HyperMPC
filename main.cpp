@@ -5,7 +5,8 @@
 #include "VDM.h"
 #include "TGate.h"
 #include "protocol.h"
-
+#include "Communication.h"
+#include <thread>
 using namespace std;
 
 
@@ -16,5 +17,9 @@ int main(int argc, char* argv[])
         cout << "error";
         return 0;
     }
+
+    Communication::getInstance(atoi(argv[2]), atoi(argv[1]));
+
+    std::thread::id main_thread_id = std::this_thread::get_id();
     createObjectOfCommunicationAndStartTheProtocol(argc, argv);
 }

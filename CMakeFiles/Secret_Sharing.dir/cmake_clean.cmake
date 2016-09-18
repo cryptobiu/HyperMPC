@@ -8,8 +8,9 @@ file(REMOVE_RECURSE
   "CMakeFiles/Secret_Sharing.dir/main.cpp.o"
   "CMakeFiles/Secret_Sharing.dir/VDM.cpp.o"
   "CMakeFiles/Secret_Sharing.dir/TGate.cpp.o"
-  "CMakeFiles/Secret_Sharing.dir/Circuit.cpp.o"
+  "CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o"
   "CMakeFiles/Secret_Sharing.dir/protocol.cpp.o"
+  "CMakeFiles/Secret_Sharing.dir/Communication.cpp.o"
   "Secret_Sharing.pdb"
   "Secret_Sharing"
 )

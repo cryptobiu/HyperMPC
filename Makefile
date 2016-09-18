@@ -138,29 +138,29 @@ AES_PRG.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/AES_PRG.cpp.s
 .PHONY : AES_PRG.cpp.s
 
-TCircuit.o: TCircuit.cpp.o
-.PHONY : TCircuit.o
+Communication.o: Communication.cpp.o
+.PHONY : Communication.o
 
 # target to build an object file
-TCircuit.cpp.o:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o
-.PHONY : TCircuit.cpp.o
+Communication.cpp.o:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/Communication.cpp.o
+.PHONY : Communication.cpp.o
 
-TCircuit.i: TCircuit.cpp.i
-.PHONY : TCircuit.i
+Communication.i: Communication.cpp.i
+.PHONY : Communication.i
 
 # target to preprocess a source file
-TCircuit.cpp.i:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.i
-.PHONY : TCircuit.cpp.i
+Communication.cpp.i:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/Communication.cpp.i
+.PHONY : Communication.cpp.i
 
-TCircuit.s: TCircuit.cpp.s
-.PHONY : TCircuit.s
+Communication.s: Communication.cpp.s
+.PHONY : Communication.s
 
 # target to generate assembly for a file
-TCircuit.cpp.s:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.s
-.PHONY : TCircuit.cpp.s
+Communication.cpp.s:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/Communication.cpp.s
+.PHONY : Communication.cpp.s
 
 HIM.o: HIM.cpp.o
 .PHONY : HIM.o
@@ -185,6 +185,30 @@ HIM.s: HIM.cpp.s
 HIM.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/HIM.cpp.s
 .PHONY : HIM.cpp.s
+
+TCircuit.o: TCircuit.cpp.o
+.PHONY : TCircuit.o
+
+# target to build an object file
+TCircuit.cpp.o:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o
+.PHONY : TCircuit.cpp.o
+
+TCircuit.i: TCircuit.cpp.i
+.PHONY : TCircuit.i
+
+# target to preprocess a source file
+TCircuit.cpp.i:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.i
+.PHONY : TCircuit.cpp.i
+
+TCircuit.s: TCircuit.cpp.s
+.PHONY : TCircuit.s
+
+# target to generate assembly for a file
+TCircuit.cpp.s:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.s
+.PHONY : TCircuit.cpp.s
 
 TField.o: TField.cpp.o
 .PHONY : TField.o
@@ -390,12 +414,15 @@ help:
 	@echo "... AES_PRG.o"
 	@echo "... AES_PRG.i"
 	@echo "... AES_PRG.s"
-	@echo "... TCircuit.o"
-	@echo "... TCircuit.i"
-	@echo "... TCircuit.s"
+	@echo "... Communication.o"
+	@echo "... Communication.i"
+	@echo "... Communication.s"
 	@echo "... HIM.o"
 	@echo "... HIM.i"
 	@echo "... HIM.s"
+	@echo "... TCircuit.o"
+	@echo "... TCircuit.i"
+	@echo "... TCircuit.s"
 	@echo "... TField.o"
 	@echo "... TField.i"
 	@echo "... TField.s"

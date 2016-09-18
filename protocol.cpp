@@ -5,133 +5,17 @@
 #include "VDM.h"
 #include "TGate.h"
 #include "TCircuit.h"
+#include "Communication.h"
 
 using namespace std;
 
 #define ADDRESS     "tcp://localhost:1883"
-#define QOS         1
-
-int PARTYID;
-//bool finish_sending_x_part = false;
-volatile MQTTClient_deliveryToken deliveredtoken;
-
-int countXRecieve =0;
-int countYRecieve =0;
-int N, T, M;
-vector<int> vecConn;
-vector<TFieldElement*> vecRecX;
-vector<string> vec;
-vector<string> vecRecForCheck;
 
 void RunTheProtocol(int party_id, MQTTClient &m_client, MQTTClient_message &m_pubmsg,
                     MQTTClient_deliveryToken &m_token, char** &topic, int &m_rc, string &s3);
 
 void InitializationPhase(vector<TGate> &GateValueArr, vector<TGate> &GateShareArr, vector<bool> &GateDoneArr,
                          HIM &matrix_him,  VDM &matrix_vand);
-
-void ConnectHandler(const char *topicName, MQTTClient_message *&message, const string &str) {
-    int elem = stoi(str);
-    bool flag = true;
-    for(int i=0; i<vecConn.size(); i++)
-    {
-        if(vecConn[i] == elem)
-        {
-            flag = false;
-            break;
-        }
-    }
-    if (flag == true) {
-
-        printf("Message arrived\n");
-        printf("   topic: %s\n", topicName);
-
-        printf("   message: ");
-
-        cout << elem << endl;
-        vecConn.push_back(elem);
-    }
-
-}
-/**
- * the function handle when message arrive
- */
-int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *message) {
-
-    string topic(topicName);
-    string str_message = "";
-    int i;
-    char *payloadptr;
-    string s = to_string(PARTYID);
-    int len_of_message;
-
-
-    payloadptr = (char *) message->payload;
-    string str(payloadptr);
-
-    str = strtok(payloadptr, "$");
-
-    int pid = atoi(str.c_str());
-
-
-    if (str == s) return 1;
-
-    // loop until client_id
-    if (topic == "CONNECT") {
-        ConnectHandler(topicName, message, str);
-        MQTTClient_freeMessage(&message);
-        MQTTClient_free(topicName);
-        return 1;
-    }
-
-    int count = 0;
-    int div, mod;
-    div = PARTYID / 10;
-    mod = PARTYID % 10;
-    if (mod == 0) {
-        count = div;
-    } else {
-        count = div + 1;
-    }
-    for (i = 0; i < count + 1; i++) {
-        *payloadptr++;
-    }
-    len_of_message = message->payloadlen - (count + 1);
-    for (i = 0; i < len_of_message; i++) {
-        str_message += (*payloadptr++);
-    }
-
-    if (topic.find("SHARE_Yjk_VECTOR") != std::string::npos) {
-        vecRecForCheck[pid-1] = str_message;
-        countYRecieve++;
-    } else {
-        // only when all x es recived we can calculate every x
-        vec[pid-1] = str_message;
-        countXRecieve++;
-    }
-
-    printf("Message arrived\n");
-    printf("     topic: %s\n", topicName);
-    printf("   message: ");
-
-    cout << str_message;
-    putchar('\n');
-    // clean the pointer of the message
-    MQTTClient_freeMessage(&message);
-    MQTTClient_free(topicName);
-
-    return 1;
-}
-
-void connlost(void *context, char *cause)
-{
-    printf("\nConnection lost\n");
-    printf("     cause: %s\n", cause);
-}
-
-void delivered(void *context, MQTTClient_deliveryToken dt)
-{
-    deliveredtoken = dt;
-}
 
 void split(const string &s, char delim, vector<string> &elems) {
     stringstream ss;
@@ -149,91 +33,19 @@ vector<string> split(const string &s, char delim) {
     return elems;
 }
 
-void ConnectionToServer(const MQTTClient &m_client, const string &s, string &myTopicForMessage, MQTTClient_message &m_pubmsg,
-                        MQTTClient_deliveryToken &m_token) {// connect
-
-    string strMessage = s + "$" + s;
-
-    myTopicForMessage = "CONNECT";
-
-    // update the details of message
-    m_pubmsg.payload =(void*) strMessage.c_str();
-    m_pubmsg.payloadlen = strMessage.size();
-    m_pubmsg.qos = QOS;
-    m_pubmsg.retained = 0;
-    deliveredtoken = 0;
-
-    // publish the message to all parties
-    MQTTClient_publishMessage(m_client, myTopicForMessage.c_str(), &m_pubmsg, &m_token);
-
-    // wait until all parties connect
-    while(vecConn.size() < N-1){
-        MQTTClient_publishMessage(m_client, myTopicForMessage.c_str(), &m_pubmsg, &m_token);
-    }
-
-    MQTTClient_publishMessage(m_client, myTopicForMessage.c_str(), &m_pubmsg, &m_token);
-
-    cout << "Let's start!" << endl;
-}
-
-void SendTheResult(string &myMessage, MQTTClient const &m_client, string &myTopicForMessage,
-                   MQTTClient_message &m_pubmsg,
-                   MQTTClient_deliveryToken &m_token, const string &s, const vector<string> &buffers) {// buffers[i] = the buffer of party i+1
-    // buffers[0] = party 1
-    for(int i=0; i<buffers.size(); i++)
-    {
-        myMessage = s + "$" + buffers[i];
-
-        myTopicForMessage = "SHARE_Yjk_VECTOR" + to_string(i + 1);
-
-        m_pubmsg.payload = (void *) myMessage.c_str();
-
-        m_pubmsg.payloadlen = myMessage.size();
-        m_pubmsg.qos = QOS;
-        m_pubmsg.retained = 0;
-        deliveredtoken = 0;
-
-        MQTTClient_publishMessage(m_client, myTopicForMessage.c_str(), &m_pubmsg, &m_token);
-
-        while (deliveredtoken != m_token) {};
-    }
-}
-
-void SendXVectorToAllParties(string &myMessage, MQTTClient const &m_client, char *const *topic,
-                             string &myTopicForMessage, MQTTClient_message &m_pubmsg,
-                             MQTTClient_deliveryToken &m_token, string &s) {
-    myTopicForMessage = topic[0];
-
-    // add id party to the message
-    myMessage = s + "$" + myMessage;
-
-    // update the details of message
-    m_pubmsg.payload = (void *) myMessage.c_str();
-    m_pubmsg.payloadlen = myMessage.size();
-    m_pubmsg.qos = QOS;
-    m_pubmsg.retained = 0;
-    deliveredtoken = 0;
-
-    // publish the message to all parties
-    MQTTClient_publishMessage(m_client, myTopicForMessage.c_str(), &m_pubmsg, &m_token);
-
-    // waiting until the message send
-    while (deliveredtoken != m_token) {};
-}
-
 void Broadcaster(string &myMessage, const MQTTClient &m_client, char *const *topic, string &myTopicForMessage,
                  MQTTClient_message &m_pubmsg, MQTTClient_deliveryToken &m_token, string &s) {
 
     string temp = myMessage;
-    vec[PARTYID-1] = temp;
+    Communication::getInstance()->vec[Communication::getInstance()->PARTYID - 1] = temp;
 
-    SendXVectorToAllParties(myMessage, m_client, topic, myTopicForMessage, m_pubmsg, m_token, s);
+    Communication::getInstance()->SendXVectorToAllParties(myMessage, m_client, topic, myTopicForMessage, m_pubmsg, m_token, s);
     // Round Function
-    while (countXRecieve < N-1) {}
+    while (Communication::getInstance()->countXRecieve < Communication::getInstance()->N - 1) {}
 
-    for(int i=0; i<vec.size(); i++)
+    for(int i=0; i< Communication::getInstance()->vec.size(); i++)
     {
-        cout << "this is: "<< i<< "  " << vec[i] << endl;
+        cout << "this is: " << i << "  " << Communication::getInstance()->vec[i] << endl;
     }
 }
 
@@ -248,38 +60,42 @@ void getXVector(string str, int pid)
         str1 = arr[i];
         str2 += str1;
         n = new TFieldElement(str1);
-        vecRecX.push_back(n);
+        Communication::getInstance()->vecRecX.push_back(n);
     }
 
 }
+
 void ConcatenateEverything(vector<string> &buffers, int &no_buckets, HIM &matrix)
 {
     vector<TFieldElement*> X1;
     vector<TFieldElement*> Y1;
 
-    X1.resize(N);
-    Y1.resize(N);
+    int N= Communication::getInstance()->N;
+    int T= Communication::getInstance()->T;
+
+    X1.resize(Communication::getInstance()->N);
+    Y1.resize(Communication::getInstance()->N);
     matrix.InitHIM();
 
-    for(int i=0; i<N; i++)
+    for(int i=0; i< Communication::getInstance()->N; i++)
     {
-        getXVector(vec[i],i+1);
+        getXVector(Communication::getInstance()->vec[i], i + 1);
     }
 
     // total number of values
-    int count = vecRecX.size();
+    int count = Communication::getInstance()->vecRecX.size();
 
     // nr of buckets
-    no_buckets = count / (N-T) + 1;
+    no_buckets = count / (Communication::getInstance()->N - Communication::getInstance()->T) + 1;
     TFieldElement* n;
 
     for(int k = 0; k < no_buckets; k++)
     {
-        for(int i = 0; i < N; i++)
+        for(int i = 0; i < Communication::getInstance()->N; i++)
         {
             if((i < N-T) && (k*(N-T)+i < count))
             {
-                X1[i]=vecRecX[i];
+                X1[i]= Communication::getInstance()->vecRecX[i];
             }
                 // padding zero
             else
@@ -319,13 +135,14 @@ void ConcatenateEverything(vector<string> &buffers, int &no_buckets, HIM &matrix
 
 bool CheckIfHappyOrCry(int &no_buckets)
 {
-    while (countYRecieve < N-1) {}
+    int N= Communication::getInstance()->N;
+    while (Communication::getInstance()->countYRecieve < N - 1) {}
 
     string temp;
-    for(int i=0; i<vecRecForCheck.size(); i++) {
+    for(int i=0; i< Communication::getInstance()->vecRecForCheck.size(); i++) {
 
         vector<string> arr = {};
-        arr = split(vecRecForCheck[i], '*');
+        arr = split(Communication::getInstance()->vecRecForCheck[i], '*');
         if(arr.size() > 0) {
             temp = arr[0];
             for (int i = 1; i < arr.size() - 1; i++) {
@@ -344,18 +161,19 @@ bool CheckIfHappyOrCry(int &no_buckets)
 bool broadcast(int party_id, string myMessage ,MQTTClient &m_client, MQTTClient_message &m_pubmsg,
                MQTTClient_deliveryToken &m_token, char** &topic, int &m_rc, HIM &him_matrix)
 {
+    int N= Communication::getInstance()->N;
     int no_buckets;
     vector<string> buffers;
     buffers.resize(N);
-    vecRecForCheck.resize(N);
+    Communication::getInstance()->vecRecForCheck.resize(N);
     string myTopicForMessage="";
-    string s = to_string(PARTYID);
+    string s = to_string(Communication::getInstance()->PARTYID);
 
     Broadcaster(myMessage, m_client, topic, myTopicForMessage, m_pubmsg, m_token, s);
 
     ConcatenateEverything(buffers, no_buckets, him_matrix);
 
-    SendTheResult(myMessage, m_client, myTopicForMessage, m_pubmsg, m_token, s, buffers);
+    Communication::getInstance()->SendTheResult(myMessage, m_client, myTopicForMessage, m_pubmsg, m_token, s, buffers);
 
     return CheckIfHappyOrCry(no_buckets);
 
@@ -363,65 +181,17 @@ bool broadcast(int party_id, string myMessage ,MQTTClient &m_client, MQTTClient_
 
 int createObjectOfCommunicationAndStartTheProtocol(int argc, char* argv[])
 {
-    N = atoi(argv[2]);
-    T = N/3 -1;
-    vec.resize(N);
-    PARTYID = atoi(argv[1]);
-
-    // start intialize the connection to server
-
-    MQTTClient m_client;
-    static MQTTClient_connectOptions m_conn_opts = MQTTClient_connectOptions_initializer;
-    int m_rc;
-    int m_ch;
-    char** topic = new char*[3];
-    int len;
-    MQTTClient_message m_pubmsg;
-    MQTTClient_deliveryToken m_token;
-
-    // messages
-    m_pubmsg = MQTTClient_message_initializer;
-
-    // create client object
-
-    const char* c ="party" +PARTYID;
-    MQTTClient_create(&m_client, ADDRESS, c,
-                      MQTTCLIENT_PERSISTENCE_NONE, NULL);
-
-    m_conn_opts.keepAliveInterval = 60;
-    m_conn_opts.cleansession = 1;
-
-
-    // msgarrvd - handle function
-    MQTTClient_setCallbacks(m_client, NULL, connlost, msgarrvd, delivered);
-
-    // try to connect to server
-    if ((m_rc = MQTTClient_connect(m_client, &m_conn_opts)) != MQTTCLIENT_SUCCESS)
-    {
-        printf("Failed to connect, return code %d\n", m_rc);
-        //   exit(EXIT_FAILURE);
-    }
-
-    //free topic
-    // create topics
-    string s1 = "SHARE_Ps_VECTOR";
-    string s2 = "SHARE_Yjk_VECTOR"+to_string(PARTYID);
-    string s3 = "CONNECT";
-
-    topic[0] = (char*)s1.c_str();
-    topic[1] = (char*)s2.c_str();
-    topic[2] = (char*)s3.c_str();
-    int QQS_ARR[3] = {1, 1, 1};
-
-    // update the topics
-    MQTTClient_subscribeMany(m_client,  3, topic, QQS_ARR);
-
     // finish intialize the connection to server
 
-    RunTheProtocol(PARTYID,m_client, m_pubmsg, m_token, topic, m_rc, s3);
+    RunTheProtocol(Communication::getInstance()->PARTYID, Communication::getInstance()->m_client,
+                   Communication::getInstance()->m_pubmsg,
+                   Communication::getInstance()->m_token,
+                   Communication::getInstance()->topic,
+                   Communication::getInstance()->m_rc,
+                   Communication::getInstance()->s3);
 
-    MQTTClient_disconnect(m_client, 10000);
-    MQTTClient_destroy(&m_client);
+    MQTTClient_disconnect(Communication::getInstance()->m_client, 10000);
+    MQTTClient_destroy(&Communication::getInstance()->m_client);
 
 
 }
@@ -490,6 +260,7 @@ string test() {
 void RunTheProtocol(int party_id, MQTTClient &m_client, MQTTClient_message &m_pubmsg,
                     MQTTClient_deliveryToken &m_token, char** &topic, int &m_rc, string &s3) {
 
+    int N= Communication::getInstance()->N;
     TParty t(party_id);
 
     GF2X irreduciblePolynomial = BuildSparseIrred_GF2X(8);
@@ -506,9 +277,9 @@ void RunTheProtocol(int party_id, MQTTClient &m_client, MQTTClient_message &m_pu
     HIM matrix_him(N,N);
     VDM matrix_vand(N,N);
 
-    string s = to_string(PARTYID);
+    string s = to_string(Communication::getInstance()->PARTYID);
 
-    ConnectionToServer(m_client, s, s3, m_pubmsg, m_token);
+    Communication::getInstance()->ConnectionToServer(m_client, s, s3, m_pubmsg, m_token);
 
     InitializationPhase(GateValueArr, GateShareArr, GateDoneArr, matrix_him, matrix_vand);
 
@@ -525,6 +296,7 @@ void RunTheProtocol(int party_id, MQTTClient &m_client, MQTTClient_message &m_pu
 /// TO DO TO DO !!
 void InputAdjustment(vector<TFieldElement> &diff)
 {
+    int M= Communication::getInstance()->M;
 //    DiffBuf : TBuffer;
 //    d : TFieldElement;
 //
@@ -537,7 +309,7 @@ void InputAdjustment(vector<TFieldElement> &diff)
     TFieldElement d;
     for (int k = 0; k < M; k++)
     {
-        if(circuit[k].getTGateType() == InputGate && circuit[k].getParty() == PARTYID)
+        if(circuit[k].getTGateType() == InputGate && circuit[k].getParty() == Communication::getInstance()->PARTYID)
         {
             //    BEGIN
             //   Writeln(’Enter input for gate nr ’,k,’:’);
@@ -570,6 +342,7 @@ void InputAdjustment(vector<TFieldElement> &diff)
 void InitializationPhase(vector<TGate> &GateValueArr, vector<TGate> &GateShareArr, vector<bool> &GateDoneArr,
                          HIM &matrix_him,  VDM &matrix_vand)
 {
+    int M= Communication::getInstance()->M;
     // Compute Vandermonde matrix VDM
     matrix_vand.InitVDM();
     matrix_vand.Print();
@@ -592,6 +365,8 @@ void InitializationPhase(vector<TGate> &GateValueArr, vector<TGate> &GateShareAr
 // for multiplication - will do after
 void publicReconstruction(vector<TFieldElement*> alpha)
 {
+    int N= Communication::getInstance()->N;
+    int T= Communication::getInstance()->T;
     //  Length(MyShares)
     int count;
     int no_buckets = count / (N-T) + 1;
@@ -660,6 +435,8 @@ void publicReconstruction(vector<TFieldElement*> alpha)
 
 void preparationPhase(VDM &matrix_vand, HIM &matrix_him)
 {
+    int N= Communication::getInstance()->N;
+    int T= Communication::getInstance()->T;
     TCircuit circuit;
     int no_random = circuit.getnumOfMultiplicationGates() + circuit.getnumOfRandomGates() + circuit.getnumOfInputGates();
 
@@ -742,7 +519,7 @@ void preparationPhase(VDM &matrix_vand, HIM &matrix_him)
     // RoundFunction(SendBufs,RecBufs);
 
     int count = no_buckets * (2*T) / N;
-    if(no_buckets * (2*T)%N > PARTYID)
+    if(no_buckets * (2*T)%N > Communication::getInstance()->PARTYID)
     {
         count++;
     }
