@@ -26,16 +26,23 @@ HIM::HIM(int m, int n) {
 }
 
 /*
+ * TFieldElement* alpha
  * before you need to create matrixHIM (d+1, (n-1)-(d+1)+1)
  * n-1-d-1+1
  * n-1-d
  * HIM(d+1, n-d-1)
  */
-bool HIM::CheckConsistency(TFieldElement* alpha, int d, int size_of_alpha, int n)
+bool HIM::CheckConsistency(int d, int n, vector<TFieldElement*> &x1)
 {
     // Interpolate first d+1 positions of (alpha,x)
     vector<TFieldElement*> Y;
     vector<TFieldElement*> X;
+	X.resize(n);
+	Y.resize(n);
+	for(int i=0; i< d+1; i++)
+	{
+		X[i] = x1[i];
+	}
     MatrixMult3(X, Y);
     for(int i=0; i< n-d-1; i++)
     {
@@ -93,8 +100,27 @@ TFieldElement** HIM::InitHIMByVectors(vector<TFieldElement*> &alpha, vector<TFie
 /*
  * HIM* matrix = new HIM(n, 1);
  */
-TFieldElement HIM::Interpolate (vector<TFieldElement*> alpha, int n, vector<TFieldElement*> x)
+TFieldElement HIM::Interpolate (vector<TFieldElement*> alpha, vector<TFieldElement*> x)
 {
+	/**
+	 * // Interpolate polynomial at position Zero
+		FUNCTION Interpolate (alpha,x : TVector) : TFieldElement;
+		VAR
+		y,beta : TVector;
+		m : TMatrix;
+		i,n : INTEGER;
+		BEGIN
+		n := Length(alpha);
+		SetLength(beta,1); beta[0] := ZERO;
+		// zero of the field
+		m := CreateHIM(alpha,beta);
+		// yeah, this is cheap :-)
+		y := MatrixMul(m,x);
+		Return(y[0]);
+		END;
+	 */
+
+
     vector<TFieldElement*> y;
 	vector<TFieldElement*> beta;
 	beta.resize(1);

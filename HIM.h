@@ -48,8 +48,8 @@ public:
 	vector<TFieldElement> MatrixMult(vector<TFieldElement> vector);
 	TFieldElement* MatrixMult2(TFieldElement* vector);
 	void MatrixMult3(std::vector<TFieldElement*> vector, std::vector<TFieldElement*> &answer);
-	bool CheckConsistency(TFieldElement* alpha, int d, int size_of_alpha, int n);
-	TFieldElement Interpolate (vector<TFieldElement*> alpha, int n, vector<TFieldElement*> x);
+	bool CheckConsistency(int d, int n, vector<TFieldElement*> &x1);
+	TFieldElement Interpolate (vector<TFieldElement*> alpha, vector<TFieldElement*> x);
 	virtual ~HIM();
 };
 

@@ -138,6 +138,30 @@ AES_PRG.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/AES_PRG.cpp.s
 .PHONY : AES_PRG.cpp.s
 
+ArythmeticCircuit.o: ArythmeticCircuit.cpp.o
+.PHONY : ArythmeticCircuit.o
+
+# target to build an object file
+ArythmeticCircuit.cpp.o:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o
+.PHONY : ArythmeticCircuit.cpp.o
+
+ArythmeticCircuit.i: ArythmeticCircuit.cpp.i
+.PHONY : ArythmeticCircuit.i
+
+# target to preprocess a source file
+ArythmeticCircuit.cpp.i:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.i
+.PHONY : ArythmeticCircuit.cpp.i
+
+ArythmeticCircuit.s: ArythmeticCircuit.cpp.s
+.PHONY : ArythmeticCircuit.s
+
+# target to generate assembly for a file
+ArythmeticCircuit.cpp.s:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.s
+.PHONY : ArythmeticCircuit.cpp.s
+
 Communication.o: Communication.cpp.o
 .PHONY : Communication.o
 
@@ -186,29 +210,29 @@ HIM.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/HIM.cpp.s
 .PHONY : HIM.cpp.s
 
-TCircuit.o: TCircuit.cpp.o
-.PHONY : TCircuit.o
+Protocol.o: Protocol.cpp.o
+.PHONY : Protocol.o
 
 # target to build an object file
-TCircuit.cpp.o:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o
-.PHONY : TCircuit.cpp.o
+Protocol.cpp.o:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o
+.PHONY : Protocol.cpp.o
 
-TCircuit.i: TCircuit.cpp.i
-.PHONY : TCircuit.i
+Protocol.i: Protocol.cpp.i
+.PHONY : Protocol.i
 
 # target to preprocess a source file
-TCircuit.cpp.i:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.i
-.PHONY : TCircuit.cpp.i
+Protocol.cpp.i:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/Protocol.cpp.i
+.PHONY : Protocol.cpp.i
 
-TCircuit.s: TCircuit.cpp.s
-.PHONY : TCircuit.s
+Protocol.s: Protocol.cpp.s
+.PHONY : Protocol.s
 
 # target to generate assembly for a file
-TCircuit.cpp.s:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.s
-.PHONY : TCircuit.cpp.s
+Protocol.cpp.s:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/Protocol.cpp.s
+.PHONY : Protocol.cpp.s
 
 TField.o: TField.cpp.o
 .PHONY : TField.o
@@ -257,30 +281,6 @@ TFieldElement.s: TFieldElement.cpp.s
 TFieldElement.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldElement.cpp.s
 .PHONY : TFieldElement.cpp.s
-
-TGate.o: TGate.cpp.o
-.PHONY : TGate.o
-
-# target to build an object file
-TGate.cpp.o:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TGate.cpp.o
-.PHONY : TGate.cpp.o
-
-TGate.i: TGate.cpp.i
-.PHONY : TGate.i
-
-# target to preprocess a source file
-TGate.cpp.i:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TGate.cpp.i
-.PHONY : TGate.cpp.i
-
-TGate.s: TGate.cpp.s
-.PHONY : TGate.s
-
-# target to generate assembly for a file
-TGate.cpp.s:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TGate.cpp.s
-.PHONY : TGate.cpp.s
 
 TParty.o: TParty.cpp.o
 .PHONY : TParty.o
@@ -378,30 +378,6 @@ oldmain.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/oldmain.cpp.s
 .PHONY : oldmain.cpp.s
 
-protocol.o: protocol.cpp.o
-.PHONY : protocol.o
-
-# target to build an object file
-protocol.cpp.o:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/protocol.cpp.o
-.PHONY : protocol.cpp.o
-
-protocol.i: protocol.cpp.i
-.PHONY : protocol.i
-
-# target to preprocess a source file
-protocol.cpp.i:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/protocol.cpp.i
-.PHONY : protocol.cpp.i
-
-protocol.s: protocol.cpp.s
-.PHONY : protocol.s
-
-# target to generate assembly for a file
-protocol.cpp.s:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/protocol.cpp.s
-.PHONY : protocol.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -414,24 +390,24 @@ help:
 	@echo "... AES_PRG.o"
 	@echo "... AES_PRG.i"
 	@echo "... AES_PRG.s"
+	@echo "... ArythmeticCircuit.o"
+	@echo "... ArythmeticCircuit.i"
+	@echo "... ArythmeticCircuit.s"
 	@echo "... Communication.o"
 	@echo "... Communication.i"
 	@echo "... Communication.s"
 	@echo "... HIM.o"
 	@echo "... HIM.i"
 	@echo "... HIM.s"
-	@echo "... TCircuit.o"
-	@echo "... TCircuit.i"
-	@echo "... TCircuit.s"
+	@echo "... Protocol.o"
+	@echo "... Protocol.i"
+	@echo "... Protocol.s"
 	@echo "... TField.o"
 	@echo "... TField.i"
 	@echo "... TField.s"
 	@echo "... TFieldElement.o"
 	@echo "... TFieldElement.i"
 	@echo "... TFieldElement.s"
-	@echo "... TGate.o"
-	@echo "... TGate.i"
-	@echo "... TGate.s"
 	@echo "... TParty.o"
 	@echo "... TParty.i"
 	@echo "... TParty.s"
@@ -444,9 +420,6 @@ help:
 	@echo "... oldmain.o"
 	@echo "... oldmain.i"
 	@echo "... oldmain.s"
-	@echo "... protocol.o"
-	@echo "... protocol.i"
-	@echo "... protocol.s"
 .PHONY : help
 
 

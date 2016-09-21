@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /home/hila/ClionProjects/Secret-Sharing
 CMakeFiles/Secret_Sharing.dir/all:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/depend
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles  1 2 3 4 5 6 7 8 9 10 11 12
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles  1 2 3 4 5 6 7 8 9 10 11
 	@echo "Built target Secret_Sharing"
 .PHONY : CMakeFiles/Secret_Sharing.dir/all
 
@@ -69,7 +69,7 @@ all: CMakeFiles/Secret_Sharing.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/Secret_Sharing.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/hila/ClionProjects/Secret-Sharing/CMakeFiles 12
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/hila/ClionProjects/Secret-Sharing/CMakeFiles 11
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/Secret_Sharing.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/hila/ClionProjects/Secret-Sharing/CMakeFiles 0
 .PHONY : CMakeFiles/Secret_Sharing.dir/rule

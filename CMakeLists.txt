@@ -5,8 +5,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 INCLUDE_DIRECTORIES($ENV{HOME}/workspace/paho/src)
 
-set(SOURCE_FILES oldmain.cpp AES_PRG.cpp HIM.cpp TField.cpp TFieldElement.cpp TParty.cpp main.cpp VDM.cpp TGate.cpp
-        TGate.h TCircuit.cpp protocol.cpp protocol.h Communication.cpp Communication.h)
+set(SOURCE_FILES oldmain.cpp AES_PRG.cpp HIM.cpp TField.cpp TFieldElement.cpp TParty.cpp main.cpp VDM.cpp
+        TGate.h ArythmeticCircuit.cpp Communication.cpp Communication.h Protocol.cpp Protocol.h)
 add_executable(Secret_Sharing ${SOURCE_FILES})
 
 TARGET_LINK_LIBRARIES(Secret_Sharing ntl.a gmp ssl crypto $ENV{HOME}/workspace/paho/src/libpaho-mqtt3a.so

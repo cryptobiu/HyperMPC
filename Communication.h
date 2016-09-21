@@ -10,7 +10,8 @@
 #include "TParty.h"
 #include "VDM.h"
 #include "TGate.h"
-#include "TCircuit.h"
+#include "ArythmeticCircuit.h"
+#include <atomic>
 
 extern void ConnectHandler(const char *topicName, MQTTClient_message *&message, const string &str);
 extern int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *message);
@@ -27,11 +28,23 @@ public:
     static Communication *getInstance(int numOfParties, int id);
     static Communication* getInstance();
 
-    int PARTYID, N, T, M, countXRecieve, countYRecieve;
+    int PARTYID, N, T, M;
+
+    // two of messages can come one by one
+    std::atomic<int> countRoundRecieve;
+    std::atomic<int> countXRecieve;
+    std::atomic<int> countYRecieve;
+    std::atomic<int> countRoundFinish;
+    std::atomic<int> countPartOfPoly;
+    std::atomic<int> countDoubleShare;
+    std::atomic<int> countGateShareArr;
+//    int countRoundRecieve;
+//    int countXRecieve;
+//    int countYRecieve, countRoundFinish;
     vector<int> vecConn;
     vector<TFieldElement*> vecRecX;
     vector<string> vec;
-    vector<string> vecRecForCheck;
+    vector<string> vecRecForCheck, vecSendPartOfPoly, vecDoubleShare, vecGateShareArr;
     volatile MQTTClient_deliveryToken deliveredtoken;
     MQTTClient_connectOptions m_conn_opts = MQTTClient_connectOptions_initializer;
     MQTTClient m_client;
@@ -51,6 +64,13 @@ public:
     void SendXVectorToAllParties(string &myMessage, MQTTClient const &m_client, char *const *topic,
                                  string &myTopicForMessage, MQTTClient_message &m_pubmsg,
                                  MQTTClient_deliveryToken &m_token, string &s);
+    void roundFunction(vector<string> &sendBufs,vector<string> &recBufs);
+
+    virtual ~Communication();
+    void sendPartOfPoly(vector<string> &sendBufs,vector<string> &recBufs);
+    void send(const string &myTopicForMessage, const string &myMessage);
+    void sendDoubleShare(vector<string> &sendBufs,vector<string> &recBufs);
+    void sendGateShareArr(vector<string> &sendBufs,vector<string> &recBufs);
 };
 
 

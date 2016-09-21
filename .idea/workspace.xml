@@ -12,8 +12,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5a967074-de61-4011-8835-bdc1244a7c73" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Communication.cpp" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Communication.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Protocol.cpp" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Protocol.h" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/TGate.cpp" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/protocol.cpp" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/protocol.h" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/TCircuit.cpp" afterPath="$PROJECT_DIR$/ArythmeticCircuit.cpp" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/TCircuit.h" afterPath="$PROJECT_DIR$/ArythmeticCircuit.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/HIM.cpp.o" afterPath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/HIM.cpp.o" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/main.cpp.o" afterPath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/main.cpp.o" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Secret_Sharing" afterPath="$PROJECT_DIR$/Secret_Sharing" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/Secret-Sharing.iml" afterPath="$PROJECT_DIR$/.idea/Secret-Sharing.iml" />
@@ -29,9 +35,15 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/progress.make" afterPath="$PROJECT_DIR$/CMakeFiles/Secret_Sharing.dir/progress.make" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeFiles/progress.marks" afterPath="$PROJECT_DIR$/CMakeFiles/progress.marks" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeLists.txt" afterPath="$PROJECT_DIR$/CMakeLists.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Communication.cpp" afterPath="$PROJECT_DIR$/Communication.cpp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Communication.h" afterPath="$PROJECT_DIR$/Communication.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/HIM.cpp" afterPath="$PROJECT_DIR$/HIM.cpp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/HIM.h" afterPath="$PROJECT_DIR$/HIM.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Makefile" afterPath="$PROJECT_DIR$/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TFieldElement.cpp" afterPath="$PROJECT_DIR$/TFieldElement.cpp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TGate.h" afterPath="$PROJECT_DIR$/TGate.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VDM.cpp" afterPath="$PROJECT_DIR$/VDM.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.cpp" afterPath="$PROJECT_DIR$/main.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/protocol.cpp" afterPath="$PROJECT_DIR$/protocol.cpp" />
     </list>
     <ignored path="Secret-Sharing.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -51,54 +63,116 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="main.cpp" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/main.cpp">
+      <file leaf-file-name="Protocol.cpp" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Protocol.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="546">
-              <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
+            <state relative-caret-position="1809">
+              <caret line="576" column="0" selection-start-line="576" selection-start-column="0" selection-end-line="576" selection-end-column="0" />
               <folding>
-                <element signature="e#1#20#0" expanded="true" />
+                <element signature="e#47#252#0" expanded="false" />
+                <element signature="e#254#389#0" expanded="false" />
+                <element signature="e#391#1026#0" expanded="false" />
+                <element signature="e#1028#1386#0" expanded="false" />
+                <element signature="e#1388#3221#0" expanded="false" />
+                <element signature="e#3227#3861#0" expanded="false" />
+                <element signature="e#3867#4698#0" expanded="false" />
+                <element signature="e#4700#6225#0" expanded="false" />
+                <element signature="e#8222#9431#0" expanded="false" />
+                <element signature="e#9433#10073#0" expanded="false" />
+                <element signature="e#10075#11656#0" expanded="false" />
+                <element signature="e#16234#19187#0" expanded="false" />
+                <marker date="1474476627606" expanded="true" signature="13397:14397" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="protocol.cpp" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/protocol.cpp">
+      <file leaf-file-name="TFieldElement.cpp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TFieldElement.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1405">
-              <caret line="319" column="0" selection-start-line="319" selection-start-column="0" selection-end-line="319" selection-end-column="0" />
-              <folding>
-                <element signature="e#1#20#0" expanded="true" />
-                <element signature="e#596#791#0" expanded="false" />
-                <element signature="e#794#919#0" expanded="false" />
-                <element signature="e#1667#2016#0" expanded="false" />
-                <element signature="e#2018#3843#0" expanded="false" />
-                <element signature="e#3845#4471#0" expanded="false" />
-                <element signature="e#5908#7345#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TParty.cpp" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/TParty.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="411">
-              <caret line="185" column="0" selection-start-line="185" selection-start-column="0" selection-end-line="185" selection-end-column="0" />
+            <state relative-caret-position="-104">
+              <caret line="53" column="0" selection-start-line="53" selection-start-column="0" selection-end-line="53" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="VDM.cpp" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/VDM.cpp">
+      <file leaf-file-name="Communication.cpp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Communication.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="598">
-              <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+            <state relative-caret-position="377">
+              <caret line="185" column="28" selection-start-line="185" selection-start-column="15" selection-end-line="185" selection-end-column="28" />
               <folding>
-                <element signature="e#654#908#0" expanded="false" />
+                <element signature="e#175#194#0" expanded="true" />
+                <element signature="e#465#1058#0" expanded="false" />
+                <element signature="e#1060#1110#0" expanded="false" />
+                <element signature="e#1060#2206#0" expanded="false" />
+                <element signature="e#2209#2259#0" expanded="false" />
+                <element signature="e#4721#4840#0" expanded="false" />
+                <element signature="e#4842#4959#0" expanded="false" />
+                <element signature="e#6529#6564#0" expanded="false" />
+                <element signature="e#6832#6900#0" expanded="false" />
+                <element signature="e#6902#7825#0" expanded="false" />
+                <element signature="e#8719#9567#0" expanded="false" />
+                <element signature="e#9569#9683#0" expanded="false" />
+                <element signature="e#9687#9801#0" expanded="false" />
+                <element signature="e#9687#10366#0" expanded="false" />
+                <element signature="e#10369#11053#0" expanded="false" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TGate.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TGate.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="216">
+              <caret line="15" column="15" selection-start-line="15" selection-start-column="15" selection-end-line="15" selection-end-column="15" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ArythmeticCircuit.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ArythmeticCircuit.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="682">
+              <caret line="36" column="29" selection-start-line="36" selection-start-column="29" selection-end-line="36" selection-end-column="29" />
+              <folding>
+                <element signature="e#39#57#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CMakeLists.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="208">
+              <caret line="8" column="37" selection-start-line="8" selection-start-column="37" selection-end-line="8" selection-end-column="37" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ArythmeticCircuit.cpp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ArythmeticCircuit.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="604">
+              <caret line="117" column="0" selection-start-line="117" selection-start-column="0" selection-end-line="117" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#30#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="WordVector.c" pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/Downloads/ntl-9.10.0/src/WordVector.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="253">
+              <caret line="99" column="0" selection-start-line="99" selection-start-column="0" selection-end-line="99" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -106,8 +180,8 @@
       <file leaf-file-name="Communication.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Communication.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="151">
-              <caret line="27" column="26" selection-start-line="27" selection-start-column="26" selection-end-line="27" selection-end-column="26" />
+            <state relative-caret-position="424">
+              <caret line="46" column="85" selection-start-line="46" selection-start-column="70" selection-end-line="46" selection-end-column="85" />
               <folding>
                 <element signature="e#78#97#0" expanded="true" />
               </folding>
@@ -115,41 +189,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Communication.cpp" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Communication.cpp">
+      <file leaf-file-name="Protocol.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Protocol.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="52">
-              <caret line="157" column="1" selection-start-line="157" selection-start-column="1" selection-end-line="157" selection-end-column="1" />
-              <folding>
-                <element signature="e#0#26#0" expanded="true" />
-                <element signature="e#176#781#0" expanded="false" />
-                <element signature="e#783#2702#0" expanded="false" />
-                <element signature="e#2704#2823#0" expanded="false" />
-                <element signature="e#2825#2946#0" expanded="false" />
-                <element signature="e#2949#4112#0" expanded="false" />
-                <element signature="e#4487#5410#0" expanded="false" />
-                <element signature="e#5412#6234#0" expanded="false" />
-                <element signature="e#6237#7047#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="protocol.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/protocol.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="182">
-              <caret line="7" column="20" selection-start-line="7" selection-start-column="20" selection-end-line="7" selection-end-column="20" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MQTTClient.h" pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/workspace/paho/src/MQTTClient.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="12439">
-              <caret line="516" column="0" selection-start-line="516" selection-start-column="0" selection-end-line="516" selection-end-column="0" />
+            <state relative-caret-position="438">
+              <caret line="35" column="118" selection-start-line="35" selection-start-column="118" selection-end-line="35" selection-end-column="118" />
               <folding />
             </state>
           </provider>
@@ -165,26 +209,31 @@
       <list>
         <option value="$PROJECT_DIR$/oldmain.cpp" />
         <option value="$PROJECT_DIR$/TParty.cpp" />
-        <option value="$PROJECT_DIR$/HIM.h" />
-        <option value="$PROJECT_DIR$/HIM.cpp" />
         <option value="$PROJECT_DIR$/TParty.h" />
         <option value="$PROJECT_DIR$/communication.c" />
         <option value="$PROJECT_DIR$/communication.h" />
         <option value="$PROJECT_DIR$/communication.cpp" />
-        <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/Circuit.h" />
-        <option value="$PROJECT_DIR$/TGate.h" />
-        <option value="$PROJECT_DIR$/TGate.cpp" />
-        <option value="$PROJECT_DIR$/TCircuit.h" />
-        <option value="$PROJECT_DIR$/TCircuit.cpp" />
-        <option value="$PROJECT_DIR$/VDM.cpp" />
         <option value="$PROJECT_DIR$/VDM.h" />
         <option value="$PROJECT_DIR$/Context.h" />
         <option value="$PROJECT_DIR$/Context.cpp" />
-        <option value="$PROJECT_DIR$/main.cpp" />
-        <option value="$PROJECT_DIR$/Communication.h" />
         <option value="$PROJECT_DIR$/protocol.cpp" />
+        <option value="$PROJECT_DIR$/VDM.cpp" />
+        <option value="$PROJECT_DIR$/TFieldElement.cpp" />
+        <option value="$PROJECT_DIR$/TCircuit.cpp" />
+        <option value="$PROJECT_DIR$/HIM.cpp" />
+        <option value="$PROJECT_DIR$/HIM.h" />
+        <option value="$PROJECT_DIR$/main.cpp" />
+        <option value="$PROJECT_DIR$/CMakeLists.txt" />
+        <option value="$PROJECT_DIR$/Communication.h" />
         <option value="$PROJECT_DIR$/Communication.cpp" />
+        <option value="$PROJECT_DIR$/TCircuit.h" />
+        <option value="$PROJECT_DIR$/TGate.cpp" />
+        <option value="$PROJECT_DIR$/TGate.h" />
+        <option value="$PROJECT_DIR$/Protocol.h" />
+        <option value="$PROJECT_DIR$/ArythmeticCircuit.h" />
+        <option value="$PROJECT_DIR$/ArythmeticCircuit.cpp" />
+        <option value="$PROJECT_DIR$/Protocol.cpp" />
       </list>
     </option>
   </component>
@@ -418,7 +467,7 @@
       <envs />
       <method />
     </configuration>
-    <configuration default="false" name="Build All" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="3 3" WORKING_DIR="" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Secret_Sharing" RUN_TARGET_NAME="Secret_Sharing" EXPLICIT_BUILD_TARGET_NAME="all">
+    <configuration default="false" name="Build All" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="7 7" WORKING_DIR="" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Secret_Sharing" RUN_TARGET_NAME="Secret_Sharing" EXPLICIT_BUILD_TARGET_NAME="all">
       <envs />
       <method />
     </configuration>
@@ -445,7 +494,12 @@
       <workItem from="1473827810621" duration="27611000" />
       <workItem from="1473912519326" duration="28749000" />
       <workItem from="1474171988665" duration="640000" />
-      <workItem from="1474172643731" duration="20005000" />
+      <workItem from="1474172643731" duration="25953000" />
+      <workItem from="1474206821462" duration="1484000" />
+      <workItem from="1474259037316" duration="17080000" />
+      <workItem from="1474345848097" duration="15578000" />
+      <workItem from="1474380181398" duration="6302000" />
+      <workItem from="1474433141378" duration="36649000" />
     </task>
     <task id="LOCAL-00001" summary="broadcast">
       <created>1473844671640</created>
@@ -489,11 +543,18 @@
       <option name="project" value="LOCAL" />
       <updated>1474182778501</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="class communication">
+      <created>1474200128159</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1474200128159</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="141578000" />
+    <option name="totallyTimeSpent" value="224619000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="-4" width="1855" height="1084" extended-state="6" />
@@ -501,15 +562,15 @@
     <layout>
       <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12884097" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.37716615" sideWeight="0.71320754" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1977574" sideWeight="0.46792454" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.37716615" sideWeight="0.28679246" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20489296" sideWeight="0.5336927" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1977574" sideWeight="0.4549865" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20489296" sideWeight="0.46630728" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20549339" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20489296" sideWeight="0.49595687" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33843017" sideWeight="0.8312668" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.35168195" sideWeight="0.6334232" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -518,6 +579,26 @@
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32925585" sideWeight="0.49811321" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
+    <layout-to-restore>
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20489296" sideWeight="0.5336927" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1977574" sideWeight="0.4549865" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20489296" sideWeight="0.46630728" order="9" side_tool="true" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20489296" sideWeight="0.49595687" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12884097" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32925585" sideWeight="0.49811321" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19469929" sideWeight="0.6334232" order="3" side_tool="false" content_ui="tabs" />
+    </layout-to-restore>
   </component>
   <component name="Vcs.Log.UiProperties">
     <option name="RECENTLY_FILTERED_USER_GROUPS">
@@ -537,68 +618,61 @@
     <MESSAGE value="initialization phase" />
     <MESSAGE value="change the main" />
     <MESSAGE value="Preparation Phase" />
-    <option name="LAST_COMMIT_MESSAGE" value="Preparation Phase" />
+    <MESSAGE value="class communication" />
+    <option name="LAST_COMMIT_MESSAGE" value="class communication" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/protocol.cpp</url>
-          <line>173</line>
-          <option name="timeStamp" value="106" />
+          <url>file://$PROJECT_DIR$/Protocol.cpp</url>
+          <line>153</line>
+          <option name="timeStamp" value="187" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/protocol.cpp</url>
-          <line>43</line>
-          <option name="timeStamp" value="107" />
+          <url>file://$PROJECT_DIR$/Protocol.cpp</url>
+          <line>602</line>
+          <option name="timeStamp" value="204" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/Protocol.cpp</url>
+          <line>601</line>
+          <option name="timeStamp" value="205" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/Protocol.cpp</url>
+          <line>579</line>
+          <option name="timeStamp" value="206" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/Protocol.cpp</url>
+          <line>615</line>
+          <option name="timeStamp" value="207" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/Protocol.cpp</url>
+          <line>515</line>
+          <option name="timeStamp" value="208" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/Protocol.cpp</url>
+          <line>514</line>
+          <option name="timeStamp" value="209" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="111" />
+      <option name="time" value="210" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="CMakeRunConfiguration">
-        <watch expression="alpha" language="ObjectiveC" />
+        <watch expression="countRoundRecieve" language="ObjectiveC" />
+        <watch expression="topic" language="ObjectiveC" />
       </configuration>
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/HIM.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2990">
-          <caret line="115" column="0" selection-start-line="115" selection-start-column="0" selection-end-line="115" selection-end-column="0" />
-          <folding>
-            <element signature="e#3543#3859#0" expanded="false" />
-            <element signature="e#3861#4243#0" expanded="false" />
-            <element signature="e#4245#4734#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TFieldElement.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1976">
-          <caret line="76" column="10" selection-start-line="76" selection-start-column="4" selection-end-line="76" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/oldmain.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/include/c++/4.8/bits/stl_vector.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="23764">
@@ -659,7 +733,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -668,13 +741,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="10478">
           <caret line="403" column="0" selection-start-line="403" selection-start-column="0" selection-end-line="403" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Downloads/ntl-9.10.0/include/NTL/WordVector.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="89" column="0" selection-start-line="89" selection-start-column="0" selection-end-line="89" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -700,20 +766,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file:///usr/include/c++/4.8/ext/alloc_traits.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="186">
-          <caret line="166" column="0" selection-start-line="166" selection-start-column="0" selection-end-line="166" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/include/c++/4.8/bits/alloc_traits.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="186">
-          <caret line="337" column="0" selection-start-line="337" selection-start-column="0" selection-end-line="337" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/include/c++/4.8/bits/allocator.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="186">
@@ -735,20 +787,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/Downloads/ntl-9.10.0/src/GF2X.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="28262">
-          <caret line="1087" column="0" selection-start-line="1087" selection-start-column="0" selection-end-line="1087" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TFieldElement.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1976">
-          <caret line="76" column="10" selection-start-line="76" selection-start-column="4" selection-end-line="76" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/include/c++/4.8/ext/new_allocator.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2080">
@@ -763,19 +801,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="312">
-          <caret line="12" column="22" selection-start-line="12" selection-start-column="22" selection-end-line="12" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/old.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -783,31 +812,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1712">
           <caret line="421" column="29" selection-start-line="421" selection-start-column="6" selection-end-line="421" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TGate.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="312">
-          <caret line="12" column="1" selection-start-line="12" selection-start-column="1" selection-end-line="12" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TGate.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="494">
-          <caret line="19" column="19" selection-start-line="19" selection-start-column="19" selection-end-line="19" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/HIM.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1058">
-          <caret line="55" column="0" selection-start-line="55" selection-start-column="0" selection-end-line="55" selection-end-column="19" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -815,35 +819,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="2" selection-start-line="0" selection-start-column="2" selection-end-line="0" selection-end-column="2" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TCircuit.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="520">
-          <caret line="20" column="26" selection-start-line="20" selection-start-column="8" selection-end-line="20" selection-end-column="26" />
-          <folding>
-            <element signature="e#39#57#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AES_PRG.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="468">
-          <caret line="189" column="18" selection-start-line="189" selection-start-column="10" selection-end-line="189" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TCircuit.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="494">
-          <caret line="19" column="17" selection-start-line="19" selection-start-column="17" selection-end-line="19" selection-end-column="17" />
-          <folding>
-            <marker date="1474175689737" expanded="true" signature="44:48" ph="{...}" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -851,23 +826,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="442">
           <caret line="20" column="19" selection-start-line="20" selection-start-column="19" selection-end-line="20" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/include/c++/4.8/bits/stl_vector.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="209" column="10" selection-start-line="209" selection-start-column="10" selection-end-line="209" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TField.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="81" column="24" selection-start-line="81" selection-start-column="24" selection-end-line="81" selection-end-column="24" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -879,23 +837,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/HIM.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="254" column="0" selection-start-line="254" selection-start-column="0" selection-end-line="278" selection-end-column="1" />
-          <folding>
-            <element signature="e#3543#3859#0" expanded="false" />
-            <element signature="e#3861#4243#0" expanded="false" />
-            <element signature="e#4245#4734#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/protocol.h">
+    <entry file="file://$PROJECT_DIR$/protocol1.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="182">
           <caret line="7" column="20" selection-start-line="7" selection-start-column="20" selection-end-line="7" selection-end-column="20" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -907,74 +852,240 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$USER_HOME$/Downloads/ntl-9.10.0/include/NTL/WordVector.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2314">
+          <caret line="89" column="0" selection-start-line="89" selection-start-column="0" selection-end-line="89" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AES_PRG.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="206">
+          <caret line="169" column="0" selection-start-line="169" selection-start-column="0" selection-end-line="169" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/include/c++/4.8/bits/alloc_traits.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="206">
+          <caret line="427" column="0" selection-start-line="427" selection-start-column="0" selection-end-line="427" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/include/c++/4.8/ext/alloc_traits.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="186">
+          <caret line="166" column="0" selection-start-line="166" selection-start-column="0" selection-end-line="166" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/VDM.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="598">
-          <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+        <state relative-caret-position="-78">
+          <caret line="12" column="17" selection-start-line="12" selection-start-column="10" selection-end-line="12" selection-end-column="17" />
           <folding>
             <element signature="e#654#908#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/protocol.cpp">
+    <entry file="file:///usr/include/c++/4.8/bits/stl_vector.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1405">
-          <caret line="319" column="0" selection-start-line="319" selection-start-column="0" selection-end-line="319" selection-end-column="0" />
+        <state relative-caret-position="214">
+          <caret line="311" column="0" selection-start-line="311" selection-start-column="0" selection-end-line="311" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/include/c++/4.8/iostream">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="508">
+          <caret line="73" column="0" selection-start-line="73" selection-start-column="0" selection-end-line="73" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/HIM.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1014">
+          <caret line="39" column="16" selection-start-line="39" selection-start-column="16" selection-end-line="39" selection-end-column="16" />
           <folding>
-            <element signature="e#1#20#0" expanded="true" />
-            <element signature="e#596#791#0" expanded="false" />
-            <element signature="e#794#919#0" expanded="false" />
-            <element signature="e#1667#2016#0" expanded="false" />
-            <element signature="e#2018#3843#0" expanded="false" />
-            <element signature="e#3845#4471#0" expanded="false" />
-            <element signature="e#5908#7345#0" expanded="false" />
+            <element signature="e#2533#3286#0" expanded="false" />
+            <element signature="e#3997#4313#0" expanded="false" />
+            <element signature="e#4315#4697#0" expanded="false" />
+            <element signature="e#4699#5188#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.cpp">
+    <entry file="file://$USER_HOME$/Downloads/ntl-9.10.0/src/GF2X.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="546">
-          <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
-          <folding>
-            <element signature="e#1#20#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="28262">
+          <caret line="1087" column="0" selection-start-line="1087" selection-start-column="0" selection-end-line="1087" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/HIM.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1404">
+          <caret line="54" column="0" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$USER_HOME$/workspace/paho/src/MQTTClient.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="12439">
-          <caret line="516" column="0" selection-start-line="516" selection-start-column="0" selection-end-line="516" selection-end-column="0" />
+        <state relative-caret-position="14248">
+          <caret line="548" column="5" selection-start-line="548" selection-start-column="5" selection-end-line="548" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TField.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="364">
+          <caret line="95" column="0" selection-start-line="95" selection-start-column="0" selection-end-line="95" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/protocol1.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4428">
+          <caret line="517" column="0" selection-start-line="517" selection-start-column="0" selection-end-line="517" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="130">
+          <caret line="5" column="18" selection-start-line="5" selection-start-column="18" selection-end-line="5" selection-end-column="18" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Communication.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="151">
-          <caret line="27" column="26" selection-start-line="27" selection-start-column="26" selection-end-line="27" selection-end-column="26" />
+        <state relative-caret-position="424">
+          <caret line="46" column="85" selection-start-line="46" selection-start-column="70" selection-end-line="46" selection-end-column="85" />
           <folding>
             <element signature="e#78#97#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/TGate.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="12" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="208">
+          <caret line="8" column="37" selection-start-line="8" selection-start-column="37" selection-end-line="8" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Protocol.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="438">
+          <caret line="35" column="118" selection-start-line="35" selection-start-column="118" selection-end-line="35" selection-end-column="118" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ArythmeticCircuit.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="604">
+          <caret line="117" column="0" selection-start-line="117" selection-start-column="0" selection-end-line="117" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#30#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Downloads/ntl-9.10.0/src/WordVector.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="253">
+          <caret line="99" column="0" selection-start-line="99" selection-start-column="0" selection-end-line="99" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Communication.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="52">
-          <caret line="157" column="1" selection-start-line="157" selection-start-column="1" selection-end-line="157" selection-end-column="1" />
+        <state relative-caret-position="377">
+          <caret line="185" column="28" selection-start-line="185" selection-start-column="15" selection-end-line="185" selection-end-column="28" />
           <folding>
-            <element signature="e#0#26#0" expanded="true" />
-            <element signature="e#176#781#0" expanded="false" />
-            <element signature="e#783#2702#0" expanded="false" />
-            <element signature="e#2704#2823#0" expanded="false" />
-            <element signature="e#2825#2946#0" expanded="false" />
-            <element signature="e#2949#4112#0" expanded="false" />
-            <element signature="e#4487#5410#0" expanded="false" />
-            <element signature="e#5412#6234#0" expanded="false" />
-            <element signature="e#6237#7047#0" expanded="false" />
+            <element signature="e#175#194#0" expanded="true" />
+            <element signature="e#465#1058#0" expanded="false" />
+            <element signature="e#1060#1110#0" expanded="false" />
+            <element signature="e#1060#2206#0" expanded="false" />
+            <element signature="e#2209#2259#0" expanded="false" />
+            <element signature="e#4721#4840#0" expanded="false" />
+            <element signature="e#4842#4959#0" expanded="false" />
+            <element signature="e#6529#6564#0" expanded="false" />
+            <element signature="e#6832#6900#0" expanded="false" />
+            <element signature="e#6902#7825#0" expanded="false" />
+            <element signature="e#8719#9567#0" expanded="false" />
+            <element signature="e#9569#9683#0" expanded="false" />
+            <element signature="e#9687#9801#0" expanded="false" />
+            <element signature="e#9687#10366#0" expanded="false" />
+            <element signature="e#10369#11053#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ArythmeticCircuit.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="682">
+          <caret line="36" column="29" selection-start-line="36" selection-start-column="29" selection-end-line="36" selection-end-column="29" />
+          <folding>
+            <element signature="e#39#57#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TGate.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="15" column="15" selection-start-line="15" selection-start-column="15" selection-end-line="15" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TFieldElement.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-104">
+          <caret line="53" column="0" selection-start-line="53" selection-start-column="0" selection-end-line="53" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Protocol.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1809">
+          <caret line="576" column="0" selection-start-line="576" selection-start-column="0" selection-end-line="576" selection-end-column="0" />
+          <folding>
+            <element signature="e#47#252#0" expanded="false" />
+            <element signature="e#254#389#0" expanded="false" />
+            <element signature="e#391#1026#0" expanded="false" />
+            <element signature="e#1028#1386#0" expanded="false" />
+            <element signature="e#1388#3221#0" expanded="false" />
+            <element signature="e#3227#3861#0" expanded="false" />
+            <element signature="e#3867#4698#0" expanded="false" />
+            <element signature="e#4700#6225#0" expanded="false" />
+            <element signature="e#8222#9431#0" expanded="false" />
+            <element signature="e#9433#10073#0" expanded="false" />
+            <element signature="e#10075#11656#0" expanded="false" />
+            <element signature="e#16234#19187#0" expanded="false" />
+            <marker date="1474476627606" expanded="true" signature="13397:14397" ph="..." />
           </folding>
         </state>
       </provider>

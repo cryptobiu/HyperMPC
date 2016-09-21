@@ -5,13 +5,17 @@ CMakeFiles/Secret_Sharing.dir/AES_PRG.cpp.o
  /home/hila/ClionProjects/Secret-Sharing/AES_PRG.cpp
  /home/hila/ClionProjects/Secret-Sharing/AES_PRG.h
  /home/hila/ClionProjects/Secret-Sharing/aes_locl.h
+CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o
+ /home/hila/ClionProjects/Secret-Sharing/ArythmeticCircuit.cpp
+ /home/hila/ClionProjects/Secret-Sharing/ArythmeticCircuit.h
+ /home/hila/ClionProjects/Secret-Sharing/TGate.h
 CMakeFiles/Secret_Sharing.dir/Communication.cpp.o
  /home/hila/ClionProjects/Secret-Sharing/AES_PRG.h
+ /home/hila/ClionProjects/Secret-Sharing/ArythmeticCircuit.h
  /home/hila/ClionProjects/Secret-Sharing/Communication.cpp
  /home/hila/ClionProjects/Secret-Sharing/Communication.h
  /home/hila/ClionProjects/Secret-Sharing/HIM.h
  /home/hila/ClionProjects/Secret-Sharing/ProtocolBroadcast.h
- /home/hila/ClionProjects/Secret-Sharing/TCircuit.h
  /home/hila/ClionProjects/Secret-Sharing/TField.h
  /home/hila/ClionProjects/Secret-Sharing/TFieldElement.h
  /home/hila/ClionProjects/Secret-Sharing/TGate.h
@@ -27,10 +31,22 @@ CMakeFiles/Secret_Sharing.dir/HIM.cpp.o
  /home/hila/ClionProjects/Secret-Sharing/TField.h
  /home/hila/ClionProjects/Secret-Sharing/TFieldElement.h
  /home/hila/ClionProjects/Secret-Sharing/aes_locl.h
-CMakeFiles/Secret_Sharing.dir/TCircuit.cpp.o
- /home/hila/ClionProjects/Secret-Sharing/TCircuit.cpp
- /home/hila/ClionProjects/Secret-Sharing/TCircuit.h
+CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o
+ /home/hila/ClionProjects/Secret-Sharing/AES_PRG.h
+ /home/hila/ClionProjects/Secret-Sharing/ArythmeticCircuit.h
+ /home/hila/ClionProjects/Secret-Sharing/Communication.h
+ /home/hila/ClionProjects/Secret-Sharing/HIM.h
+ /home/hila/ClionProjects/Secret-Sharing/Protocol.cpp
+ /home/hila/ClionProjects/Secret-Sharing/Protocol.h
+ /home/hila/ClionProjects/Secret-Sharing/ProtocolBroadcast.h
+ /home/hila/ClionProjects/Secret-Sharing/TField.h
+ /home/hila/ClionProjects/Secret-Sharing/TFieldElement.h
  /home/hila/ClionProjects/Secret-Sharing/TGate.h
+ /home/hila/ClionProjects/Secret-Sharing/TParty.h
+ /home/hila/ClionProjects/Secret-Sharing/VDM.h
+ /home/hila/ClionProjects/Secret-Sharing/aes_locl.h
+ /home/hila/workspace/paho/src/MQTTClient.h
+ /home/hila/workspace/paho/src/MQTTClientPersistence.h
 CMakeFiles/Secret_Sharing.dir/TField.cpp.o
  /home/hila/ClionProjects/Secret-Sharing/AES_PRG.h
  /home/hila/ClionProjects/Secret-Sharing/TField.cpp
@@ -40,9 +56,6 @@ CMakeFiles/Secret_Sharing.dir/TField.cpp.o
 CMakeFiles/Secret_Sharing.dir/TFieldElement.cpp.o
  /home/hila/ClionProjects/Secret-Sharing/TFieldElement.cpp
  /home/hila/ClionProjects/Secret-Sharing/TFieldElement.h
-CMakeFiles/Secret_Sharing.dir/TGate.cpp.o
- /home/hila/ClionProjects/Secret-Sharing/TGate.cpp
- /home/hila/ClionProjects/Secret-Sharing/TGate.h
 CMakeFiles/Secret_Sharing.dir/TParty.cpp.o
  /home/hila/ClionProjects/Secret-Sharing/AES_PRG.h
  /home/hila/ClionProjects/Secret-Sharing/HIM.h
@@ -63,10 +76,11 @@ CMakeFiles/Secret_Sharing.dir/VDM.cpp.o
  /home/hila/ClionProjects/Secret-Sharing/aes_locl.h
 CMakeFiles/Secret_Sharing.dir/main.cpp.o
  /home/hila/ClionProjects/Secret-Sharing/AES_PRG.h
+ /home/hila/ClionProjects/Secret-Sharing/ArythmeticCircuit.h
  /home/hila/ClionProjects/Secret-Sharing/Communication.h
  /home/hila/ClionProjects/Secret-Sharing/HIM.h
+ /home/hila/ClionProjects/Secret-Sharing/Protocol.h
  /home/hila/ClionProjects/Secret-Sharing/ProtocolBroadcast.h
- /home/hila/ClionProjects/Secret-Sharing/TCircuit.h
  /home/hila/ClionProjects/Secret-Sharing/TField.h
  /home/hila/ClionProjects/Secret-Sharing/TFieldElement.h
  /home/hila/ClionProjects/Secret-Sharing/TGate.h
@@ -74,23 +88,7 @@ CMakeFiles/Secret_Sharing.dir/main.cpp.o
  /home/hila/ClionProjects/Secret-Sharing/VDM.h
  /home/hila/ClionProjects/Secret-Sharing/aes_locl.h
  /home/hila/ClionProjects/Secret-Sharing/main.cpp
- /home/hila/ClionProjects/Secret-Sharing/protocol.h
  /home/hila/workspace/paho/src/MQTTClient.h
  /home/hila/workspace/paho/src/MQTTClientPersistence.h
 CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o
  /home/hila/ClionProjects/Secret-Sharing/oldmain.cpp
-CMakeFiles/Secret_Sharing.dir/protocol.cpp.o
- /home/hila/ClionProjects/Secret-Sharing/AES_PRG.h
- /home/hila/ClionProjects/Secret-Sharing/Communication.h
- /home/hila/ClionProjects/Secret-Sharing/HIM.h
- /home/hila/ClionProjects/Secret-Sharing/ProtocolBroadcast.h
- /home/hila/ClionProjects/Secret-Sharing/TCircuit.h
- /home/hila/ClionProjects/Secret-Sharing/TField.h
- /home/hila/ClionProjects/Secret-Sharing/TFieldElement.h
- /home/hila/ClionProjects/Secret-Sharing/TGate.h
- /home/hila/ClionProjects/Secret-Sharing/TParty.h
- /home/hila/ClionProjects/Secret-Sharing/VDM.h
- /home/hila/ClionProjects/Secret-Sharing/aes_locl.h
- /home/hila/ClionProjects/Secret-Sharing/protocol.cpp
- /home/hila/workspace/paho/src/MQTTClient.h
- /home/hila/workspace/paho/src/MQTTClientPersistence.h

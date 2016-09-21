@@ -50,6 +50,13 @@ void VDM::MatrixMult3(std::vector<TFieldElement*> vector, std::vector<TFieldElem
     TFieldElement* temp;
     TFieldElement temp1;
 
+    for(int i = 0; i < vector.size(); i++) {
+        if(vector[i] == NULL) {
+            temp = new TFieldElement("[]");
+            vector[i] = temp;
+        }
+    }
+
     cout << "123  " <<  vector.size()<< endl;
 
     for(int i = 0; i < m_n; i++)
@@ -63,9 +70,6 @@ void VDM::MatrixMult3(std::vector<TFieldElement*> vector, std::vector<TFieldElem
         }
 
         answer[i]=temp;
-
-        //	answer[i].setPoly(temp.getElement());
-
     }
 
 }
