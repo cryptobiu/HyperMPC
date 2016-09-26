@@ -18,6 +18,8 @@ int main(int argc, char* argv[])
         return 0;
     }
     Communication::getInstance(atoi(argv[2]), atoi(argv[1]));
-    Protocol protocol;
+    Protocol protocol(atoi(argv[2]), atoi(argv[1]));
     protocol.run();
+    cout << "njfkl" << endl;
+    return 0;
 }

@@ -38,13 +38,14 @@ public:
     std::atomic<int> countPartOfPoly;
     std::atomic<int> countDoubleShare;
     std::atomic<int> countGateShareArr;
+    std::atomic<int> countLast;
 //    int countRoundRecieve;
 //    int countXRecieve;
 //    int countYRecieve, countRoundFinish;
     vector<int> vecConn;
     vector<TFieldElement*> vecRecX;
     vector<string> vec;
-    vector<string> vecRecForCheck, vecSendPartOfPoly, vecDoubleShare, vecGateShareArr;
+    vector<string> vecRecForCheck, vecSendPartOfPoly, vecDoubleShare, vecGateShareArr, vecLast;
     volatile MQTTClient_deliveryToken deliveredtoken;
     MQTTClient_connectOptions m_conn_opts = MQTTClient_connectOptions_initializer;
     MQTTClient m_client;
@@ -71,6 +72,7 @@ public:
     void send(const string &myTopicForMessage, const string &myMessage);
     void sendDoubleShare(vector<string> &sendBufs,vector<string> &recBufs);
     void sendGateShareArr(vector<string> &sendBufs,vector<string> &recBufs);
+    void Lastsend(vector<string> &sendBufs,vector<string> &recBufs);
 };
 
 

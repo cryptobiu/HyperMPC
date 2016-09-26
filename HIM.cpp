@@ -84,8 +84,13 @@ TFieldElement** HIM::InitHIMByVectors(vector<TFieldElement*> &alpha, vector<TFie
 				{
 					continue;
 				}
-				temp1 = *(beta[i]) - *(alpha[k]);
-				temp2 = *(alpha[j]) - *(alpha[k]);
+                try {
+                    temp1 = *(beta[i]) - *(alpha[k]);
+                    temp2 = *(alpha[j]) - *(alpha[k]);
+                } catch (exception e)
+                {
+                    cout << "error ~ ~" << endl;
+                }
 				temp = temp1 / temp2;
 				lambda = lambda * temp;
 			}
@@ -201,13 +206,16 @@ TFieldElement** HIM::InitHIM()
  */
 void HIM::Print()
 {
-	for (int i = 0; i < m_m; i++)
-	{
-		for(int j = 0; j < m_n; j++)
-		{
-			cout << (m_matrix[i][j]).getElement() << " ";
+	for (int i = 0; i < m_m; i++) {
+		for (int j = 0; j < m_n; j++) {
+// MEITAL
+// if((m_matrix[i][j]).getElement() == NULL){
+//                cout << "0" << " ";
+//            } else {
 
+			cout << (m_matrix[i][j]).getElement() << " ";
 		}
+
 		cout << " " << endl;
 	}
 
@@ -297,6 +305,8 @@ void HIM::MatrixMult3(std::vector<TFieldElement*> vector, std::vector<TFieldElem
 		}
 
 		answer[i]=temp;
+
+		cout << "answer" << i << endl;
 
 		//	answer[i].setPoly(temp.getElement());
 

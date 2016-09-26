@@ -10,13 +10,6 @@ Communication* Communication::m_single = NULL;
 
 using namespace std;
 
-std::mutex m;//you can use std::lock_guard if you want to be exception safe
-std::mutex m1;
-std::mutex mfinish;
-
-mutex m_mutex;
-condition_variable cvWrite;
-bool flag_finish = false;
 
 void ConnectHandler(const char *topicName, MQTTClient_message *&message, const string &str) {
     int elem = stoi(str);
@@ -139,7 +132,12 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
     }
 
 
-    if (topic.find("sendGateShareArr") != std::string::npos) {
+    if(topic.find("nposLastsend") != std::string::npos)
+    {
+        Communication::getInstance()->vecLast[pid - 1] = str_message;
+        Communication::getInstance()->countLast++;
+    }
+    else if (topic.find("sendGateShareArr") != std::string::npos) {
         Communication::getInstance()->vecGateShareArr[pid - 1] = str_message;
         Communication::getInstance()->countGateShareArr++;
     }
@@ -191,6 +189,8 @@ Communication::Communication(int n, int id) {
     vecSendPartOfPoly.resize(N);
     vecDoubleShare.resize(N);
     vecGateShareArr.resize(N);
+    vecLast.resize(N);
+    countLast = 0;
     countPartOfPoly = 0;
     countDoubleShare = 0;
     // start intialize the connection to server
@@ -203,7 +203,7 @@ Communication::Communication(int n, int id) {
     MQTTClient_create(&m_client, ADDRESS, c,
                       MQTTCLIENT_PERSISTENCE_NONE, NULL);
 
-    m_conn_opts.keepAliveInterval = 60;
+    m_conn_opts.keepAliveInterval = 120;
     m_conn_opts.cleansession = 1;
 
 
@@ -217,7 +217,6 @@ Communication::Communication(int n, int id) {
         //   exit(EXIT_FAILURE);
     }
 
-    //free topic
     // create topics
     string s1 = "SHARE_Ps_VECTOR";
     string s2 = "SHARE_Yjk_VECTOR"+to_string(id);
@@ -225,6 +224,7 @@ Communication::Communication(int n, int id) {
     string s4 = "sendPartOfPoly"+to_string(id);
     string s5 = "sendDoubleShare"+to_string(id);
     string s6 = "sendGateShareArr"+to_string(id);
+    string s7 = "Lastsend"+to_string(id);
 
     topic[0] = (char*)s1.c_str();
     topic[1] = (char*)s2.c_str();
@@ -232,10 +232,11 @@ Communication::Communication(int n, int id) {
     topic[3] = (char*)s4.c_str();
     topic[4] = (char*)s5.c_str();
     topic[5] = (char*)s6.c_str();
-    int QQS_ARR[6] = {1, 1, 1, 1, 1, 1};
+    topic[6] = (char*)s7.c_str();
+    int QQS_ARR[7] = {1, 1, 1, 1, 1, 1, 1};
 
     // update the topics
-    MQTTClient_subscribeMany(m_client,  6, topic, QQS_ARR);
+    MQTTClient_subscribeMany(m_client,  7, topic, QQS_ARR);
 }
 
 /**
@@ -261,7 +262,7 @@ Communication* Communication::getInstance()
 }
 
 void Communication::ConnectionToServer(const MQTTClient &m_client, const string &s, string &myTopicForMessage, MQTTClient_message &m_pubmsg,
-                        MQTTClient_deliveryToken &m_token) {// connect
+                        MQTTClient_deliveryToken &m_token) {
 
     string strMessage = s + "$" + s;
 
@@ -291,7 +292,7 @@ void Communication::SendTheResult(string &myMessage, MQTTClient const &m_client,
                    MQTTClient_message &m_pubmsg,
                    MQTTClient_deliveryToken &m_token, const string &s, const vector<string> &buffers) {// buffers[i] = the buffer of party i+1
     // buffers[0] = party 1
-    m.lock();
+
     for(int i=0; i<buffers.size(); i++)
     {
         myMessage = s + "$" + buffers[i];
@@ -309,7 +310,6 @@ void Communication::SendTheResult(string &myMessage, MQTTClient const &m_client,
 
         while (deliveredtoken != m_token) {};
     }
-    m.unlock();
     while (countYRecieve < N - 1) {}
 }
 
@@ -339,11 +339,13 @@ void Communication::SendXVectorToAllParties(string &myMessage, MQTTClient const 
 }
 
 Communication::~Communication() {
+    cout << "                                                      in  ~Communication()" << endl;
     MQTTClient_disconnect(m_client, 10000);
+    cout << "                                                       after MQTTClient_disconnect " << endl;
     MQTTClient_destroy(&m_client);
+
+    cout << "                                                               after destroy " << endl;
 }
-
-
 
 /**
  * the function update the details of message and send it.
@@ -437,6 +439,31 @@ void Communication::sendGateShareArr(vector<string> &sendBufs,vector<string> &re
     {
         if(i != PARTYID-1) {
             recBufs[i] = vecGateShareArr[i];
+        }
+    }
+}
+
+void Communication::Lastsend(vector<string> &sendBufs,vector<string> &recBufs) {
+    string s = to_string(PARTYID);
+    string myTopicForMessage;
+
+    recBufs[PARTYID-1] = sendBufs[PARTYID-1];
+
+    for(int i=0; i<N; i++)
+    {
+        myTopicForMessage = "Lastsend" + to_string(i+1);
+        // add id party to the message
+        string myMessage = s + "$" + sendBufs[i];
+        send(myTopicForMessage, myMessage);
+        cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<endl;
+    }
+
+    while(countLast < N - 1) {}
+
+    for(int i=0; i<N; i++)
+    {
+        if(i != PARTYID-1) {
+            recBufs[i] = vecLast[i];
         }
     }
 }

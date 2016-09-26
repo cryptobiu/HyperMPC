@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(Secret_Sharing)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11")
 
 INCLUDE_DIRECTORIES($ENV{HOME}/workspace/paho/src)
 

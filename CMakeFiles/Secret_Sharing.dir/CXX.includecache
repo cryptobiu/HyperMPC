@@ -115,6 +115,12 @@ ArythmeticCircuit.h
 /home/hila/ClionProjects/Secret-Sharing/ArythmeticCircuit.h
 Communication.h
 /home/hila/ClionProjects/Secret-Sharing/Communication.h
+vector
+-
+bitset
+-
+TFieldElement.h
+/home/hila/ClionProjects/Secret-Sharing/TFieldElement.h
 
 /home/hila/ClionProjects/Secret-Sharing/ProtocolBroadcast.h
 

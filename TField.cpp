@@ -32,7 +32,10 @@ TField::TField() {
 //	cout << p<<endl;
 //
 //	GF2E::init(p);
-	m_ZERO = new TFieldElement(GF2X::zero());
+	//m_ZERO = new TFieldElement(GF2X::zero());
+    GF2X pone0;
+    SetCoeff(pone0, 0, 0);
+    m_ZERO = new TFieldElement(GF2X(0));
 	GF2X pone;
 	SetCoeff(pone, 0, 1);
 	m_ONE = new TFieldElement(GF2X(1));
