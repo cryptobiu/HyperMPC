@@ -229,9 +229,13 @@ void Protocol::run() {
 
     cout << "after Input Adjustment " << endl;
 
-    processAdditions(circuit,gateDoneArr, gateShareArr);
+//    processAdditions(circuit,gateDoneArr, gateShareArr);
+//
+//    cout << "after process Additions " << endl;
 
-    cout << "after process Additions " << endl;
+    processMultiplications(circuit, gateDoneArr, gateShareArr, sharingBuf, alpha);
+
+    cout << "after process Multiplications " << endl;
 
     outputPhase(circuit,gateShareArr, alpha, gateValueArr);
 
@@ -364,29 +368,35 @@ void Protocol::initializationPhase(vector<TFieldElement> &gateValueArr, vector<T
  * @param alpha
  * @param valBuf
  */
-void Protocol::publicReconstruction(vector<string> &myShares, int d, vector<TFieldElement> &alpha, vector<TFieldElement> &valBuf)
+void Protocol::publicReconstruction(vector<string> &myShares, int &count, int d, vector<TFieldElement> &alpha, vector<TFieldElement> &valBuf)
 {
-    //  Length(MyShares)
-    int count;
+    // count =  Length(MyShares)
     int no_buckets = count / (N-T) + 1;
 
     HIM m(T, N-T);
-
+    TFieldElement x;
     vector<TFieldElement> alpha1(N);
     vector<TFieldElement> alpha2(N);
-    vector<TFieldElement> x1(N);
+    vector<TFieldElement> x1(N-T);
     vector<TFieldElement> y1(N);
     vector<TFieldElement> y2(N);
     vector<string> sendBufs(N);
     vector<string> recBufs(N);
+    vector<string> recBufs2(N);
 
     for(int i = 0; i < N-T; i++)
     {
-        alpha1[i].setPoly(alpha[i].getElement());
+        alpha1[i] = alpha[i];
     }
-    for(int i = N-T; i < alpha.size(); i++)
+    for(int i = N-T; i < N; i++)
     {
-        alpha2[i] = alpha[i];
+        alpha2[i - (N-T)] = alpha[i];
+    }
+
+    for(int i = 0; i < N; i++)
+    {
+        recBufs[i] = "";
+        recBufs2[i] = "";
     }
 
     m.InitHIMByVectors(alpha1, alpha2);
@@ -398,8 +408,10 @@ void Protocol::publicReconstruction(vector<string> &myShares, int d, vector<TFie
         {
             if( k*(N-T)+i < count)
             {
-                x1[i] = myShares[i];
-            } else {
+                x1[i] = TFieldElement(myShares[i]);
+            }
+            else
+            {
                 x1[i] = *TField::getInstance()->GetZero();
             }
         }
@@ -411,36 +423,52 @@ void Protocol::publicReconstruction(vector<string> &myShares, int d, vector<TFie
         }
         for(int i = 0; i < N; i++)
         {
-            sendBufs[i] = x1[i].toString();
+            sendBufs[i] += x1[i].toString() + "*";
         }
     }
 
     Communication::getInstance()->sendRecon(sendBufs, recBufs);
 
     for(int k=0; k < no_buckets; k++) {
-        for (int i = 0; i < N - 1; i++) {
-            TFieldElement num(recBufs[i]);
-            x1[i].setPoly(num.getElement());
+        for (int i = 0; i < N; i++) {
+            x1[i] = TFieldElement(recBufs[i]);
         }
+        if (!checkConsistency(alpha, x1, d)) {
+            // halt
+            // cheating detected
+        }
+        x = interpolate(alpha, x1);
+        // send to all
+        for (int i = 0; i < N; i++) {
+            sendBufs[i] += x1[i].toString() + "*";
+        }
+    }
 
-        m.MatrixMult(x1, y2);
+    // Communication::getInstance()->sendRecon(sendBufs, recBufs2);
+
+    int index = 0;
+    for(int k=0; k < no_buckets; k++) {
+        for (int i = 0; i < N; i++) {
+            x1[i] = TFieldElement(recBufs[i]);
+        }
+        m.MatrixMult(x1, y1);
         for (int i = 0; i < T; i++) {
-            if(x1[N - T + i].toString() != y1[i].toString())
+            if(x1[N-T+i].toString() != y1[i].toString())
             {
+                // halt !
                 cout << "cheating" << endl;
-                // Halt
             }
-
         }
 
-        for(int i = 0; i < N-T; i++)
-        {
-            if( k*(N-T)+i < count)
+        for (int i = 0; i < N-T; i++) {
+            if(k*(N-T)+1 < count)
             {
-                valBuf[i] = x1[i];
+                valBuf[index] = x1[i];
+                index++;
             }
         }
     }
+
 }
 
 bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him, vector<string> &sharingBuf, vector<TFieldElement> &alpha, ArythmeticCircuit &circuit)
@@ -786,10 +814,13 @@ int Protocol::processAdditions(ArythmeticCircuit &circuit, vector<bool> &gateDon
     return count;
 }
 
-int Protocol::processmultiplications(ArythmeticCircuit &circuit, vector<bool> &gateDoneArr, vector<TFieldElement> &gateShareArr, vector<string> &sharingBuf, vector<TFieldElement> alpha)
+int Protocol::processMultiplications(ArythmeticCircuit &circuit, vector<bool> &gateDoneArr,
+                                     vector<TFieldElement> &gateShareArr, vector<string> &sharingBuf,
+                                     vector<TFieldElement> alpha)
 {
     int count =0;
     int index = 0;
+    int indexSharingBuf = 0;
     TFieldElement p2, d2;
     TFieldElement r1, r2;
     vector<string> ReconsBuf(M);
@@ -800,10 +831,12 @@ int Protocol::processmultiplications(ArythmeticCircuit &circuit, vector<bool> &g
            && gateDoneArr[circuit.getGates()[k].input1]
            && gateDoneArr[circuit.getGates()[k].input2])
         {
-//            Read(SharingBuf,r1);
-//            // t-share of random r
-//            Read(SharingBuf,r2);
-//            // t2-share of same r
+            // t-share of random r
+            r1 = TFieldElement(sharingBuf[indexSharingBuf]);
+            indexSharingBuf++;
+            // t2-share of same r
+            r2 = TFieldElement(sharingBuf[indexSharingBuf]);
+            indexSharingBuf++;
             p2 = gateShareArr[circuit.getGates()[k].input1] * gateShareArr[circuit.getGates()[k].input2];
             d2 = p2 - r2;
             ReconsBuf[index] = d2.toString();
@@ -814,16 +847,24 @@ int Protocol::processmultiplications(ArythmeticCircuit &circuit, vector<bool> &g
     }
 
     vector<TFieldElement> valBuf(N);
+    TFieldElement d;
+    int indexForValBuf = 0;
+    publicReconstruction(ReconsBuf, index, 2*T, alpha, valBuf);
 
-    publicReconstruction(ReconsBuf, 2*T, alpha, valBuf);
-
-//    cout << count << endl;
-//    cout << "Gatesharearr" << endl;
-//
-//    for(int i=0; i < M; i++)
-//    {
-//        cout << circuit.getGates()[i].gateType << "   " << gateShareArr[i].getElement() << endl;
-//    }
+    for(int k=0; k < M; k++)
+    {
+        // its a multiplication which not yet processed and ready
+        if(circuit.getGates()[k].gateType == MULT && !gateDoneArr[k]
+           && gateDoneArr[circuit.getGates()[k].input1]
+           && gateDoneArr[circuit.getGates()[k].input2])
+        {
+            d = valBuf[indexForValBuf];
+            indexForValBuf++;
+            gateShareArr[k] = gateShareArr[k] + d;
+            gateDoneArr[k] = true;
+            count++;
+        }
+    }
 
     return count;
 }

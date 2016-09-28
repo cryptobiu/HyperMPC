@@ -27,13 +27,15 @@ public:
     void getXVector(string str, int pid);
     bool broadcast(int party_id, string myMessage ,MQTTClient &m_client, MQTTClient_message &m_pubmsg,
                    MQTTClient_deliveryToken &m_token, char** &topic, int &m_rc, HIM &him_matrix, vector<string> &recBufsdiff);
-    int processmultiplications(ArythmeticCircuit &circuit, vector<bool> &gateDoneArr, vector<TFieldElement> &gateShareArr, vector<string> &sharingBuf, vector<TFieldElement> alpha);
+    int processMultiplications(ArythmeticCircuit &circuit, vector<bool> &gateDoneArr,
+                               vector<TFieldElement> &gateShareArr, vector<string> &sharingBuf,
+                               vector<TFieldElement> alpha);
     void inputAdjustment(string &diff, vector<TFieldElement> &gateValueArr, ArythmeticCircuit &circuit,
                          vector<TFieldElement> &gateShareArr, vector<bool> &GateDoneArr);
     void initializationPhase(vector<TFieldElement> &gateValueArr, vector<TFieldElement> &gateShareArr,
                              vector<bool> &gateDoneArr,
                              HIM &matrix_him, VDM &matrix_vand, vector<TFieldElement> &alpha);
-    void publicReconstruction(vector<string> &myShares, int d, vector<TFieldElement> &alpha, vector<TFieldElement> &valBuf);
+    void publicReconstruction(vector<string> &myShares, int &count, int d, vector<TFieldElement> &alpha, vector<TFieldElement> &valBuf);
     bool preparationPhase(VDM &matrix_vand, HIM &matrix_him, vector<string> &sharingBuf, vector<TFieldElement> &alpha, ArythmeticCircuit &circuit);
     bool inputPreparation(vector<string> &sharingBuf, vector<TFieldElement> &gateShareArr, ArythmeticCircuit &circuit, vector<TFieldElement> &alpha, vector<TFieldElement> &gateValueArr);
     bool checkConsistency(vector<TFieldElement> alpha,vector<TFieldElement> x, int d);
