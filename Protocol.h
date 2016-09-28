@@ -30,18 +30,21 @@ public:
     void ConcatenateEverything(vector<string> &buffers, int &no_buckets, HIM &matrix);
     bool CheckIfHappyOrCry(int &no_buckets);
     bool broadcast(int party_id, string myMessage ,MQTTClient &m_client, MQTTClient_message &m_pubmsg,
-                   MQTTClient_deliveryToken &m_token, char** &topic, int &m_rc, HIM &him_matrix);
+                   MQTTClient_deliveryToken &m_token, char** &topic, int &m_rc, HIM &him_matrix, vector<string> &recBufsdiff);
+    int processmultiplications(ArythmeticCircuit &circuit, vector<bool> &gateDoneArr, vector<TFieldElement> &gateShareArr, vector<string> &sharingBuf, vector<TFieldElement> alpha);
     string test();
-    void InputAdjustment(string &diff, vector<TFieldElement*> &gateValueArr, ArythmeticCircuit &circuit, vector<TFieldElement*> gateShareArr, vector<bool> GateDoneArr);
-    void InitializationPhase(vector<TFieldElement*> &GateValueArr, vector<TFieldElement*> &gateShareArr, vector<bool> &gateDoneArr,
-                             HIM &matrix_him,  VDM &matrix_vand, vector<TFieldElement*> &alpha);
-    void publicReconstruction(vector<TFieldElement*> alpha);
-    bool preparationPhase(VDM &matrix_vand, HIM &matrix_him, vector<string> &sharingBuf, vector<TFieldElement*> &alpha);
-    bool inputPreparation(vector<string> &sharingBuf, vector<TFieldElement*> &gateShareArr, ArythmeticCircuit &circuit, vector<TFieldElement*> &alpha, vector<TFieldElement*> &gateValueArr);
-    bool checkConsistency(vector<TFieldElement*> alpha,vector<TFieldElement*> x, int d);
-    int processAdditions(ArythmeticCircuit &circuit, vector<bool> &gateDoneArr, vector<TFieldElement*> &gateShareArr);
-    TFieldElement interpolate(vector<TFieldElement*> alpha, vector<TFieldElement*> x);
-    void outputPhase(ArythmeticCircuit &circuit, vector<TFieldElement*> &gateShareArr, vector<TFieldElement*> alpha);
+    void inputAdjustment(string &diff, vector<TFieldElement> &gateValueArr, ArythmeticCircuit &circuit,
+                         vector<TFieldElement> &gateShareArr, vector<bool> &GateDoneArr);
+    void initializationPhase(vector<TFieldElement> &gateValueArr, vector<TFieldElement> &gateShareArr,
+                             vector<bool> &gateDoneArr,
+                             HIM &matrix_him, VDM &matrix_vand, vector<TFieldElement> &alpha);
+    void publicReconstruction(vector<TFieldElement> &myShares, int d, vector<TFieldElement> &alpha, vector<TFieldElement> &valBuf);
+    bool preparationPhase(VDM &matrix_vand, HIM &matrix_him, vector<string> &sharingBuf, vector<TFieldElement> &alpha, ArythmeticCircuit &circuit);
+    bool inputPreparation(vector<string> &sharingBuf, vector<TFieldElement> &gateShareArr, ArythmeticCircuit &circuit, vector<TFieldElement> &alpha, vector<TFieldElement> &gateValueArr);
+    bool checkConsistency(vector<TFieldElement> alpha,vector<TFieldElement> x, int d);
+    int processAdditions(ArythmeticCircuit &circuit, vector<bool> &gateDoneArr, vector<TFieldElement> &gateShareArr);
+    TFieldElement interpolate(vector<TFieldElement> alpha, vector<TFieldElement> x);
+    void outputPhase(ArythmeticCircuit &circuit, vector<TFieldElement> &gateShareArr, vector<TFieldElement> alpha, vector<TFieldElement> &gateValueArr);
     void run();
 };
 

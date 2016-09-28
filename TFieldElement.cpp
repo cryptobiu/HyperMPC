@@ -66,19 +66,10 @@ TFieldElement TFieldElement::operator/(TFieldElement& f2)
 
 TFieldElement TFieldElement::operator*(TFieldElement& f2)
 {
-//	TFieldElement answer;
-//	NTL::GF2X f;
-//	f = this->getElement() * f2.getElement();
-//
-//	answer.setPoly(f);
-//	return answer;
 	TFieldElement answer;
 	NTL::GF2X f;
-//	f = this->getElement() * f2.getElement();
-	//cout<< "h";
 	MulMod(f, this->getElement(),  f2.getElement(),  this->irreduciblePolynomial);
 	answer.setPoly(f);
-	//cout<< "h";
 	return answer;
 }
 

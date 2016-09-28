@@ -132,7 +132,12 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
     }
 
 
-    if(topic.find("nposLastsend") != std::string::npos)
+    if (topic.find("sendRecon") != std::string::npos)
+    {
+        Communication::getInstance()->vecRecon[pid - 1] = str_message;
+        Communication::getInstance()->countRecon++;
+    }
+    else if(topic.find("Lastsend") != std::string::npos)
     {
         Communication::getInstance()->vecLast[pid - 1] = str_message;
         Communication::getInstance()->countLast++;
@@ -183,13 +188,18 @@ void delivered(void *context, MQTTClient_deliveryToken dt)
 
 Communication::Communication(int n, int id) {
     N = n;
-    T = N/3 -1;
+    T = N/3 - 1;
+    if(N%3 > 0)
+    {
+        T++;
+    }
     vec.resize(N);
     PARTYID = id;
     vecSendPartOfPoly.resize(N);
     vecDoubleShare.resize(N);
     vecGateShareArr.resize(N);
     vecLast.resize(N);
+    vecRecon.resize(N);
     countLast = 0;
     countPartOfPoly = 0;
     countDoubleShare = 0;
@@ -203,7 +213,7 @@ Communication::Communication(int n, int id) {
     MQTTClient_create(&m_client, ADDRESS, c,
                       MQTTCLIENT_PERSISTENCE_NONE, NULL);
 
-    m_conn_opts.keepAliveInterval = 120;
+    m_conn_opts.keepAliveInterval = 50000;
     m_conn_opts.cleansession = 1;
 
 
@@ -226,6 +236,8 @@ Communication::Communication(int n, int id) {
     string s6 = "sendGateShareArr"+to_string(id);
     string s7 = "Lastsend"+to_string(id);
 
+    string s8 = "sendRecon"+to_string(id);
+
     topic[0] = (char*)s1.c_str();
     topic[1] = (char*)s2.c_str();
     topic[2] = (char*)s3.c_str();
@@ -233,10 +245,11 @@ Communication::Communication(int n, int id) {
     topic[4] = (char*)s5.c_str();
     topic[5] = (char*)s6.c_str();
     topic[6] = (char*)s7.c_str();
-    int QQS_ARR[7] = {1, 1, 1, 1, 1, 1, 1};
+    topic[7] = (char*)s8.c_str();
+    int QQS_ARR[8] = {1, 1, 1, 1, 1, 1, 1, 1};
 
     // update the topics
-    MQTTClient_subscribeMany(m_client,  7, topic, QQS_ARR);
+    MQTTClient_subscribeMany(m_client,  8, topic, QQS_ARR);
 }
 
 /**
@@ -290,8 +303,9 @@ void Communication::ConnectionToServer(const MQTTClient &m_client, const string 
 
 void Communication::SendTheResult(string &myMessage, MQTTClient const &m_client, string &myTopicForMessage,
                    MQTTClient_message &m_pubmsg,
-                   MQTTClient_deliveryToken &m_token, const string &s, const vector<string> &buffers) {// buffers[i] = the buffer of party i+1
+                   MQTTClient_deliveryToken &m_token, const string &s, const vector<string> &buffers, vector<string> &recBufs) {// buffers[i] = the buffer of party i+1
     // buffers[0] = party 1
+    recBufs[PARTYID-1] = myMessage;
 
     for(int i=0; i<buffers.size(); i++)
     {
@@ -311,12 +325,21 @@ void Communication::SendTheResult(string &myMessage, MQTTClient const &m_client,
         while (deliveredtoken != m_token) {};
     }
     while (countYRecieve < N - 1) {}
+
+    for(int i=0; i<N; i++)
+    {
+        if(i != PARTYID-1) {
+            recBufs[i] =  vec[i];
+        }
+    }
 }
 
 
 void Communication::SendXVectorToAllParties(string &myMessage, MQTTClient const &m_client, char *const *topic,
                              string &myTopicForMessage, MQTTClient_message &m_pubmsg,
-                             MQTTClient_deliveryToken &m_token, string &s) {
+                             MQTTClient_deliveryToken &m_token, string &s, vector<string> &recBufs) {
+    recBufs[PARTYID-1] = myMessage;
+
     myTopicForMessage = "SHARE_Ps_VECTOR";
 
     // add id party to the message
@@ -336,6 +359,13 @@ void Communication::SendXVectorToAllParties(string &myMessage, MQTTClient const 
     while (deliveredtoken != m_token) {};
 
     while (countXRecieve < N - 1) {}
+
+    for(int i=0; i<N; i++)
+    {
+        if(i != PARTYID-1) {
+            recBufs[i] =  vec[i];
+        }
+    }
 }
 
 Communication::~Communication() {
@@ -458,12 +488,41 @@ void Communication::Lastsend(vector<string> &sendBufs,vector<string> &recBufs) {
         cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<endl;
     }
 
+    cout << "before" << endl;
     while(countLast < N - 1) {}
+    cout << "after" << endl;
 
     for(int i=0; i<N; i++)
     {
         if(i != PARTYID-1) {
             recBufs[i] = vecLast[i];
+        }
+    }
+}
+
+void Communication::sendRecon(vector<string> &sendBufs,vector<string> &recBufs) {
+    string s = to_string(PARTYID);
+    string myTopicForMessage;
+
+    recBufs[PARTYID-1] = sendBufs[PARTYID-1];
+
+    for(int i=0; i<N; i++)
+    {
+        myTopicForMessage = "sendRecon" + to_string(i+1);
+        // add id party to the message
+        string myMessage = s + "$" + sendBufs[i];
+        send(myTopicForMessage, myMessage);
+        cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<endl;
+    }
+
+    cout << "before" << endl;
+    while(countRecon < N - 1) {}
+    cout << "after" << endl;
+
+    for(int i=0; i<N; i++)
+    {
+        if(i != PARTYID-1) {
+            recBufs[i] = vecRecon[i];
         }
     }
 }

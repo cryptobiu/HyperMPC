@@ -13,7 +13,7 @@
 *
 */
 
-#define INPUT 4
+#define INPUT 0
 #define OUTPUT 3
 #define ADD 1
 #define MULT 2

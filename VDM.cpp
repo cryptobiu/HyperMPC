@@ -44,15 +44,15 @@ void VDM::Print()
 }
 
 
-void VDM::MatrixMult3(std::vector<TFieldElement*> vector, std::vector<TFieldElement*> &answer)
+void VDM::MatrixMult3(std::vector<TFieldElement> &vector, std::vector<TFieldElement> &answer)
 {
 
-    TFieldElement* temp;
+    TFieldElement temp;
     TFieldElement temp1;
 
     for(int i = 0; i < vector.size(); i++) {
-        if(vector[i] == NULL) {
-            temp = new TFieldElement("[]");
+        if(vector[i].getElement() == NULL) {
+            temp = TFieldElement("[]");
             vector[i] = temp;
         }
     }
@@ -61,12 +61,12 @@ void VDM::MatrixMult3(std::vector<TFieldElement*> vector, std::vector<TFieldElem
 
     for(int i = 0; i < m_n; i++)
     {
-        temp = new TFieldElement(GF2X::zero());
+        temp = TFieldElement(GF2X::zero());
         for(int j=0; j < m_m; j++)
         {
 
-            temp1 = m_matrix[i][j] * *vector[j];
-            *temp = *temp + temp1;
+            temp1 = m_matrix[i][j] * vector[j];
+            temp = temp + temp1;
         }
 
         answer[i]=temp;

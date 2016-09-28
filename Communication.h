@@ -39,13 +39,14 @@ public:
     std::atomic<int> countDoubleShare;
     std::atomic<int> countGateShareArr;
     std::atomic<int> countLast;
+    std::atomic<int>  countRecon;
 //    int countRoundRecieve;
 //    int countXRecieve;
 //    int countYRecieve, countRoundFinish;
     vector<int> vecConn;
-    vector<TFieldElement*> vecRecX;
+    vector<TFieldElement> vecRecX;
     vector<string> vec;
-    vector<string> vecRecForCheck, vecSendPartOfPoly, vecDoubleShare, vecGateShareArr, vecLast;
+    vector<string> vecRecForCheck, vecSendPartOfPoly, vecDoubleShare, vecGateShareArr, vecLast, vecRecon;
     volatile MQTTClient_deliveryToken deliveredtoken;
     MQTTClient_connectOptions m_conn_opts = MQTTClient_connectOptions_initializer;
     MQTTClient m_client;
@@ -61,10 +62,10 @@ public:
                                      MQTTClient_deliveryToken &m_token);
     void SendTheResult(string &myMessage, MQTTClient const &m_client, string &myTopicForMessage,
                        MQTTClient_message &m_pubmsg,
-                       MQTTClient_deliveryToken &m_token, const string &s, const vector<string> &buffers);
+                       MQTTClient_deliveryToken &m_token, const string &s, const vector<string> &buffers, vector<string> &recBufs);
     void SendXVectorToAllParties(string &myMessage, MQTTClient const &m_client, char *const *topic,
                                  string &myTopicForMessage, MQTTClient_message &m_pubmsg,
-                                 MQTTClient_deliveryToken &m_token, string &s);
+                                 MQTTClient_deliveryToken &m_token, string &s, vector<string> &recBufs);
     void roundFunction(vector<string> &sendBufs,vector<string> &recBufs);
 
     virtual ~Communication();
@@ -73,6 +74,7 @@ public:
     void sendDoubleShare(vector<string> &sendBufs,vector<string> &recBufs);
     void sendGateShareArr(vector<string> &sendBufs,vector<string> &recBufs);
     void Lastsend(vector<string> &sendBufs,vector<string> &recBufs);
+    void sendRecon(vector<string> &sendBufs,vector<string> &recBufs);
 };
 
 

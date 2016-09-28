@@ -166,7 +166,7 @@ void ArythmeticCircuit::readCircuit(const char* fileName)
             myfile >> currentPartyNumber;
 
             myfile >> numOfoutputsForParty;
-            numOfOutputsForEachParty[currentPartyNumber - 1] = numOfinputsForParty;
+            numOfOutputsForEachParty[currentPartyNumber - 1] = numOfoutputsForParty;
 
             partiesOutputs[currentPartyNumber - 1] = new int[numOfOutputsForEachParty[currentPartyNumber - 1]];
 

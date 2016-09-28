@@ -42,6 +42,7 @@ public:
 	 * 1-st field element must be the neutral w.r.t. multiplication.
 	 */
 	TFieldElement* GetElement(uint8_t b);
+	TFieldElement GetElementByValue(uint8_t b);
 	TFieldElement* Random();
 	virtual ~TField();
 };
