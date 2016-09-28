@@ -44,7 +44,7 @@ void VDM::Print()
 }
 
 
-void VDM::MatrixMult3(std::vector<TFieldElement> &vector, std::vector<TFieldElement> &answer)
+void VDM::MatrixMult(std::vector<TFieldElement> &vector, std::vector<TFieldElement> &answer)
 {
 
     TFieldElement temp;

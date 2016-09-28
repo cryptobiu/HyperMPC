@@ -205,6 +205,12 @@ Communication::Communication(int n, int id) {
     countDoubleShare = 0;
     // start intialize the connection to server
 
+    countThis = 0;
+    countNext = 0;
+    vecThis.resize(N);
+    vecNext.resize(N);
+
+
     // messages
     m_pubmsg = MQTTClient_message_initializer;
 
@@ -526,3 +532,38 @@ void Communication::sendRecon(vector<string> &sendBufs,vector<string> &recBufs) 
         }
     }
 }
+
+
+//void Communication::roundfunction(vector<string> &sendBufs, vector<string> &recBufs, int num)
+//{
+//    string s = to_string(PARTYID);
+//    string myTopicForMessage;
+//
+//    recBufs[PARTYID-1] = sendBufs[PARTYID-1];
+//
+//    for(int i=0; i<N; i++)
+//    {
+//        myTopicForMessage = num + "roundfunction" + to_string(i+1);
+//        // add id party to the message
+//        string myMessage = s + "$" + sendBufs[i];
+//        send(myTopicForMessage, myMessage);
+//        cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<endl;
+//    }
+//
+//    while(countThis < N - 1) {}
+//
+//    for(int i=0; i<N; i++)
+//    {
+//        if(i != PARTYID-1) {
+//            recBufs[i] = vecThis[i];
+//        }
+//    }
+//
+//    for(int i=0; i<N; i++)
+//    {
+//        recBufs[i] = vecThis[i];
+//
+//    }
+//
+//
+//}

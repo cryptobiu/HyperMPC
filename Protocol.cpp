@@ -26,20 +26,6 @@ vector<string> Protocol::split(const string &s, char delim) {
     return elems;
 }
 
-void Protocol::Broadcaster(string &myMessage, const MQTTClient &m_client, char *const *topic, string &myTopicForMessage,
-                 MQTTClient_message &m_pubmsg, MQTTClient_deliveryToken &m_token, string &s) {
-
-    string temp = myMessage;
-    Communication::getInstance()->vec[m_partyId - 1] = temp;
-
-//    Communication::getInstance()->SendXVectorToAllParties(myMessage, m_client, topic, myTopicForMessage, m_pubmsg, m_token, s);
-
-    for(int i=0; i< Communication::getInstance()->vec.size(); i++)
-    {
-        cout << "this is: " << i << "  " << Communication::getInstance()->vec[i] << endl;
-    }
-}
-
 void Protocol::getXVector(string str, int pid)
 {
     vector<string> arr = {};
@@ -54,129 +40,6 @@ void Protocol::getXVector(string str, int pid)
         Communication::getInstance()->vecRecX.push_back(n);
     }
 }
-
-void Protocol::ConcatenateEverything(vector<string> &buffers, int &no_buckets, HIM &matrix)
-{
-    HIM mat(N,N);
-    mat.InitHIM();
-
-    vector<TFieldElement> X1(N);
-    vector<TFieldElement> Y1(N);
-
-  //  matrix.InitHIM();
-
-    for(int i=0; i< N; i++)
-    {
-        getXVector(Communication::getInstance()->vec[i], i + 1);
-    }
-
-    // total number of values
-    int count = Communication::getInstance()->vecRecX.size();
-
-    // nr of buckets
-    no_buckets = count / (N - T) + 1;
-    TFieldElement n;
-
-    for(int k = 0; k < no_buckets; k++)
-    {
-        for(int i = 0; i < N; i++)
-        {
-            if((i < N-T) && (k*(N-T)+i < count))
-            {
-                X1[i]= Communication::getInstance()->vecRecX[i].getElement();
-            }
-                // padding zero
-            else
-            {
-                X1[i] = TFieldElement(GF2X::zero());
-            }
-        }
-
-        // the problem is that matrix[2][0] is not good
-        // MEITAL
-
-        mat.MatrixMult3(X1, Y1);
-        cout << "Y1[i]" << endl;
-        for(int i = 0; i < N; i++) {
-            cout << i << endl;
-            cout << Y1[i].toString() << endl;
-        }
-
-        for(int i = 0; i < N; i++) {
-            buffers[i] += Y1[i].toString() + "*";
-        }
-//        X1.clear();
-//        Y1.clear();
-//        X1.resize(N);
-//        Y1.resize(N);
-        for(int i = 0; i < N; i++)
-        {
-            X1[i].setPoly(GF2X::zero());
-            Y1[i].setPoly(GF2X::zero());
-         //   Y1[i] = TFieldElement(GF2X::zero());
-        }
-    }
-
-    // no cheating: all parties have same y1
-    // ‘‘Reconstruct’’ values towards some party (‘‘reconstruct’’ with degree 0)
-
-    // buffers[0] --> the buffer of party with num id is 1
-    cout << "Result" << endl;
-    for(int i = 0; i < N; i++) {
-        cout << buffers[i] << endl;
-    }
-
-}
-
-bool Protocol::CheckIfHappyOrCry(int &no_buckets)
-{
-    string temp;
-    for(int i=0; i< Communication::getInstance()->vecRecForCheck.size(); i++) {
-
-        vector<string> arr = {};
-        arr = split(Communication::getInstance()->vecRecForCheck[i], '*');
-        if(arr.size() > 0) {
-            temp = arr[0];
-            for (int i = 1; i < arr.size() - 1; i++) {
-                if(temp != arr[i])
-                {
-                    return false;
-                }
-            }
-        }
-    }
-
-    return true;
-
-}
-
-///**
-// *
-// *
-// */
-//bool Protocol::broadcast(int party_id, string myMessage ,MQTTClient &m_client, MQTTClient_message &m_pubmsg,
-//               MQTTClient_deliveryToken &m_token, char** &topic, int &m_rc, HIM &him_matrix)
-//{
-//    int no_buckets;
-//    vector<string> buffers(N);
-//    Communication::getInstance()->vecRecForCheck.resize(N);
-//    string myTopicForMessage="";
-//    string s = to_string(m_partyId);
-//
-//    Broadcaster(myMessage, m_client, topic, myTopicForMessage, m_pubmsg, m_token, s);
-//    cout << "after Broadcaster" << endl;
-//
-//    ConcatenateEverything(buffers, no_buckets, him_matrix);
-//    cout << "after ConcatenateEverything" << endl;
-//
-//
-//    Communication::getInstance()->SendTheResult(myMessage, m_client, myTopicForMessage, m_pubmsg, m_token, s, buffers);
-//
-//    cout << "after SendTheResult" << endl;
-//
-//    return CheckIfHappyOrCry(no_buckets);
-//
-//}
 
 /**
  *
@@ -215,27 +78,14 @@ bool Protocol::broadcast(int party_id, string myMessage ,MQTTClient &m_client, M
     vector<TFieldElement> X1(N);
     vector<TFieldElement> Y1(N);
 
-
-
-    //        vector<string> arr = {};
-//        arr = split(Communication::getInstance()->vec[l], '*');
-//        string str1;
-//        string str2 ="";
-//        TFieldElement n;
-//        for (int i = 0; i < arr.size() ; i++) {
-//            str1 = arr[i];
-//            str2 += str1;
-//            n = TFieldElement(str1);
-//            Communication::getInstance()->vecRecX.push_back(n);
-
-
-    //  matrix.InitHIM();
-    int countValue = 4;
+    // total number of values
+    int count = 0;
     int index = 0;
     for(int l=0; l< N; l++)
     {
         vector<string> arr = {};
         arr = split(recBufsdiff[l], '*');
+        count += arr.size();
         for (int i = 0; i < arr.size() ; i++) {
             valBufs[index] = arr[i];
             index++;
@@ -244,9 +94,7 @@ bool Protocol::broadcast(int party_id, string myMessage ,MQTTClient &m_client, M
 
     cout << "index" << index << endl;
     index = 0;
-    // total number of values
-  //  int count = Communication::getInstance()->vecRecX.size();
-    int count = 4;
+
     // nr of buckets
     no_buckets = count / (N - T) + 1;
 
@@ -270,12 +118,7 @@ bool Protocol::broadcast(int party_id, string myMessage ,MQTTClient &m_client, M
             }
         }
 
-
-
-        // the problem is that matrix[2][0] is not good
-        // MEITAL
-
-        mat.MatrixMult3(X1, Y1);
+        mat.MatrixMult(X1, Y1);
         cout << "Y1[i]" << endl;
         for(int i = 0; i < N; i++) {
             cout << i << endl;
@@ -303,7 +146,6 @@ bool Protocol::broadcast(int party_id, string myMessage ,MQTTClient &m_client, M
         cout << buffers[i] << endl;
     }
 
-
     cout << "after ConcatenateEverything" << endl;
 
     Communication::getInstance()->SendTheResult(myMessage, m_client, myTopicForMessage, m_pubmsg, m_token, s, buffers, recBufs2);
@@ -330,78 +172,11 @@ bool Protocol::broadcast(int party_id, string myMessage ,MQTTClient &m_client, M
 
 }
 
-string Protocol::test() {
-    GF2X p1, p2, p3, p4, p5, p6, p7, p8;
-    SetCoeff(p1, 5);
-    SetCoeff(p1, 2);
-    SetCoeff(p2, 3);
-    SetCoeff(p3, 1);
-    SetCoeff(p4, 3);
-    SetCoeff(p4, 1);
-    SetCoeff(p5, 1);
-    SetCoeff(p5, 6);
-    SetCoeff(p5, 4);
-    SetCoeff(p6, 2);
-    SetCoeff(p7, 3);
-    SetCoeff(p7, 1);
-    SetCoeff(p7, 7);
-    SetCoeff(p8, 1);
-    SetCoeff(p6, 1);
-    SetCoeff(p7, 6);
-    SetCoeff(p8, 7);
-
-    cout << p1 << endl;
-    cout << p2 << endl;
-    cout << p3 << endl;
-    cout << p4 << endl;
-    cout << p5 << endl;
-    cout << p6 << endl;
-    cout <<"p7"<< p7 << endl;
-    cout << "p8"<<p8 << endl;
-
-
-    TFieldElement e1(p1);
-
-    TFieldElement e2(p2);
-
-    TFieldElement e3(p3);
-
-    TFieldElement e4(p4);
-
-    TFieldElement e5(p5);
-
-    TFieldElement e6(p5);
-
-    TFieldElement e7(p7);
-
-    TFieldElement e8(p8);
-
-    TFieldElement e9(p5);
-
-//    e9 = e7/e8;
-  //  cout<< "result" << e9.toString()<<endl;
-
-    string x = e2.toString() +"*" +e1.toString()+ "*" + e4.toString();
-    //string x = e7.toString() +"*" +e2.toString() + "*" + e4.toString() + "*" + e8.toString();
-    // string x =  e4.toString() + "*" + e5.toString();
-    //string x = e1.toString() +"*" +e8.toString() + "*"  +e3.toString() + "*" + e7.toString() + "*" + e6.toString();
-    //  string x = e1.toString() +"*" +e2.toString() + "*"  +e3.toString() + "*" + e4.toString() + "*" + e5.toString();
-    // string x = e1.toString();
-
-    //string x = e8.toString()+"*" +e2.toString();
-
-    cout << x << endl;
-
-    return x;
-}
-
 void Protocol::run() {
     TParty t(m_partyId);
 
     GF2X irreduciblePolynomial = BuildSparseIrred_GF2X(8);
     GF2E::init(irreduciblePolynomial);
-
-    string x = test();
 
     // the value of the gate (for my input and output gates)
     vector<TFieldElement> gateValueArr;
@@ -448,7 +223,7 @@ void Protocol::run() {
         cout << "no cheating!!!" << endl << "finish Input Preparation" << endl;
     }
 
-    string sss;
+    string sss = "";
 
     inputAdjustment(sss, gateValueArr, circuit, gateShareArr, gateDoneArr);
 
@@ -486,26 +261,16 @@ void Protocol::inputAdjustment(string &diff, vector<TFieldElement> &gateValueArr
         {
             cout << "enter your real input : " << endl;
             cin >> input;
+            // Ok, the value is GateValue[k], but should be input.
             TFieldElement myinput = TField::getInstance()->GetElementByValue(input);
-            // Ok, the value is GateValue[k], but should be x.
-//            if(gateValueArr[k].getElement() == NULL) {
-//                cout << "Null" << endl;
-//            }
 
             cout << "gatevaluearr" << k << "  " << gateValueArr[k].getElement() << endl;
 
             TFieldElement different = myinput - gateValueArr[k];
             cout << different.getElement()<< endl;
             string str = different.toString();
-            // if you have more than one input >?
-            // MEITAL
-            // diff += str + "*";
 
-            diff = str;
-
-            // return the diff;
-            // DiffBuf = x-GateValueArr[k]
-            // i will send it to this function
+            diff += str + "*";
 
             // i need to concatenate the difference
             // this can abort in case of cheating
@@ -530,13 +295,6 @@ void Protocol::inputAdjustment(string &diff, vector<TFieldElement> &gateValueArr
     else {
         cout << "no cheating!!!" <<  endl << "finish Broadcast" << endl;
     }
-
-
-//    for(int i=0; i< Communication::getInstance()->vecRecForCheck.size(); i++)
-//    {
-//        Communication::getInstance()->vecRecForCheck[i]
-//    }
-
 
     // handle after broadcast
     string str;
@@ -606,7 +364,7 @@ void Protocol::initializationPhase(vector<TFieldElement> &gateValueArr, vector<T
  * @param alpha
  * @param valBuf
  */
-void Protocol::publicReconstruction(vector<TFieldElement> &myShares, int d, vector<TFieldElement> &alpha, vector<TFieldElement> &valBuf)
+void Protocol::publicReconstruction(vector<string> &myShares, int d, vector<TFieldElement> &alpha, vector<TFieldElement> &valBuf)
 {
     //  Length(MyShares)
     int count;
@@ -645,7 +403,7 @@ void Protocol::publicReconstruction(vector<TFieldElement> &myShares, int d, vect
                 x1[i] = *TField::getInstance()->GetZero();
             }
         }
-        m.MatrixMult3(x1, y1);
+        m.MatrixMult(x1, y1);
 
         for(int i = 0; i < T; i++)
         {
@@ -665,7 +423,7 @@ void Protocol::publicReconstruction(vector<TFieldElement> &myShares, int d, vect
             x1[i].setPoly(num.getElement());
         }
 
-        m.MatrixMult3(x1, y2);
+        m.MatrixMult(x1, y2);
         for (int i = 0; i < T; i++) {
             if(x1[N - T + i].toString() != y1[i].toString())
             {
@@ -709,9 +467,6 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him, vector<string
     sharingBuf.resize(no_buckets*(N-2*T));
     // return int 32 bit
     uint8_t b = prg.getRandom();
-
-    //sendBufs.resize(no_buckets*2);
-
 
     sendBufs.resize(N);
     for(int i=0; i < N; i++)
@@ -757,22 +512,23 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him, vector<string
 
 
 
-        matrix_vand.MatrixMult3(x1, y1);
-        matrix_vand.MatrixMult3(x2, y2);
-        cout << "------------------------------ "<< endl;
-        for(int i=0; i < N; i++)
-        {
-            cout << y1[i].toString() << endl;
-        }
+        matrix_vand.MatrixMult(x1, y1);
+        matrix_vand.MatrixMult(x2, y2);
 
-        cout << "------------------------------ "<< endl;
-        for(int i=0; i < N; i++)
-        {
-            cout << y2[i].toString() << endl;
-        }
-
-        cout << "------------------------------ "<< endl;
-
+//        cout << "------------------------------ "<< endl;
+//        for(int i=0; i < N; i++)
+//        {
+//            cout << y1[i].toString() << endl;
+//        }
+//
+//        cout << "------------------------------ "<< endl;
+//        for(int i=0; i < N; i++)
+//        {
+//            cout << y2[i].toString() << endl;
+//        }
+//
+//        cout << "------------------------------ "<< endl;
+//
 
         for(int i=0; i < N; i++)
         {
@@ -816,8 +572,8 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him, vector<string
                 cout<< "strX2 " << strX1 << endl;
             }
         }
-        matrix_him.MatrixMult3(x1, y1);
-        matrix_him.MatrixMult3(x2, y2);
+        matrix_him.MatrixMult(x1, y1);
+        matrix_him.MatrixMult(x2, y2);
         for (int i = 0; i < 2 * T; i++) {
             sendBufs1[robin] += y1[i].toString() + "*";
             sendBufs1[robin] += y2[i].toString() + "$";
@@ -965,7 +721,7 @@ bool Protocol::checkConsistency(vector<TFieldElement> alpha, vector<TFieldElemen
     }
     HIM matrix(N-1-d,d+1);
     matrix.InitHIMByVectors(alpha_until_d, alpha_from_d);
-    matrix.MatrixMult3(alpha_until_d,y);
+    matrix.MatrixMult(alpha_until_d, y);
     // compare that the result is equal to the according positions in x
 
     // n-d-2 or n-d-1 ? ?
@@ -990,7 +746,7 @@ TFieldElement Protocol::interpolate(vector<TFieldElement> alpha, vector<TFieldEl
     beta[0] = *TField::getInstance()->GetElement(0);
     HIM matrix(1,N);
     matrix.InitHIMByVectors(alpha, beta);
-    matrix.MatrixMult3(x, y);
+    matrix.MatrixMult(x, y);
     return y[0];
 }
 
@@ -1100,37 +856,16 @@ void Protocol::outputPhase(ArythmeticCircuit &circuit, vector<TFieldElement> &ga
     {
         if(circuit.getGates()[k].gateType == OUTPUT)
         {
-           // cout << gateShareArr[k]->toString() << endl;
-          sendBuf[circuit.getGates()[k].party - 1] = gateShareArr[circuit.getGates()[k].input1].toString();
-
             // send to party (which need this gate) your share for this gate
-        //    sendBuf[circuit.getGates()[k].party - 1] += gateShareArr[k].toString();
-        //    sendBuf[circuit.getGates()[k].party - 1] += gateValueArr[k].toString();
-
+            sendBuf[circuit.getGates()[k].party - 1] = gateShareArr[circuit.getGates()[k].input1].toString();
         }
     }
 
-
-    for(int i=0; i < N; i++) {
-        // change from string to field element
-
-        cout << (sendBuf[i]) << endl;
-
-    }
-
-    cout << " fffff" << endl;
 
     Communication::getInstance()->Lastsend(sendBuf,recBuf);
 
     cout << " after last send" << endl;
 
-
-    for(int i=0; i < N; i++) {
-        // change from string to field element
-
-       cout << (recBuf[i]) << endl;
-
-    }
 
     TFieldElement num;
 
@@ -1139,11 +874,8 @@ void Protocol::outputPhase(ArythmeticCircuit &circuit, vector<TFieldElement> &ga
     for(int k=0; k < M; k++) {
         if(circuit.getGates()[k].gateType == OUTPUT && circuit.getGates()[k].party == m_partyId)
         {
-          //  sendBuf[circuit.getGates()[k].party] = gateShareArr[k]->toString() + "*";
-            // FOR i := 0 TO N-1 DO Read(RecBufs[i],x1[i]);
             for(int i=0; i < N; i++) {
                 // change from string to field element
-
                 num = TFieldElement(recBuf[i]);
                 x1[i] = num;
             }

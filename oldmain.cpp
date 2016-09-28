@@ -181,7 +181,7 @@
 //    matrix.InitHIM();
 ////    vecRecX[1];
 ////    vecRecX[2];
-//    vecResult = matrix.MatrixMult3(vecRecX);
+//    vecResult = matrix.MatrixMult(vecRecX);
 //
 //    flag_send_vecResult = true;
 //

@@ -40,6 +40,12 @@ public:
     std::atomic<int> countGateShareArr;
     std::atomic<int> countLast;
     std::atomic<int>  countRecon;
+
+
+    std::atomic<int> countThis;
+    std::atomic<int>  countNext;
+    vector<string> vecThis, vecNext;
+
 //    int countRoundRecieve;
 //    int countXRecieve;
 //    int countYRecieve, countRoundFinish;
@@ -66,7 +72,7 @@ public:
     void SendXVectorToAllParties(string &myMessage, MQTTClient const &m_client, char *const *topic,
                                  string &myTopicForMessage, MQTTClient_message &m_pubmsg,
                                  MQTTClient_deliveryToken &m_token, string &s, vector<string> &recBufs);
-    void roundFunction(vector<string> &sendBufs,vector<string> &recBufs);
+    void roundFunction(vector<string> &sendBufs, vector<string> &recBufs);
 
     virtual ~Communication();
     void sendPartOfPoly(vector<string> &sendBufs,vector<string> &recBufs);
@@ -75,6 +81,7 @@ public:
     void sendGateShareArr(vector<string> &sendBufs,vector<string> &recBufs);
     void Lastsend(vector<string> &sendBufs,vector<string> &recBufs);
     void sendRecon(vector<string> &sendBufs,vector<string> &recBufs);
+    void roundfunction(vector<string> &sendBufs, vector<string> &recBufs, int num);
 };
 
 

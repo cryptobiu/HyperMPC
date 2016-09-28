@@ -43,14 +43,8 @@ public:
 	 * the function print the matrix
 	 */
 	void Print();
-	void CalculateDet();
 	TFieldElement** CheckInitHIM();
-	vector<TFieldElement> MatrixMult(vector<TFieldElement> vector);
-	TFieldElement* MatrixMult2(TFieldElement* vector);
-	void MatrixMult3old(std::vector<TFieldElement*> vector, std::vector<TFieldElement*> &answer);
-	void MatrixMult3(std::vector<TFieldElement> &vector, std::vector<TFieldElement> &answer);
-	bool CheckConsistency(int d, int n, vector<TFieldElement> &x1);
-	TFieldElement Interpolate (vector<TFieldElement> alpha, vector<TFieldElement> x);
+	void MatrixMult(std::vector<TFieldElement> &vector, std::vector<TFieldElement> &answer);
 	virtual ~HIM();
 };
 
