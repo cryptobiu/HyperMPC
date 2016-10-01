@@ -337,7 +337,7 @@ void Communication::SendTheResult1(const vector<string> &buffers, vector<string>
     for(int i=0; i<N; i++)
     {
         if(i != PARTYID-1) {
-            recBufs[i] =  vec[i];
+            recBufs[i] =  vecRecForCheck[i];
         }
     }
 }
@@ -415,7 +415,7 @@ void Communication::sendPartOfPoly(vector<string> &sendBufs,vector<string> &recB
         // add id party to the message
         string myMessage = s + "$" + sendBufs[i];
         send(myTopicForMessage, myMessage);
-        cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<'\n';
+  //      cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<'\n';
     }
 
     while(countPartOfPoly < N - 1) {}
@@ -440,7 +440,7 @@ void Communication::sendDoubleShare(vector<string> &sendBufs,vector<string> &rec
         // add id party to the message
         string myMessage = s + "$" + sendBufs[i];
         send(myTopicForMessage, myMessage);
-        cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<'\n';
+ //       cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<'\n';
     }
 
     while(countDoubleShare < N - 1) {}
@@ -465,7 +465,7 @@ void Communication::sendGateShareArr(vector<string> &sendBufs,vector<string> &re
         // add id party to the message
         string myMessage = s + "$" + sendBufs[i];
         send(myTopicForMessage, myMessage);
-        cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<'\n';
+ //       cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<'\n';
     }
 
     while(countGateShareArr < N - 1) {}
@@ -492,7 +492,7 @@ void Communication::Lastsend(vector<string> &sendBufs,vector<string> &recBufs) {
         // add id party to the message
         string myMessage = s + "$" + sendBufs[i];
         send(myTopicForMessage, myMessage);
-        cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<'\n';
+  //      cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<'\n';
     }
 
     cout << "before" << '\n';
@@ -520,7 +520,7 @@ void Communication::sendRecon(vector<string> &sendBufs,vector<string> &recBufs) 
         // add id party to the message
         string myMessage = s + "$" + sendBufs[i];
         send(myTopicForMessage, myMessage);
-        cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<'\n';
+    //    cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<'\n';
     }
 
     while(countRecon < N - 1) {}
@@ -547,7 +547,7 @@ void Communication::roundfunction10(vector<string> &sendBufs,vector<string> &rec
         // add id party to the message
         string myMessage = s + "$" + sendBufs[i];
         send(myTopicForMessage, myMessage);
-        cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<'\n';
+ //       cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<'\n';
     }
 
     while(count10 < N - 1) {}

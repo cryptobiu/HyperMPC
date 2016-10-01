@@ -42,10 +42,10 @@ int main(int argc, char* argv[])
         cout << "error";
         return 0;
     }
-    Communication* c = Communication::getInstance(atoi(argv[2]), atoi(argv[1]));
+
     Protocol protocol(atoi(argv[2]), atoi(argv[1]), argv[3], argv[4]);
     protocol.run();
-    delete(c);
+
     cout << "end main" << '\n';
     return 0;
 }
