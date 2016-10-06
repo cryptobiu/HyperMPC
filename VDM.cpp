@@ -11,7 +11,7 @@ VDM::VDM(int n, int m) {
 }
 
 void VDM::InitVDM() {
-    vector<TFieldElement *> alpha;
+    vector<TFieldElement> alpha;
     alpha.resize(m_n);
    // TFieldElement *elem;
     for (int i = 0; i < m_n; i++) {
@@ -21,7 +21,7 @@ void VDM::InitVDM() {
     for (int i = 0; i < m_n; i++) {
         m_matrix[i][0] = *(TField::getInstance()->GetOne());
         for (int k = 1; k < m_n; k++) {
-            m_matrix[i][k] = m_matrix[i][k - 1] * *(alpha[i]);
+            m_matrix[i][k] = m_matrix[i][k - 1] * (alpha[i]);
         }
     }
 }
@@ -38,7 +38,7 @@ void VDM::Print()
             cout << (m_matrix[i][j]).getElement() << " ";
 
         }
-        cout << " " << endl;
+        cout << " " << '\n';
     }
 
 }
@@ -57,7 +57,7 @@ void VDM::MatrixMult(std::vector<TFieldElement> &vector, std::vector<TFieldEleme
         }
     }
 
-    cout << "123  " <<  vector.size()<< endl;
+    cout << "123  " <<  vector.size()<< '\n';
 
     for(int i = 0; i < m_n; i++)
     {
@@ -71,5 +71,11 @@ void VDM::MatrixMult(std::vector<TFieldElement> &vector, std::vector<TFieldEleme
 
         answer[i]=temp;
     }
-
+}
+//
+VDM::~VDM() {
+    for (int i = 0; i < m_n; i++) {
+        delete[] m_matrix[i];
+    }
+    delete[] m_matrix;
 }

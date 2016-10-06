@@ -56,13 +56,15 @@ TFieldElement TFieldElement::operator/(TFieldElement& f2)
 	NTL::GF2X rf;
 	// x = a^{-1} % f, error is a is not invertible
     InvMod(f,f2.getElement() ,this->irreduciblePolynomial);
-//	cout<<"inv" <<f <<endl;
     MulMod(rf, f,  this->getElement(), this->irreduciblePolynomial);
-//	cout<< "mul"<<rf <<endl;
 	answer.setPoly(rf);
 	return answer;
 }
+NTL::GF2X TFieldElement::getIrreducible()
+{
+    this->irreduciblePolynomial;
 
+}
 
 TFieldElement TFieldElement::operator*(TFieldElement& f2)
 {
@@ -73,15 +75,9 @@ TFieldElement TFieldElement::operator*(TFieldElement& f2)
 	return answer;
 }
 
-
 void TFieldElement::operator=(const TFieldElement& f2)
 {
 	this->setPoly(f2.m_poly);
-}
-
-TFieldElement* TFieldElement::getElementByPoly(NTL::GF2X poly) {
-	TFieldElement* temp = new TFieldElement(poly);
-	return temp;
 }
 
 int TFieldElement::setPoly(NTL::GF2X poly) {
@@ -96,7 +92,6 @@ string TFieldElement::toString()
     string str =  stream.str();
     return str;
 }
-
 
 TFieldElement::~TFieldElement() {}
 

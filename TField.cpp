@@ -19,7 +19,7 @@ TField* TField::m_single = NULL;
 TField::TField() {
 
 	GF2X irreduciblePolynomial = BuildSparseIrred_GF2X(8);
-	cout << "Leader irreducible Polynomial is " << irreduciblePolynomial << endl;
+	cout << "Leader irreducible Polynomial is " << irreduciblePolynomial << '\n';
 	GF2E::init(irreduciblePolynomial);
 
 //	GF2X p;
@@ -29,7 +29,7 @@ TField::TField() {
 //	SetCoeff(p, 1, 1);
 //	SetCoeff(p, 0, 1);
 //
-//	cout << p<<endl;
+//	cout << p<<'\n';
 //
 //	GF2E::init(p);
 	//m_ZERO = new TFieldElement(GF2X::zero());
@@ -53,22 +53,22 @@ TField::TField() {
  * the 0-th field element must be the neutral w.r.t. addition, and the
  * 1-st field element must be the neutral w.r.t. multiplication.
  */
-TFieldElement* TField::GetElement(uint8_t b) {
+TFieldElement TField::GetElement(uint8_t b) {
 
 	if(b == 1)
 	{
-		return this->GetOne();
+		return *GetOne();
 	}
 	if(b == 0)
 	{
-		return this->GetZero();
+		return *GetZero();
 	}
-	TFieldElement* element = new TFieldElement();
+	TFieldElement element;
 	bitset<8> bits(b);
 
 	for(int i=0; i < 8; i++) {
 			// set the coefficient of x^i to 1
-			SetCoeff(element->getElement(),i,bits[i]);
+			SetCoeff(element.getElement(),i,bits[i]);
 	}
 	return element;
 }
@@ -120,33 +120,13 @@ TField* TField::getInstance()
 /**
  * A random random field element, uniform distribution
  */
-TFieldElement* TField::Random() {
-	TFieldElement* randomElement;
+TFieldElement TField::Random() {
+	TFieldElement randomElement;
 	PRG & prg = PRG::instance();
 	uint8_t b = prg.getRandom();
-	randomElement = this->GetElement(b);
+	randomElement = GetElement(b);
 	return randomElement;
 }
-//
-//void TField::InitOne()
-//{
-//	TFieldElement* randomElement;
-//	uint8_t b;
-//	randomElement = this->GetElement(b);
-//
-//	for (int i=0; i<256; i++)
-//	{
-//		b=i;
-//		randomElement = this->GetElement(b);
-//
-//		if(NTL::IsOne(randomElement->getElement()) == 1)
-//		{
-//			m_ONE = randomElement;
-//			cout << randomElement->getElement();
-//			return;
-//		}
-//	}
-//}
 
 TFieldElement* TField::GetZero()
 {
@@ -155,12 +135,13 @@ TFieldElement* TField::GetZero()
 
 TFieldElement* TField::GetOne()
 {
-//	InitOne();
 	return m_ONE;
 }
 
 TField::~TField() {
 	m_instanceFlag = false;
+	delete m_ZERO;
+	delete m_ONE;
 }
 
 

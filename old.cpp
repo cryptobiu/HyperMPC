@@ -130,9 +130,9 @@
 //    	if (map_check.count(PARTYID) == 0) {
 //    	map_check[PARTYID] = str_message;
 //    	} else {
-//    		cout << endl;
-//    		cout << endl;
-//    		cout << "this party already send a message" << endl;
+//    		cout << '\n';
+//    		cout << '\n';
+//    		cout << "this party already send a message" << '\n';
 //    	}
 //    }
 //
@@ -195,7 +195,7 @@
 ////    MQTTClient_subscribe(m_client, c, QOS);
 //
 //  //  string myTopic;
-//  //  cout << "enter a topic" << endl;
+//  //  cout << "enter a topic" << '\n';
 //
 //   // vector<string> strings= {};
 //
@@ -210,7 +210,7 @@
 ////    }
 //
 ////
-////    cout << strings.size() << endl;
+////    cout << strings.size() << '\n';
 ////
 ////     //print the vector
 ////    for (std::vector<string>::iterator it = strings.begin(); it != strings.end(); ++it)
@@ -248,15 +248,15 @@
 //    int len;
 //    string myMessage ="";
 //    string myTopicForMessage="";
-//    cout << "enter a message" << endl;
+//    cout << "enter a message" << '\n';
 //    while(1) {
 //
 ////    	cin >> myMessage;
 //    	myMessage = "";
-//    	cout << "while"<<myMessage << endl;
+//    	cout << "while"<<myMessage << '\n';
 //    	getline(cin, myMessage);
 //
-//  //  	cout << "while"<<myMessage << endl;
+//  //  	cout << "while"<<myMessage << '\n';
 //
 //    	if(myMessage == "") continue;
 //
@@ -279,12 +279,12 @@
 //    		myTopicForMessage = topic[1];
 //    	}
 //
-//   //     cout << "the topic is" << myTopicForMessage << endl;
+//   //     cout << "the topic is" << myTopicForMessage << '\n';
 //
 //    	//m_pubmsg.payload = (void*)"";
-//   // 	cout << "vv"<<m_pubmsg.payload  << endl;
+//   // 	cout << "vv"<<m_pubmsg.payload  << '\n';
 //        m_pubmsg.payload =(void*) myMessage.c_str();
-//     //   cout << "ddd"<<m_pubmsg.payload  << endl;
+//     //   cout << "ddd"<<m_pubmsg.payload  << '\n';
 //        m_pubmsg.payloadlen = myMessage.size();
 //        m_pubmsg.qos = QOS;
 //        m_pubmsg.retained = 0;
@@ -299,8 +299,8 @@
 //
 //        while(deliveredtoken != m_token);
 //
-//       // cout << "publish !!" << endl;
-//        cout << "enter a message" << endl;
+//       // cout << "publish !!" << '\n';
+//        cout << "enter a message" << '\n';
 //    }
 //
 //    MQTTClient_disconnect(m_client, 10000);
@@ -342,11 +342,11 @@
 ////int main()
 ////{
 //////	GF2X irreduciblePolynomial = BuildSparseIrred_GF2X(8);
-////	    //std::cout << "Leader irreducible Polynomial is " << irreduciblePolynomial << std::endl;
+////	    //std::cout << "Leader irreducible Polynomial is " << irreduciblePolynomial << std::'\n';
 ////	//    GF2E::init(irreduciblePolynomial);
 ////
 ////	GF2X irreduciblePolynomial = BuildSparseIrred_GF2X(8);
-////	cout << "Leader irreducible Polynomial is " << irreduciblePolynomial << endl;
+////	cout << "Leader irreducible Polynomial is " << irreduciblePolynomial << '\n';
 ////	GF2E::init(irreduciblePolynomial);
 ////
 ////	GF2X p1 , p2, p3, p4, p5;
@@ -356,7 +356,7 @@
 ////	SetCoeff(p2, 0, 0);
 ////
 ////
-////	cout << "num" << endl;
+////	cout << "num" << '\n';
 ////	int num;
 ////	cin >> num;
 ////	TParty* t1 = new TParty(num);
@@ -373,7 +373,7 @@
 ////////		b++;
 ////////	}
 //////
-//////	cout << "finish" << b << endl;
+//////	cout << "finish" << b << '\n';
 ////
 ////
 ////
@@ -393,24 +393,24 @@
 ////
 ////
 ////
-//////	cout << "p1 : " << p1 << endl;
-//////	cout << "p2 : " << p2 << endl;
+//////	cout << "p1 : " << p1 << '\n';
+//////	cout << "p2 : " << p2 << '\n';
 //////
 //////	div(p3, p1 ,p2);
-//////	cout << "result by div : " << p3 << endl;
+//////	cout << "result by div : " << p3 << '\n';
 //////
 //////	InvMod(p3, p2, irreduciblePolynomial);
 //////
 //////	MulMod (p4, p1, p3, irreduciblePolynomial);
-//////	cout << "result by inv and mul : " << p3 << endl;
+//////	cout << "result by inv and mul : " << p3 << '\n';
 //////
 //////	p5 = p1 / p2;
-//////	cout << "result by operator / : " << p5 << endl;
+//////	cout << "result by operator / : " << p5 << '\n';
 ////
 //////	p4 = p1 * p3;
-//////	cout << "p4" << p3 << endl;
+//////	cout << "p4" << p3 << '\n';
 //////	MulMod (p4, p1, p3, irreduciblePolynomial);
-//////	cout << "p4" << p3 << endl;
+//////	cout << "p4" << p3 << '\n';
 //////
 //////	TFieldElement tf (p1);
 //////	string p1s = tf.toString();
@@ -418,15 +418,15 @@
 //////	TFieldElement tf2 (p2);
 //////	string p2s = tf2.toString();
 //////
-//////	cout << p1s << endl;
-//////	cout << p2s << endl;
+//////	cout << p1s << '\n';
+//////	cout << p2s << '\n';
 //////
 //////	std::string some_string;
 //////
 //////	//cin >> some_string;
 //////	getline(cin , some_string);
 //////
-//////	cout << "str" << some_string << endl;
+//////	cout << "str" << some_string << '\n';
 //////
 //////	std::istringstream iss(some_string);
 //////
@@ -438,16 +438,16 @@
 //////	iss >> p4;
 //////
 //////
-//////	cout << "p4" <<p4 << endl;
+//////	cout << "p4" <<p4 << '\n';
 //////
 //////	p5 = p4 + p1;
 //////
-//////	cout << p5 << endl;
+//////	cout << p5 << '\n';
 //////
 //////
 //////
 //////	TFieldElement tf3 (some_string);
-//////	cout <<" f" << tf3.getElement() << endl;
+//////	cout <<" f" << tf3.getElement() << '\n';
 ////
 ////
 //////	testMatHIM();
@@ -459,7 +459,7 @@
 //////	SetCoeff(p, 1);
 //////	SetCoeff(p, 0);
 //////
-//////	//cout << p.is_irreducible() <<endl;
+//////	//cout << p.is_irreducible() <<'\n';
 //////
 //////	GF2E::init(p);
 //////
@@ -478,14 +478,14 @@
 ////void testMatHIM()
 ////{
 ////	int n,m;
-////	cout << "enter m" << endl;
+////	cout << "enter m" << '\n';
 ////	cin >> m;
-////	cout << "enter n" << endl;
+////	cout << "enter n" << '\n';
 ////	cin >> n;
 ////	TField* t = TField::getInstance();
 ////	HIM* mat = new HIM(m,n);
 ////	TFieldElement** na = mat->CheckInitHIM();
-////	cout << "HIM: " << endl;
+////	cout << "HIM: " << '\n';
 ////	mat->Print();
 ////	TFieldElement* vec = new TFieldElement[m];
 ////
@@ -499,17 +499,17 @@
 //////	vec[1].setPoly(NTL::GF2X(156));
 ////	SetCoeff(vec[0].getElement(),1,1);
 ////	SetCoeff(vec[1].getElement(),0,1);
-////	cout << "vec:" << endl;
+////	cout << "vec:" << '\n';
 ////	for (int i=0; i<m; i++)
 ////	{
-////		cout << vec[i].getElement() << endl;
+////		cout << vec[i].getElement() << '\n';
 ////	}
 ////	//vec[2].setPoly(NTL::GF2X(253));
-//////	cout << "result of mult:" << endl;
+//////	cout << "result of mult:" << '\n';
 //////	result = mat->MatrixMult(vec);
 //////	for (int i=0; i<m; i++)
 //////	{
-//////		cout << result[i].getElement() << endl;
+//////		cout << result[i].getElement() << '\n';
 //////	}
 //////	cout<< "finish";
 ////	// to do : calculate and print determinant

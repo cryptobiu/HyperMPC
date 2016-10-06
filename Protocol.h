@@ -26,10 +26,10 @@ public:
     vector<string> split(const string &s, char delim);
     void getXVector(string str, int pid);
     bool broadcast(int party_id, string myMessage ,MQTTClient &m_client, MQTTClient_message &m_pubmsg,
-                   MQTTClient_deliveryToken &m_token, char** &topic, int &m_rc, HIM &him_matrix, vector<string> &recBufsdiff);
+                   MQTTClient_deliveryToken &m_token, char** &topic, int &m_rc, vector<string> &recBufsdiff);
     int processMultiplications(ArythmeticCircuit &circuit, vector<bool> &gateDoneArr,
                                vector<TFieldElement> &gateShareArr, vector<string> &sharingBuf,
-                               vector<TFieldElement> alpha);
+                               vector<TFieldElement> &alpha);
     void inputAdjustment(string &diff, vector<TFieldElement> &gateValueArr, ArythmeticCircuit &circuit,
                          vector<TFieldElement> &gateShareArr, vector<bool> &GateDoneArr);
     void initializationPhase(vector<TFieldElement> &gateValueArr, vector<TFieldElement> &gateShareArr,

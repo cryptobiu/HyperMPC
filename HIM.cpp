@@ -86,19 +86,19 @@ TFieldElement** HIM::CheckInitHIM()
 	// Let alpha_j and beta_i be arbitrary field elements
 	for (i = 0; i < m_n; i++)
 	{
-		 alpha[i] = *(TField::getInstance()->GetElement(i));
+		 alpha[i] = (TField::getInstance()->GetElement(i));
 		 cout << alpha[i].getElement() << "  ";
 	}
 
-	cout << endl;
+	cout << '\n';
 
 	cout << "vector: beta: ";
 	for (i = 0; i < m_m; i++)
 	{
-		beta[i] = *(TField::getInstance()->GetElement(m_n+i));
+		beta[i] = (TField::getInstance()->GetElement(m_n+i));
 		 cout << beta[i].getElement() << "  ";
 	}
-	cout << endl;
+	cout << '\n';
 	return(InitHIMByVectors(alpha,beta));
 }
 
@@ -147,12 +147,12 @@ TFieldElement** HIM::InitHIM()
 	// Let alpha_j and beta_i be arbitrary field elements
 	for (i = 0; i < m_n; i++)
 	{
-		alpha[i] = *(TField::getInstance()->GetElement(i));
+		alpha[i] = (TField::getInstance()->GetElement(i));
 	}
 
 	for (i = 0; i < m_m; i++)
 	{
-		beta[i] = *(TField::getInstance()->GetElement(m_n+i));
+		beta[i] = (TField::getInstance()->GetElement(m_n+i));
 	}
 
 	return(InitHIMByVectors(alpha,beta));
@@ -169,7 +169,7 @@ void HIM::Print()
 			cout << (m_matrix[i][j]).getElement() << " ";
 		}
 
-		cout << " " << endl;
+		cout << " " << '\n';
 	}
 
 }
@@ -181,8 +181,6 @@ void HIM::MatrixMult(std::vector<TFieldElement> &vector, std::vector<TFieldEleme
 	TFieldElement temp;
 	TFieldElement temp1;
 
-	cout << "123  " <<  vector.size()<< endl;
-
 	for(int i = 0; i < m_m; i++)
 	{
 		temp = TFieldElement(GF2X::zero());
@@ -192,17 +190,15 @@ void HIM::MatrixMult(std::vector<TFieldElement> &vector, std::vector<TFieldEleme
 			temp1 = m_matrix[i][j] * vector[j];
 			temp = temp + temp1;
 		}
-
 		answer[i]=temp;
-
-		cout << "answer" << i << endl;
-
-		//	answer[i].setPoly(temp.getElement());
-
 	}
-
 }
 
-
-HIM::~HIM() {}
+HIM::~HIM() {
+	for (int i = 0; i < m_m; i++)
+	{
+        delete[] m_matrix[i];
+	}
+   delete[] m_matrix;
+}
 

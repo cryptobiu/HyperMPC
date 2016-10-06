@@ -80,9 +80,9 @@
 //    	if (map_check.count(PARTYID) == 0) {
 //    	map_check[PARTYID] = str_message;
 //    	} else {
-//    		cout << endl;
-//    		cout << endl;
-//    		cout << "this party already send a message" << endl;
+//    		cout << '\n';
+//    		cout << '\n';
+//    		cout << "this party already send a message" << '\n';
 //    	}
 //    }
 //
@@ -118,10 +118,10 @@
 ////    int len;
 ////
 ////    string myTopicForMessage="";
-////    cout << "enter a message" << endl;
+////    cout << "enter a message" << '\n';
 ////
 ////    	myMessage = "";
-//////    	cout << "while"<<myMessage << endl;
+//////    	cout << "while"<<myMessage << '\n';
 //////    	getline(cin, myMessage);
 ////
 ////    	if(myMessage == "") return 0;
@@ -150,7 +150,7 @@
 ////
 ////        while(deliveredtoken != m_token);
 ////
-//////        cout << "enter a message" << endl;
+//////        cout << "enter a message" << '\n';
 //////    }
 ////
 ////

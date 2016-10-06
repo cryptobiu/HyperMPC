@@ -12,6 +12,7 @@ private:
     TFieldElement** m_matrix;
 public:
     VDM(int n, int m);
+    ~VDM();
     void InitVDM();
     void Print();
     void MatrixMult(std::vector<TFieldElement> &vector, std::vector<TFieldElement> &answer);

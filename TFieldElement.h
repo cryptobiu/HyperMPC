@@ -26,9 +26,10 @@ public:
 	TFieldElement();
 	TFieldElement(NTL::GF2X poly);
 	TFieldElement(string str);
-	TFieldElement* getElementByPoly(NTL::GF2X poly);
+//	TFieldElement* getElementByPoly(NTL::GF2X poly);
 	NTL::GF2X& getElement();
 	int setPoly(NTL::GF2X poly);
+	NTL::GF2X getIrreducible();
 	TFieldElement operator+(TFieldElement& f2);
 	TFieldElement operator-(TFieldElement& f2);
 	TFieldElement operator/(TFieldElement& f2);

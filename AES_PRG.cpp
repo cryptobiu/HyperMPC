@@ -64,7 +64,7 @@ PRG::PRG(byte *key, byte *iv,int cacheSize)
     m_cachedRandoms = new byte[m_cacheSize*16]();
     m_ctr = new byte[m_cacheSize*16]();
 
- //   cout << "CACHE SIZE = " << m_cacheSize << endl;
+ //   cout << "CACHE SIZE = " << m_cacheSize << '\n';
 
     //This method created the first buffer of  CACHHE_SIZE*128Bit
     prepare(1);
@@ -85,7 +85,7 @@ byte * PRG::getRandomBytes()
 {
     if(m_cachedRandomsIdx==m_cacheSize)
     {
-        //cout << "PREPARE" << endl;
+        //cout << "PREPARE" << '\n';
         prepare(0);
     }
     byte *ret = m_cachedRandoms + m_cachedRandomsIdx*16;

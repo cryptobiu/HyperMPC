@@ -35,15 +35,26 @@ using namespace std;
  */
 int main(int argc, char* argv[])
 {
+
+//    TFieldElement answer;
+//    TFieldElement a,b;
+//
+//    a = (TField::getInstance()->GetElementByValue(83));
+//    b = (TField::getInstance()->GetElementByValue(202));
+//    NTL::GF2X f;
+//    MulMod(f, a.getElement(),  b.getElement(), BuildSparseIrred_GF2X(8));
+//    answer.setPoly(f);
+//    cout << "irr " << BuildSparseIrred_GF2X(8) << endl;
+//    cout << "answer is : " << answer.toString() << endl;
     if(argc != 3)
     {
         cout << "error";
         return 0;
     }
-    Communication* pInstance = Communication::getInstance(atoi(argv[2]), atoi(argv[1]));
+    Communication* c = Communication::getInstance(atoi(argv[2]), atoi(argv[1]));
     Protocol protocol(atoi(argv[2]), atoi(argv[1]));
     protocol.run();
-   // delete(pInstance);
-    cout << "end main" << endl;
+    delete(c);
+    cout << "end main" << '\n';
     return 0;
 }

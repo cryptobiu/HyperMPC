@@ -158,12 +158,12 @@
 //    string str2 ="";
 //    TFieldElement* n;
 //    for (int i = 0; i < arr.size() ; i++) {
-//        cout << i << ".." << arr[i] << endl;
+//        cout << i << ".." << arr[i] << '\n';
 //        str1 = arr[i];
 //        str2 += str1;
 //        n = new TFieldElement(str1);
 //        vecRecX.push_back(n);
-//        cout << "pid L             " << pid << endl;
+//        cout << "pid L             " << pid << '\n';
 //    }
 //    // padding zero
 //    for(int i = arr.size(); i < N ; i++)
@@ -247,16 +247,16 @@
 //        if (map_check.count(PARTYID) == 0) {
 //            map_check[PARTYID] = str_message;
 //        } else {
-//            cout << endl;
-//            cout << endl;
-//            cout << "this party already send a message" << endl;
+//            cout << '\n';
+//            cout << '\n';
+//            cout << "this party already send a message" << '\n';
 //        }
 //    }
 //
 //    //   if(topic == "SHARE_Yjk_VECTOR") {
 //    if(topic.find("SHARE_Yjk_VECTOR") != std::string::npos) {
 //        //	str_message = getCurrectMessage(str_message);
-//        // cout << "you right" << endl;
+//        // cout << "you right" << '\n';
 //        addElement(str_message);
 //    } else {
 //        // only when all x es recived we can calculate every x
@@ -270,7 +270,7 @@
 //        calculate();
 //        if(countXRecieve == N-1) {
 //            finish_sending_x_part = true;
-//            cout << "f f f f f f f finish" << endl;
+//            cout << "f f f f f f f finish" << '\n';
 //        }
 //    }
 //
@@ -305,7 +305,7 @@
 //
 //        printf("   message: ");
 //
-//        cout << elem << endl;
+//        cout << elem << '\n';
 //        vecConn.push_back(elem);
 //    }
 //
@@ -412,7 +412,7 @@
 //
 //   // vecConn.clear();
 //
-//    cout << "Let's start!" << endl;
+//    cout << "Let's start!" << '\n';
 //}
 //
 //void
@@ -436,7 +436,7 @@
 //
 //    for(int i=1; i<N+1; i++) {
 //       // vector<TFieldElement*> tempvec = map_vecRecX[i];
-//        cout << "pppppppppppppppppppppppppppp             "<<map_vecRecX[i] << endl;
+//        cout << "pppppppppppppppppppppppppppp             "<<map_vecRecX[i] << '\n';
 //    }
 //
 //    //TFieldElement tempelem =
@@ -444,19 +444,19 @@
 // //   if(is_Ps == 1) {
 //        // waiting until finish calculate
 //        SendYVectorResult(myMessage, m_client, topic, myTopicForMessage, m_pubmsg, m_token, s, buffers);
-//        cout << "size" <<vecRec.size() << endl;
+//        cout << "size" <<vecRec.size() << '\n';
 //
 //        SendTheResult(myMessage, m_client, myTopicForMessage, m_pubmsg, m_token, s,
 //              buffers);
 //        while (vecRec.size() < N - 2 || vecRec.size() == 0) {}
-//        cout << "size" <<vecRec.size() << endl;
+//        cout << "size" <<vecRec.size() << '\n';
 // //   }
 //
-//    cout << "finish broadcast" << endl;
+//    cout << "finish broadcast" << '\n';
 //
 //    if(vecRec.size() == 0)
 //    {
-//        cout << "there is no result" << endl;
+//        cout << "there is no result" << '\n';
 //    }
 //    else {
 //
@@ -466,7 +466,7 @@
 //            }
 //        }
 //    }
-//    cout << "flag_is_happy" << flag_is_happy << endl;
+//    cout << "flag_is_happy" << flag_is_happy << '\n';
 //
 //}
 //
@@ -481,7 +481,7 @@
 //
 //  //  string strstr;
 //    for(int i=1; i<N+1; i++) {
-//   //     cout << "             temp : " << temp << endl;
+//   //     cout << "             temp : " << temp << '\n';
 //        string strstr = getCurrectMessageById(temp, i);
 //        buffers.push_back(strstr);
 //
@@ -499,7 +499,7 @@
 //
 //        myTopicForMessage = "SHARE_Yjk_VECTOR" + to_string(i+1);
 //
-//        //    cout << "my topic     " << myTopicForMessage << endl;
+//        //    cout << "my topic     " << myTopicForMessage << '\n';
 //        m_pubmsg.payload = (void *) myMessage.c_str();
 //
 //        m_pubmsg.payloadlen = myMessage.size();
@@ -510,7 +510,7 @@
 //        MQTTClient_publishMessage(m_client, myTopicForMessage.c_str(), &m_pubmsg, &m_token);
 //
 //        while (deliveredtoken != m_token) {};
-//        cout << "****** " << buffers[i] << endl;
+//        cout << "****** " << buffers[i] << '\n';
 //    }
 //}
 //
@@ -567,8 +567,8 @@
 //    SetCoeff(p4, 1);
 //
 //
-//    cout << p1 << endl;
-//    cout << p2 << endl;
+//    cout << p1 << '\n';
+//    cout << p2 << '\n';
 //
 //    TFieldElement e1(p1);
 //
@@ -581,7 +581,7 @@
 //    string x = e1.toString() +"*" +e2.toString();
 //
 //   // string x = e1.toString() +"*" +e2.toString() + "*"  +e3.toString() + "*" + e4.toString();
-//    cout << x << endl;
+//    cout << x << '\n';
 //
 //    // start broadcast
 //    communication_broadcast(partypid, x, is_Ps);

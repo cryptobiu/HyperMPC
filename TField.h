@@ -41,9 +41,9 @@ public:
 	 * the 0-th field element must be the neutral w.r.t. addition, and the
 	 * 1-st field element must be the neutral w.r.t. multiplication.
 	 */
-	TFieldElement* GetElement(uint8_t b);
+	TFieldElement GetElement(uint8_t b);
 	TFieldElement GetElementByValue(uint8_t b);
-	TFieldElement* Random();
+	TFieldElement Random();
 	virtual ~TField();
 };
 

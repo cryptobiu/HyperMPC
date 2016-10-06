@@ -100,10 +100,10 @@
 //	    cout << "12";
 //	//    string	myMessage = "";
 //	    string myTopicForMessage="";
-////	    cout << "enter a message" << endl;
+////	    cout << "enter a message" << '\n';
 ////
 //
-//	//    	cout << "while"<<myMessage << endl;
+//	//    	cout << "while"<<myMessage << '\n';
 ////	    cout << "11";
 ////	    //	getline(cin, myMessage);
 ////	    	cin >> myMessage;
@@ -135,7 +135,7 @@
 //	        cout << "l";
 //	        while(deliveredtoken != m_token);
 //
-//	//        cout << "enter a message" << endl;
+//	//        cout << "enter a message" << '\n';
 //	//    }
 //
 //
@@ -147,13 +147,13 @@
 //
 //TParty::~TParty() {
 ////	disconnect(m_client);
-////	cout << "dF" << endl;
+////	cout << "dF" << '\n';
 //////
 //////    MQTTClient_disconnect(m_client, 10000);
 //////    MQTTClient_destroy(&m_client);
 //	MQTTClient_disconnect(m_client, 10000);
 //	MQTTClient_destroy(&m_client);
-//	cout << "dF" << endl;
+//	cout << "dF" << '\n';
 //
 //}
 //
