@@ -21,8 +21,7 @@
 using namespace std;
 
 
-
-class ArythmeticCircuit
+class ArithmeticCircuit
 {
 private:
 
@@ -34,9 +33,9 @@ private:
 
 public:
 
-    ArythmeticCircuit(int i);
-    ArythmeticCircuit();
-    ~ArythmeticCircuit();
+    ArithmeticCircuit(int i);
+    ArithmeticCircuit();
+    ~ArithmeticCircuit();
 
     /**
     * This method reads text file and creates an object of ArythmeticCircuit according to the file.

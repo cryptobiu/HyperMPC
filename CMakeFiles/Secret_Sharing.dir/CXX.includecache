@@ -30,13 +30,13 @@ openssl/evp.h
 aes_locl.h
 /home/hila/ClionProjects/Secret-Sharing/aes_locl.h
 
-/home/hila/ClionProjects/Secret-Sharing/ArythmeticCircuit.cpp
-ArythmeticCircuit.h
-/home/hila/ClionProjects/Secret-Sharing/ArythmeticCircuit.h
+/home/hila/ClionProjects/Secret-Sharing/ArithmeticCircuit.cpp
+ArithmeticCircuit.h
+/home/hila/ClionProjects/Secret-Sharing/ArithmeticCircuit.h
 fstream
 -
 
-/home/hila/ClionProjects/Secret-Sharing/ArythmeticCircuit.h
+/home/hila/ClionProjects/Secret-Sharing/ArithmeticCircuit.h
 TGate.h
 /home/hila/ClionProjects/Secret-Sharing/TGate.h
 vector
@@ -71,8 +71,8 @@ VDM.h
 /home/hila/ClionProjects/Secret-Sharing/VDM.h
 TGate.h
 /home/hila/ClionProjects/Secret-Sharing/TGate.h
-ArythmeticCircuit.h
-/home/hila/ClionProjects/Secret-Sharing/ArythmeticCircuit.h
+ArithmeticCircuit.h
+/home/hila/ClionProjects/Secret-Sharing/ArithmeticCircuit.h
 atomic
 -
 
@@ -111,8 +111,8 @@ VDM.h
 /home/hila/ClionProjects/Secret-Sharing/VDM.h
 TGate.h
 /home/hila/ClionProjects/Secret-Sharing/TGate.h
-ArythmeticCircuit.h
-/home/hila/ClionProjects/Secret-Sharing/ArythmeticCircuit.h
+ArithmeticCircuit.h
+/home/hila/ClionProjects/Secret-Sharing/ArithmeticCircuit.h
 Communication.h
 /home/hila/ClionProjects/Secret-Sharing/Communication.h
 vector
@@ -121,6 +121,12 @@ bitset
 -
 TFieldElement.h
 /home/hila/ClionProjects/Secret-Sharing/TFieldElement.h
+iostream
+-
+fstream
+-
+chrono
+-
 
 /home/hila/ClionProjects/Secret-Sharing/ProtocolBroadcast.h
 

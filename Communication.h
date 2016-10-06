@@ -10,7 +10,7 @@
 #include "TParty.h"
 #include "VDM.h"
 #include "TGate.h"
-#include "ArythmeticCircuit.h"
+#include "ArithmeticCircuit.h"
 #include <atomic>
 
 extern void ConnectHandler(const char *topicName, MQTTClient_message *&message, const string &str);

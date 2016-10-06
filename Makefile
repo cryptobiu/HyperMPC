@@ -138,29 +138,29 @@ AES_PRG.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/AES_PRG.cpp.s
 .PHONY : AES_PRG.cpp.s
 
-ArythmeticCircuit.o: ArythmeticCircuit.cpp.o
-.PHONY : ArythmeticCircuit.o
+ArithmeticCircuit.o: ArithmeticCircuit.cpp.o
+.PHONY : ArithmeticCircuit.o
 
 # target to build an object file
-ArythmeticCircuit.cpp.o:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o
-.PHONY : ArythmeticCircuit.cpp.o
+ArithmeticCircuit.cpp.o:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o
+.PHONY : ArithmeticCircuit.cpp.o
 
-ArythmeticCircuit.i: ArythmeticCircuit.cpp.i
-.PHONY : ArythmeticCircuit.i
+ArithmeticCircuit.i: ArithmeticCircuit.cpp.i
+.PHONY : ArithmeticCircuit.i
 
 # target to preprocess a source file
-ArythmeticCircuit.cpp.i:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.i
-.PHONY : ArythmeticCircuit.cpp.i
+ArithmeticCircuit.cpp.i:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.i
+.PHONY : ArithmeticCircuit.cpp.i
 
-ArythmeticCircuit.s: ArythmeticCircuit.cpp.s
-.PHONY : ArythmeticCircuit.s
+ArithmeticCircuit.s: ArithmeticCircuit.cpp.s
+.PHONY : ArithmeticCircuit.s
 
 # target to generate assembly for a file
-ArythmeticCircuit.cpp.s:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.s
-.PHONY : ArythmeticCircuit.cpp.s
+ArithmeticCircuit.cpp.s:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.s
+.PHONY : ArithmeticCircuit.cpp.s
 
 Communication.o: Communication.cpp.o
 .PHONY : Communication.o
@@ -390,9 +390,9 @@ help:
 	@echo "... AES_PRG.o"
 	@echo "... AES_PRG.i"
 	@echo "... AES_PRG.s"
-	@echo "... ArythmeticCircuit.o"
-	@echo "... ArythmeticCircuit.i"
-	@echo "... ArythmeticCircuit.s"
+	@echo "... ArithmeticCircuit.o"
+	@echo "... ArithmeticCircuit.i"
+	@echo "... ArithmeticCircuit.s"
 	@echo "... Communication.o"
 	@echo "... Communication.i"
 	@echo "... Communication.s"

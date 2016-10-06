@@ -1,9 +1,11 @@
 #include "Protocol.h"
 
-Protocol::Protocol(int n, int id)
+Protocol::Protocol(int n, int id, string inputsFile, string outputFile)
 {
     N = n;
     T = n/3 - 1;
+    this->inputsFile = inputsFile;
+    this->outputFile = outputFile;
     if(n%3 > 0)
     {
         T++;
@@ -24,21 +26,6 @@ vector<string> Protocol::split(const string &s, char delim) {
     vector<string> elems;
     split(s, delim, elems);
     return elems;
-}
-
-void Protocol::getXVector(string str, int pid)
-{
-    vector<string> arr = {};
-    arr = split(str, '*');
-    string str1;
-    string str2 ="";
-    TFieldElement n;
-    for (int i = 0; i < arr.size() ; i++) {
-        str1 = arr[i];
-        str2 += str1;
-        n = TFieldElement(str1);
-        Communication::getInstance()->vecRecX.push_back(n);
-    }
 }
 
 /**
@@ -195,8 +182,8 @@ void Protocol::run() {
 
     string s = to_string(m_partyId);
 
- //  ArythmeticCircuit circuit(1);
-    ArythmeticCircuit circuit;
+//   ArithmeticCircuit circuit(1);
+    ArithmeticCircuit circuit;
     circuit.readCircuit("/home/hila/ClionProjects/Secret-Sharing/test.txt");
     cout << "size of circuit" << circuit.getGates().size();
 
@@ -205,8 +192,9 @@ void Protocol::run() {
 
     Communication::getInstance()->ConnectionToServer(Communication::getInstance()->m_client, s, Communication::getInstance()->s3, Communication::getInstance()->m_pubmsg, Communication::getInstance()->m_token);
 
-    initializationPhase(gateValueArr, gateShareArr, gateDoneArr, matrix_him, matrix_vand, alpha);
+    auto t1 = high_resolution_clock::now();
 
+    initializationPhase(gateValueArr, gateShareArr, gateDoneArr, matrix_him, matrix_vand, alpha);
 
     if(preparationPhase(matrix_vand, matrix_him, sharingBuf, alpha, circuit) == false) {
         cout << "cheating!!!" << '\n';
@@ -230,25 +218,21 @@ void Protocol::run() {
 
     cout << "after Input Adjustment " << '\n';
 
-     processAdditions(circuit,gateDoneArr, gateShareArr);
+    int count =0;
+    do {
+        count = processAdditions(circuit,gateDoneArr, gateShareArr);
+        count += processMultiplications(circuit, gateDoneArr, gateShareArr, sharingBuf, alpha);
 
-    cout << "after process Additions " << '\n';
-
-    processMultiplications(circuit, gateDoneArr, gateShareArr, sharingBuf, alpha);
-
-    cout << "after process Multiplications 1" << '\n';
-
-    processMultiplications(circuit, gateDoneArr, gateShareArr, sharingBuf, alpha);
-
-    cout << "after process Multiplications 2" << '\n';
-
-    processMultiplications(circuit, gateDoneArr, gateShareArr, sharingBuf, alpha);
-
-    cout << "after process Multiplications 3" << '\n';
+    } while(count!=0);
 
    outputPhase(circuit, gateShareArr, alpha, gateValueArr);
 
     cout << "after output Phase " << '\n';
+    auto t2 = high_resolution_clock::now();
+
+    auto duration = duration_cast<milliseconds>(t2-t1).count();
+
+    cout << "time in milliseconds : " << duration << endl;
 }
 
 /**
@@ -261,10 +245,13 @@ void Protocol::run() {
  * @param gateShareArr
  * @param gateDoneArr
  */
-void Protocol::inputAdjustment(string &diff, vector<TFieldElement> &gateValueArr, ArythmeticCircuit &circuit,
+void Protocol::inputAdjustment(string &diff, vector<TFieldElement> &gateValueArr, ArithmeticCircuit &circuit,
                                vector<TFieldElement> &gateShareArr, vector<bool> &gateDoneArr)
 {
     int input;
+    ifstream myfile;
+
+    myfile.open(inputsFile);
 
     // Ask Party for inputs
     for (int k = 0; k < M; k++)
@@ -272,7 +259,9 @@ void Protocol::inputAdjustment(string &diff, vector<TFieldElement> &gateValueArr
         if(circuit.getGates()[k].gateType == INPUT && circuit.getGates()[k].party == m_partyId)
         {
             cout << "enter your real input : " << '\n';
-            cin >> input;
+
+            myfile >> input;
+
             // Ok, the value is GateValue[k], but should be input.
             TFieldElement myinput = TField::getInstance()->GetElementByValue(input);
 
@@ -288,6 +277,9 @@ void Protocol::inputAdjustment(string &diff, vector<TFieldElement> &gateValueArr
             // this can abort in case of cheating
         }
     }
+
+    myfile.close();
+
     cout << "try to print diff" << '\n';
     cout << diff << '\n';
 
@@ -373,12 +365,7 @@ void Protocol::initializationPhase(vector<TFieldElement> &gateValueArr, vector<T
  */
 void Protocol::publicReconstruction(vector<string> &myShares, int &count, int d, vector<TFieldElement> &alpha, vector<TFieldElement> &valBuf)
 {
-    // count =  Length(MyShares)
     int no_buckets = count / (N-T) + 1;
-    cout << " count " << count;
-    cout << " no_buckets " << no_buckets;
-    //  M := CreateHIM(alpha[0..N-T-1],alpha[N-T..N-1]);
-    // t-by-(n-t) HIM
     HIM m(T, N-T);
     TFieldElement x;
     vector<TFieldElement> alpha1(N-T);
@@ -391,24 +378,14 @@ void Protocol::publicReconstruction(vector<string> &myShares, int &count, int d,
     vector<string> recBufs(N);
     vector<string> recBufs2(N);
 
-    for(int i = 0; i < N; i++)
-    {
-        cout << "alpha[i]" << i << " " << alpha[i].toString() << endl;
-    }
-
     for(int i = 0; i < N-T; i++)
     {
         alpha1[i] = alpha[i];
-        cout << "alpha1[i]" << i << " " << alpha1[i].toString() << endl;
     }
     for(int i = N-T; i < N; i++)
     {
         alpha2[i - (N-T)] = alpha[i];
-        cout << "alpha2[i]" << i << " " << alpha2[i - (N-T)].toString() << endl;
     }
-
-
-
 
     for(int i = 0; i < N; i++)
     {
@@ -419,8 +396,6 @@ void Protocol::publicReconstruction(vector<string> &myShares, int &count, int d,
     }
 
     m.InitHIMByVectors(alpha1, alpha2);
-    cout << "the martix" << endl;
-    m.Print();
 
     // init x to be vector of degree-d (d=2*t) shares of n−t secret
     for(int k=0; k < no_buckets; k++)
@@ -437,45 +412,13 @@ void Protocol::publicReconstruction(vector<string> &myShares, int &count, int d,
             }
         }
 
-        cout << "x1[i]" << '\n';
-
-        for(int i = 0; i < N; i++)
-        {
-            cout << "x1[i] : " << i <<  "  : " << x1[i].toString() << '\n';
-        }
-
-
-
-        cout << "before mult y1[i] : " << endl;
-
-        for(int i = 0; i < T; i++)
-        {
-            cout << "y1[i] : " << i <<  "  : " << y1[i].toString() << '\n';
-        }
-
         // compute y = M*x and append it to x
         m.MatrixMult(x1, y1);
-
-        cout << "after mult y1[i] : " << endl;
-
-        for(int i = 0; i < T; i++)
-        {
-            cout << "y1[i] : " << i <<  "  : " << y1[i].toString() << '\n';
-        }
 
         for(int i = 0; i < T; i++)
         {
             x1[N-T+i] = y1[i];
         }
-
-
-        cout << "x1[i]" << '\n';
-
-        for(int i = 0; i < N; i++)
-        {
-            cout << "x1[" << i << "] : " << x1[i].toString() << '\n';
-        }
-
 
         // ∀i, j: Pi sends xj to Pj
         for(int i = 0; i < N; i++)
@@ -484,44 +427,12 @@ void Protocol::publicReconstruction(vector<string> &myShares, int &count, int d,
         }
     }
 
-    cout << " send buf send buf" << '\n';
-    cout<< "---------------------------------" << '\n';
-
-    for(int i = 0; i < N; i++)
-    {
-        cout<<sendBufs[i] << '\n';
-    }
-    cout<< "---------------------------------" << '\n';
-
-
-
-
-
-
-
     cout << "before sendRecon" << '\n';
     Communication::getInstance()->sendRecon(sendBufs, recBufs);
 
     cout << "after sendRecon" << '\n';
 
-    cout << "rec buf" << '\n';
-    cout<< "---------------------------------" << '\n';
-
-    for(int i = 0; i < N; i++)
-    {
-        cout<<recBufs[i] << '\n';
-    }
-    cout<< "---------------------------------" << '\n';
-
-
     for(int k=0; k < no_buckets; k++) {
-
-        cout << "before {xj}i : x1[i]" << '\n';
-
-        for(int i = 0; i < N; i++)
-        {
-            cout << "x1[" << i << "] : " << x1[i].toString() << '\n';
-        }
 
         for (int i = 0; i < N; i++) {
             vector<string> arr = {};
@@ -629,7 +540,7 @@ void Protocol::publicReconstruction(vector<string> &myShares, int &count, int d,
 
 }
 
-bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him, vector<string> &sharingBuf, vector<TFieldElement> &alpha, ArythmeticCircuit &circuit)
+bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him, vector<string> &sharingBuf, vector<TFieldElement> &alpha, ArithmeticCircuit &circuit)
 {
     vector<string> recBufs;
     recBufs.resize(N);
@@ -823,7 +734,7 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him, vector<string
  * for each input gate, a prepared t-sharings is reconstructed
  * towards the party giving input
  */
-bool Protocol::inputPreparation(vector<string> &sharingBuf, vector<TFieldElement> &gateShareArr, ArythmeticCircuit &circuit, vector<TFieldElement> &alpha, vector<TFieldElement> &gateValueArr)
+bool Protocol::inputPreparation(vector<string> &sharingBuf, vector<TFieldElement> &gateShareArr, ArithmeticCircuit &circuit, vector<TFieldElement> &alpha, vector<TFieldElement> &gateValueArr)
 {
     vector<string> sendBufs;
     vector<string> recBufs;
@@ -952,7 +863,7 @@ TFieldElement Protocol::interpolate(vector<TFieldElement> alpha, vector<TFieldEl
  * @param gateShareArr
  * @return the number of processed gates.
  */
-int Protocol::processAdditions(ArythmeticCircuit &circuit, vector<bool> &gateDoneArr, vector<TFieldElement> &gateShareArr)
+int Protocol::processAdditions(ArithmeticCircuit &circuit, vector<bool> &gateDoneArr, vector<TFieldElement> &gateShareArr)
 {
     int count =0;
 
@@ -990,7 +901,7 @@ int Protocol::processAdditions(ArythmeticCircuit &circuit, vector<bool> &gateDon
  * @param alpha
  * @return the number of processed gates.
  */
-int Protocol::processMultiplications(ArythmeticCircuit &circuit, vector<bool> &gateDoneArr,
+int Protocol::processMultiplications(ArithmeticCircuit &circuit, vector<bool> &gateDoneArr,
                                      vector<TFieldElement> &gateShareArr, vector<string> &sharingBuf,
                                      vector<TFieldElement> &alpha)
 {
@@ -1077,7 +988,7 @@ int Protocol::processMultiplications(ArythmeticCircuit &circuit, vector<bool> &g
  * @param gateShareArr
  * @param alpha
  */
-void Protocol::outputPhase(ArythmeticCircuit &circuit, vector<TFieldElement> &gateShareArr, vector<TFieldElement> alpha, vector<TFieldElement> &gateValueArr)
+void Protocol::outputPhase(ArithmeticCircuit &circuit, vector<TFieldElement> &gateShareArr, vector<TFieldElement> alpha, vector<TFieldElement> &gateValueArr)
 {
     int count =0;
 
@@ -1122,7 +1033,8 @@ void Protocol::outputPhase(ArythmeticCircuit &circuit, vector<TFieldElement> &ga
 
     TFieldElement num;
 
-    string strX1;
+    ofstream myfile;
+    myfile.open(outputFile);
 
     for(int k=0; k < M; k++) {
         if(circuit.getGates()[k].gateType == OUTPUT && circuit.getGates()[k].party == m_partyId)
@@ -1140,7 +1052,10 @@ void Protocol::outputPhase(ArythmeticCircuit &circuit, vector<TFieldElement> &ga
                 return;
             }
             cout << "the result is : " << interpolate(alpha, x1).toString() << '\n';
+            myfile << interpolate(alpha, x1).toString();
+
         }
     }
+    myfile.close();
 }
 

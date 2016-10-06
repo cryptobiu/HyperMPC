@@ -5,12 +5,12 @@ CMakeFiles/Secret_Sharing.dir/AES_PRG.cpp.o: AES_PRG.cpp
 CMakeFiles/Secret_Sharing.dir/AES_PRG.cpp.o: AES_PRG.h
 CMakeFiles/Secret_Sharing.dir/AES_PRG.cpp.o: aes_locl.h
 
-CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o: ArythmeticCircuit.cpp
-CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o: ArythmeticCircuit.h
-CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o: TGate.h
+CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o: ArithmeticCircuit.cpp
+CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o: ArithmeticCircuit.h
+CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o: TGate.h
 
 CMakeFiles/Secret_Sharing.dir/Communication.cpp.o: AES_PRG.h
-CMakeFiles/Secret_Sharing.dir/Communication.cpp.o: ArythmeticCircuit.h
+CMakeFiles/Secret_Sharing.dir/Communication.cpp.o: ArithmeticCircuit.h
 CMakeFiles/Secret_Sharing.dir/Communication.cpp.o: Communication.cpp
 CMakeFiles/Secret_Sharing.dir/Communication.cpp.o: Communication.h
 CMakeFiles/Secret_Sharing.dir/Communication.cpp.o: HIM.h
@@ -32,7 +32,7 @@ CMakeFiles/Secret_Sharing.dir/HIM.cpp.o: TFieldElement.h
 CMakeFiles/Secret_Sharing.dir/HIM.cpp.o: aes_locl.h
 
 CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o: AES_PRG.h
-CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o: ArythmeticCircuit.h
+CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o: ArithmeticCircuit.h
 CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o: Communication.h
 CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o: HIM.h
 CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o: Protocol.cpp
@@ -75,7 +75,7 @@ CMakeFiles/Secret_Sharing.dir/VDM.cpp.o: VDM.h
 CMakeFiles/Secret_Sharing.dir/VDM.cpp.o: aes_locl.h
 
 CMakeFiles/Secret_Sharing.dir/main.cpp.o: AES_PRG.h
-CMakeFiles/Secret_Sharing.dir/main.cpp.o: ArythmeticCircuit.h
+CMakeFiles/Secret_Sharing.dir/main.cpp.o: ArithmeticCircuit.h
 CMakeFiles/Secret_Sharing.dir/main.cpp.o: Communication.h
 CMakeFiles/Secret_Sharing.dir/main.cpp.o: HIM.h
 CMakeFiles/Secret_Sharing.dir/main.cpp.o: Protocol.h

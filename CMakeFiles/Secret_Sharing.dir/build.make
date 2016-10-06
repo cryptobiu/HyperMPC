@@ -233,28 +233,28 @@ CMakeFiles/Secret_Sharing.dir/VDM.cpp.o.provides: CMakeFiles/Secret_Sharing.dir/
 
 CMakeFiles/Secret_Sharing.dir/VDM.cpp.o.provides.build: CMakeFiles/Secret_Sharing.dir/VDM.cpp.o
 
-CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o: CMakeFiles/Secret_Sharing.dir/flags.make
-CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o: ArythmeticCircuit.cpp
+CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o: CMakeFiles/Secret_Sharing.dir/flags.make
+CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o: ArithmeticCircuit.cpp
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_9)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o -c /home/hila/ClionProjects/Secret-Sharing/ArythmeticCircuit.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o -c /home/hila/ClionProjects/Secret-Sharing/ArithmeticCircuit.cpp
 
-CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/hila/ClionProjects/Secret-Sharing/ArythmeticCircuit.cpp > CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.i
+CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/hila/ClionProjects/Secret-Sharing/ArithmeticCircuit.cpp > CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.i
 
-CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/hila/ClionProjects/Secret-Sharing/ArythmeticCircuit.cpp -o CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.s
+CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/hila/ClionProjects/Secret-Sharing/ArithmeticCircuit.cpp -o CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.s
 
-CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o.requires:
-.PHONY : CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o.requires
+CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o.requires:
+.PHONY : CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o.requires
 
-CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o.provides: CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o.requires
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o.provides.build
-.PHONY : CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o.provides
+CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o.provides: CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o.requires
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o.provides.build
+.PHONY : CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o.provides
 
-CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o.provides.build: CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o
+CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o.provides.build: CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o
 
 CMakeFiles/Secret_Sharing.dir/Communication.cpp.o: CMakeFiles/Secret_Sharing.dir/flags.make
 CMakeFiles/Secret_Sharing.dir/Communication.cpp.o: Communication.cpp
@@ -312,7 +312,7 @@ Secret_Sharing_OBJECTS = \
 "CMakeFiles/Secret_Sharing.dir/TParty.cpp.o" \
 "CMakeFiles/Secret_Sharing.dir/main.cpp.o" \
 "CMakeFiles/Secret_Sharing.dir/VDM.cpp.o" \
-"CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o" \
+"CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o" \
 "CMakeFiles/Secret_Sharing.dir/Communication.cpp.o" \
 "CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o"
 
@@ -327,7 +327,7 @@ Secret_Sharing: CMakeFiles/Secret_Sharing.dir/TFieldElement.cpp.o
 Secret_Sharing: CMakeFiles/Secret_Sharing.dir/TParty.cpp.o
 Secret_Sharing: CMakeFiles/Secret_Sharing.dir/main.cpp.o
 Secret_Sharing: CMakeFiles/Secret_Sharing.dir/VDM.cpp.o
-Secret_Sharing: CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o
+Secret_Sharing: CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o
 Secret_Sharing: CMakeFiles/Secret_Sharing.dir/Communication.cpp.o
 Secret_Sharing: CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o
 Secret_Sharing: CMakeFiles/Secret_Sharing.dir/build.make
@@ -349,7 +349,7 @@ CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/TFieldElem
 CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/TParty.cpp.o.requires
 CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/main.cpp.o.requires
 CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/VDM.cpp.o.requires
-CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o.requires
+CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o.requires
 CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/Communication.cpp.o.requires
 CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o.requires
 .PHONY : CMakeFiles/Secret_Sharing.dir/requires

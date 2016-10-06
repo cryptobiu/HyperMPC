@@ -5,13 +5,13 @@ CMakeFiles/Secret_Sharing.dir/AES_PRG.cpp.o
  /home/hila/ClionProjects/Secret-Sharing/AES_PRG.cpp
  /home/hila/ClionProjects/Secret-Sharing/AES_PRG.h
  /home/hila/ClionProjects/Secret-Sharing/aes_locl.h
-CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o
- /home/hila/ClionProjects/Secret-Sharing/ArythmeticCircuit.cpp
- /home/hila/ClionProjects/Secret-Sharing/ArythmeticCircuit.h
+CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o
+ /home/hila/ClionProjects/Secret-Sharing/ArithmeticCircuit.cpp
+ /home/hila/ClionProjects/Secret-Sharing/ArithmeticCircuit.h
  /home/hila/ClionProjects/Secret-Sharing/TGate.h
 CMakeFiles/Secret_Sharing.dir/Communication.cpp.o
  /home/hila/ClionProjects/Secret-Sharing/AES_PRG.h
- /home/hila/ClionProjects/Secret-Sharing/ArythmeticCircuit.h
+ /home/hila/ClionProjects/Secret-Sharing/ArithmeticCircuit.h
  /home/hila/ClionProjects/Secret-Sharing/Communication.cpp
  /home/hila/ClionProjects/Secret-Sharing/Communication.h
  /home/hila/ClionProjects/Secret-Sharing/HIM.h
@@ -33,7 +33,7 @@ CMakeFiles/Secret_Sharing.dir/HIM.cpp.o
  /home/hila/ClionProjects/Secret-Sharing/aes_locl.h
 CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o
  /home/hila/ClionProjects/Secret-Sharing/AES_PRG.h
- /home/hila/ClionProjects/Secret-Sharing/ArythmeticCircuit.h
+ /home/hila/ClionProjects/Secret-Sharing/ArithmeticCircuit.h
  /home/hila/ClionProjects/Secret-Sharing/Communication.h
  /home/hila/ClionProjects/Secret-Sharing/HIM.h
  /home/hila/ClionProjects/Secret-Sharing/Protocol.cpp
@@ -76,7 +76,7 @@ CMakeFiles/Secret_Sharing.dir/VDM.cpp.o
  /home/hila/ClionProjects/Secret-Sharing/aes_locl.h
 CMakeFiles/Secret_Sharing.dir/main.cpp.o
  /home/hila/ClionProjects/Secret-Sharing/AES_PRG.h
- /home/hila/ClionProjects/Secret-Sharing/ArythmeticCircuit.h
+ /home/hila/ClionProjects/Secret-Sharing/ArithmeticCircuit.h
  /home/hila/ClionProjects/Secret-Sharing/Communication.h
  /home/hila/ClionProjects/Secret-Sharing/HIM.h
  /home/hila/ClionProjects/Secret-Sharing/Protocol.h

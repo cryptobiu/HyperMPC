@@ -31,28 +31,19 @@ using namespace std;
  * @param argc
  * @param argv[1] = id of parties (1,...,N)
  * @param argv[2] = N: number of parties
+ * @param argv[3] = path of inputs file
+ * @param argv[4] = path of output file
  * @return
  */
 int main(int argc, char* argv[])
 {
-
-//    TFieldElement answer;
-//    TFieldElement a,b;
-//
-//    a = (TField::getInstance()->GetElementByValue(83));
-//    b = (TField::getInstance()->GetElementByValue(202));
-//    NTL::GF2X f;
-//    MulMod(f, a.getElement(),  b.getElement(), BuildSparseIrred_GF2X(8));
-//    answer.setPoly(f);
-//    cout << "irr " << BuildSparseIrred_GF2X(8) << endl;
-//    cout << "answer is : " << answer.toString() << endl;
-    if(argc != 3)
+    if(argc != 5)
     {
         cout << "error";
         return 0;
     }
     Communication* c = Communication::getInstance(atoi(argv[2]), atoi(argv[1]));
-    Protocol protocol(atoi(argv[2]), atoi(argv[1]));
+    Protocol protocol(atoi(argv[2]), atoi(argv[1]), argv[3], argv[4]);
     protocol.run();
     delete(c);
     cout << "end main" << '\n';

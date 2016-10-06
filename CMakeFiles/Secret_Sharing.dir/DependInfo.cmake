@@ -5,7 +5,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/hila/ClionProjects/Secret-Sharing/AES_PRG.cpp" "/home/hila/ClionProjects/Secret-Sharing/CMakeFiles/Secret_Sharing.dir/AES_PRG.cpp.o"
-  "/home/hila/ClionProjects/Secret-Sharing/ArythmeticCircuit.cpp" "/home/hila/ClionProjects/Secret-Sharing/CMakeFiles/Secret_Sharing.dir/ArythmeticCircuit.cpp.o"
+  "/home/hila/ClionProjects/Secret-Sharing/ArithmeticCircuit.cpp" "/home/hila/ClionProjects/Secret-Sharing/CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o"
   "/home/hila/ClionProjects/Secret-Sharing/Communication.cpp" "/home/hila/ClionProjects/Secret-Sharing/CMakeFiles/Secret_Sharing.dir/Communication.cpp.o"
   "/home/hila/ClionProjects/Secret-Sharing/HIM.cpp" "/home/hila/ClionProjects/Secret-Sharing/CMakeFiles/Secret_Sharing.dir/HIM.cpp.o"
   "/home/hila/ClionProjects/Secret-Sharing/Protocol.cpp" "/home/hila/ClionProjects/Secret-Sharing/CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o"
