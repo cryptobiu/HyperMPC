@@ -11,9 +11,7 @@ VDM::VDM(int n, int m) {
 }
 
 void VDM::InitVDM() {
-    vector<TFieldElement> alpha;
-    alpha.resize(m_n);
-   // TFieldElement *elem;
+    vector<TFieldElement> alpha(m_n);
     for (int i = 0; i < m_n; i++) {
         alpha[i] = (TField::getInstance()->GetElement(i + 1));
     }

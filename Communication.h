@@ -23,32 +23,21 @@ private:
     static bool m_instanceFlag;
     static Communication* m_single;
     Communication(int n, int id);
-
 public:
     static Communication* getInstance(int numOfParties, int id);
     static Communication* getInstance();
-
-    int PARTYID, N, T, M;
-
+    int PARTYID, N, T;
     // two of messages can come one by one
-    std::atomic<int> countRoundRecieve;
     std::atomic<int> countXRecieve;
     std::atomic<int> countYRecieve;
-    std::atomic<int> countRoundFinish;
     std::atomic<int> countPartOfPoly;
     std::atomic<int> countDoubleShare;
     std::atomic<int> countGateShareArr;
     std::atomic<int> countLast;
-    std::atomic<int>  countRecon;
-    std::atomic<int>  count10;
-
-    std::atomic<int> countThis;
-    std::atomic<int>  countNext;
+    std::atomic<int> countRecon;
+    std::atomic<int> count10;
     vector<string> vecThis, vecNext;
-
-
     vector<int> vecConn;
-    vector<TFieldElement> vecRecX;
     vector<string> vec;
     vector<string> vec10;
     vector<string> vecRecForCheck, vecSendPartOfPoly, vecDoubleShare, vecGateShareArr, vecLast, vecRecon;
@@ -58,25 +47,12 @@ public:
     int m_rc;
     int m_ch;
     char** topic = new char*[9];
-    int len;
     MQTTClient_message m_pubmsg;
     MQTTClient_deliveryToken m_token;
-    string s3;
-    string s1;
-    string s2, s4, s5, s6, s7, s8, s9;
-
-
+    string s1, s2, s3, s4, s5, s6, s7, s8, s9;
 
     void ConnectionToServer(const MQTTClient &m_client, const string &s, string &myTopicForMessage, MQTTClient_message &m_pubmsg,
                                      MQTTClient_deliveryToken &m_token);
-    void SendTheResult(string &myMessage, MQTTClient const &m_client, string &myTopicForMessage,
-                       MQTTClient_message &m_pubmsg,
-                       MQTTClient_deliveryToken &m_token, const string &s, const vector<string> &buffers, vector<string> &recBufs);
-    void SendXVectorToAllParties(string &myMessage, MQTTClient const &m_client, char *const *topic,
-                                 string &myTopicForMessage, MQTTClient_message &m_pubmsg,
-                                 MQTTClient_deliveryToken &m_token, string &s, vector<string> &recBufs);
-    void roundFunction(vector<string> &sendBufs, vector<string> &recBufs);
-
     virtual ~Communication();
     void sendPartOfPoly(vector<string> &sendBufs,vector<string> &recBufs);
     void send(const string &myTopicForMessage, const string &myMessage);
@@ -85,7 +61,11 @@ public:
     void Lastsend(vector<string> &sendBufs,vector<string> &recBufs);
     void sendRecon(vector<string> &sendBufs,vector<string> &recBufs);
     void roundfunction(vector<string> &sendBufs, vector<string> &recBufs, int num);
+
+    void SendTheResult1(const vector<string> &buffers, vector<string> &recBufs);
     void roundfunction10(vector<string> &sendBufs,vector<string> &recBufs);
+
+    void SendXVectorToAllParties1(string &myMessage, vector<string> &recBufs);
 };
 
 

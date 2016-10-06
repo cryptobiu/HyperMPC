@@ -183,14 +183,14 @@ void HIM::MatrixMult(std::vector<TFieldElement> &vector, std::vector<TFieldEleme
 
 	for(int i = 0; i < m_m; i++)
 	{
-		temp = TFieldElement(GF2X::zero());
+		answer[i] = TFieldElement(GF2X::zero());
 		for(int j=0; j < m_n; j++)
 		{
 
 			temp1 = m_matrix[i][j] * vector[j];
-			temp = temp + temp1;
+			answer[i] = answer[i] + temp1;
 		}
-		answer[i]=temp;
+	//	answer[i]=temp;
 	}
 }
 

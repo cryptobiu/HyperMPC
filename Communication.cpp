@@ -207,9 +207,6 @@ Communication::Communication(int n, int id) {
     countRecon = 0;
     count10 = 0;
     // start intialize the connection to server
-
-    countThis = 0;
-    countNext = 0;
     vecThis.resize(N);
     vecNext.resize(N);
    vecRecForCheck.resize(N);
@@ -312,12 +309,12 @@ void Communication::ConnectionToServer(const MQTTClient &m_client, const string 
     cout << "Let's start!" << '\n';
 }
 
-void Communication::SendTheResult(string &myMessage, MQTTClient const &m_client, string &myTopicForMessage,
-                   MQTTClient_message &m_pubmsg,
-                   MQTTClient_deliveryToken &m_token, const string &s, const vector<string> &buffers, vector<string> &recBufs) {// buffers[i] = the buffer of party i+1
+void Communication::SendTheResult1(const vector<string> &buffers, vector<string> &recBufs) {// buffers[i] = the buffer of party i+1
     // buffers[0] = party 1
-    recBufs[PARTYID-1] = myMessage;
+    recBufs[PARTYID-1] = buffers[PARTYID-1];
 
+    string myMessage, myTopicForMessage;
+    string s= to_string(PARTYID);
     for(int i=0; i<buffers.size(); i++)
     {
         myMessage = s + "$" + buffers[i];
@@ -346,13 +343,12 @@ void Communication::SendTheResult(string &myMessage, MQTTClient const &m_client,
 }
 
 
-void Communication::SendXVectorToAllParties(string &myMessage, MQTTClient const &m_client, char *const *topic,
-                             string &myTopicForMessage, MQTTClient_message &m_pubmsg,
-                             MQTTClient_deliveryToken &m_token, string &s, vector<string> &recBufs) {
+void Communication::SendXVectorToAllParties1(string &myMessage, vector<string> &recBufs) {
     recBufs[PARTYID-1] = myMessage;
     cout << "s 0" << '\n';
-    myTopicForMessage = "SHARE_Ps_VECTOR";
+    string myTopicForMessage = "SHARE_Ps_VECTOR";
 
+    string s = to_string(PARTYID);
     // add id party to the message
     myMessage = s + "$" + myMessage;
 
@@ -366,21 +362,19 @@ void Communication::SendXVectorToAllParties(string &myMessage, MQTTClient const 
     // publish the message to all parties
     MQTTClient_publishMessage(m_client, myTopicForMessage.c_str(), &m_pubmsg, &m_token);
 
-    cout << "s 1" << '\n';
     // waiting until the message send
     while (deliveredtoken != m_token) {};
 
     while (countXRecieve < N - 1) {}
-    cout << "s 2" << '\n';
-    cout << "N :  " << N << '\n';
+
     for(int i=0; i<N; i++)
     {
         if(i != PARTYID-1) {
             recBufs[i] =  vec[i];
         }
     }
-    cout << "s 3" << '\n';
 }
+
 
 Communication::~Communication() {
     MQTTClient_disconnect(m_client, 10000);
