@@ -51,13 +51,7 @@ Communication.h
 /home/hila/ClionProjects/Secret-Sharing/Communication.h
 thread
 -
-iostream
--
-thread
--
 mutex
--
-condition_variable
 -
 
 /home/hila/ClionProjects/Secret-Sharing/Communication.h

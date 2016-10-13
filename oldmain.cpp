@@ -27,7 +27,7 @@
 //bool finish_sending_x_part = false;
 //volatile MQTTClient_deliveryToken deliveredtoken;
 //
-//int countXRecieve =0;
+//int countRF2 =0;
 //int N;
 //map<int, string> map_check;
 //map<int, string> map_vecRecX;
@@ -42,7 +42,7 @@
 //bool flagPs = true;
 //
 //void
-//Broadcaster(string &myMessage, int is_Ps, const MQTTClient &m_client, char *const *topic, string &myTopicForMessage,
+//Broadcaster(string &myMessage, int is_Ps, const MQTTClient &m_client, char *const *topics, string &myTopicForMessage,
 //            MQTTClient_message &m_pubmsg, MQTTClient_deliveryToken &m_token, string &s);
 //
 //void ConnectionToServer(const MQTTClient &m_client, const string &s, string &myTopicForMessage, MQTTClient_message &m_pubmsg,
@@ -50,11 +50,11 @@
 //
 //void ConnectHandler(const char *topicName, MQTTClient_message *&message, const string &str);
 //
-//void SendXVectorToAllParties(string &myMessage, MQTTClient const &m_client, char *const *topic,
+//void SendXVectorToAllParties(string &myMessage, MQTTClient const &m_client, char *const *topics,
 //                             string &myTopicForMessage, MQTTClient_message &m_pubmsg,
 //                             MQTTClient_deliveryToken &m_token, string &s);
 //
-//void SendYVectorResult(string &myMessage, MQTTClient const &m_client, char *const *topic, string &myTopicForMessage,
+//void SendYVectorResult(string &myMessage, MQTTClient const &m_client, char *const *topics, string &myTopicForMessage,
 //                       MQTTClient_message &m_pubmsg, MQTTClient_deliveryToken &m_token, const string &s, vector<string> &buffers);
 //
 //void SendTheResult(string &myMessage, MQTTClient const &m_client, string &myTopicForMessage, MQTTClient_message &m_pubmsg,
@@ -192,7 +192,7 @@
 // */
 //int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *message)
 //{
-//    string topic(topicName);
+//    string topics(topicName);
 //    string str_message = "";
 //    int i;
 //    char* payloadptr;
@@ -212,7 +212,7 @@
 //    if(str == s) return 1;
 //
 //    // loop until client_id
-//    if(topic == "CONNECT")
+//    if(topics == "CONNECT")
 //    {
 //        ConnectHandler(topicName, message, str);
 //        MQTTClient_freeMessage(&message);
@@ -253,14 +253,14 @@
 //        }
 //    }
 //
-//    //   if(topic == "SHARE_Yjk_VECTOR") {
-//    if(topic.find("SHARE_Yjk_VECTOR") != std::string::npos) {
+//    //   if(topics == "SHARE_Yjk_VECTOR") {
+//    if(topics.find("SHARE_Yjk_VECTOR") != std::string::npos) {
 //        //	str_message = getCurrectMessage(str_message);
 //        // cout << "you right" << '\n';
 //        addElement(str_message);
 //    } else {
 //        // only when all x es recived we can calculate every x
-//        countXRecieve++;
+//        countRF2++;
 //
 //        str_message = getXVector(str_message, pid);
 //        // add x (=str_message) to vector
@@ -268,14 +268,14 @@
 //        // vecRECx Tfieldelement
 //
 //        calculate();
-//        if(countXRecieve == N-1) {
+//        if(countRF2 == N-1) {
 //            finish_sending_x_part = true;
 //            cout << "f f f f f f f finish" << '\n';
 //        }
 //    }
 //
 //    printf("Message arrived\n");
-//    printf("     topic: %s\n", topicName);
+//    printf("     topics: %s\n", topicName);
 //    printf("   message: ");
 //
 //    cout << str_message;
@@ -301,7 +301,7 @@
 //    if (flag == true) {
 //
 //        printf("Message arrived\n");
-//        printf("   topic: %s\n", topicName);
+//        printf("   topics: %s\n", topicName);
 //
 //        printf("   message: ");
 //
@@ -359,25 +359,25 @@
 //        exit(EXIT_FAILURE);
 //    }
 //
-//    //free topic
+//    //free topics
 //    // create topics
 //    string s1 = "SHARE_Ps_VECTOR";
 //    string s2 = "SHARE_Yjk_VECTOR"+to_string(PARTYID);
 //    string s3 = "CONNECT";
-//    char** topic = new char*[3];
-//    topic[0] = (char*)s1.c_str();
-//    topic[1] = (char*)s2.c_str();
-//    topic[2] = (char*)s3.c_str();
+//    char** topics = new char*[3];
+//    topics[0] = (char*)s1.c_str();
+//    topics[1] = (char*)s2.c_str();
+//    topics[2] = (char*)s3.c_str();
 //    int QQS_ARR[3] = {1, 1, 1};
 //
 //    // update the topics
-//    MQTTClient_subscribeMany(m_client,  3, topic, QQS_ARR);
+//    MQTTClient_subscribeMany(m_client,  3, topics, QQS_ARR);
 //
 //    string s = to_string(PARTYID);
 //
 //    ConnectionToServer(m_client, s, myTopicForMessage, m_pubmsg, m_token);
 //
-//    Broadcaster(myMessage, is_Ps, m_client, topic, myTopicForMessage, m_pubmsg, m_token, s);
+//    Broadcaster(myMessage, is_Ps, m_client, topics, myTopicForMessage, m_pubmsg, m_token, s);
 //
 //    MQTTClient_disconnect(m_client, 10000);
 //    MQTTClient_destroy(&m_client);
@@ -416,16 +416,16 @@
 //}
 //
 //void
-//Broadcaster(string &myMessage, int is_Ps, const MQTTClient &m_client, char *const *topic, string &myTopicForMessage,
+//Broadcaster(string &myMessage, int is_Ps, const MQTTClient &m_client, char *const *topics, string &myTopicForMessage,
 //            MQTTClient_message &m_pubmsg, MQTTClient_deliveryToken &m_token, string &s) {
 //
 //    vector<string> buffers;
 //    string temp = myMessage;
 // //   if(is_Ps == 0) {
-//        SendXVectorToAllParties(myMessage, m_client, topic, myTopicForMessage, m_pubmsg, m_token, s);
+//        SendXVectorToAllParties(myMessage, m_client, topics, myTopicForMessage, m_pubmsg, m_token, s);
 //        getXVector(temp, PARTYID);
 //        calculate();
-//        SendYVectorResult(myMessage, m_client, topic, myTopicForMessage, m_pubmsg, m_token, s, buffers);
+//        SendYVectorResult(myMessage, m_client, topics, myTopicForMessage, m_pubmsg, m_token, s, buffers);
 //
 //        SendTheResult(myMessage, m_client, myTopicForMessage, m_pubmsg, m_token, s,
 //              buffers);
@@ -443,7 +443,7 @@
 //
 // //   if(is_Ps == 1) {
 //        // waiting until finish calculate
-//        SendYVectorResult(myMessage, m_client, topic, myTopicForMessage, m_pubmsg, m_token, s, buffers);
+//        SendYVectorResult(myMessage, m_client, topics, myTopicForMessage, m_pubmsg, m_token, s, buffers);
 //        cout << "size" <<vecRec.size() << '\n';
 //
 //        SendTheResult(myMessage, m_client, myTopicForMessage, m_pubmsg, m_token, s,
@@ -470,7 +470,7 @@
 //
 //}
 //
-//void SendYVectorResult(string &myMessage, MQTTClient const &m_client, char *const *topic, string &myTopicForMessage,
+//void SendYVectorResult(string &myMessage, MQTTClient const &m_client, char *const *topics, string &myTopicForMessage,
 //                       MQTTClient_message &m_pubmsg, MQTTClient_deliveryToken &m_token, const string &s, vector<string> &buffers) {
 //
 //    while (flag_send_vecResult == false) {}
@@ -499,7 +499,7 @@
 //
 //        myTopicForMessage = "SHARE_Yjk_VECTOR" + to_string(i+1);
 //
-//        //    cout << "my topic     " << myTopicForMessage << '\n';
+//        //    cout << "my topics     " << myTopicForMessage << '\n';
 //        m_pubmsg.payload = (void *) myMessage.c_str();
 //
 //        m_pubmsg.payloadlen = myMessage.size();
@@ -514,10 +514,10 @@
 //    }
 //}
 //
-//void SendXVectorToAllParties(string &myMessage, MQTTClient const &m_client, char *const *topic,
+//void SendXVectorToAllParties(string &myMessage, MQTTClient const &m_client, char *const *topics,
 //                             string &myTopicForMessage, MQTTClient_message &m_pubmsg,
 //                             MQTTClient_deliveryToken &m_token, string &s) {
-//    myTopicForMessage = topic[0];
+//    myTopicForMessage = topics[0];
 //    flag_is_first = false;
 //    // add id party to the message
 //    myMessage = s + "$" + myMessage;

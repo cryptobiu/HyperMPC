@@ -9,7 +9,7 @@
 #include "TGate.h"
 
 /**
-* A software representation of the structure of an arythmetic circuit.
+* A software representation of the structure of an arithmetic circuit.
 * The circuit consists of Input, Addition, Multiplication, and Output gates. Technically, a circuit
 * is essentially an array of gates, with some bookkeeping information. Each gate has associated input gates
 * (at most 2) and output gates (at most 1). Input and Output gates also have an associated party.

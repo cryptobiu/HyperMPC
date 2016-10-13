@@ -54,7 +54,7 @@
 //    }
 //
 //
-//    //free topic
+//    //free topics
 //    // ALL\SHAREkey..
 //    string s1 = "SHARE_Ps_VECTOR";
 //    string s2 = "SHARE_Yjk_VECTOR";

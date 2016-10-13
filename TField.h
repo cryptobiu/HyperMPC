@@ -12,9 +12,22 @@
 #include <stdint.h>
 #include <bitset>
 
-
 using namespace std;
 using namespace NTL;
+
+/**
+ * We consider extension fields GF(b^e), where a field element is a polynomial of degree at most e over Zb,
+ * and can be represented as an array.
+ * We could restrict ourselves to fields with characteristic 2 and represent field elements as integers, where
+ * the i-th bit is the i-th coefficient. We assume that the operators + and ∗ are overloaded for field elements;
+ * We need to be able to enumerate field elements in some arbitrary order. For simplicity, we assume that
+ * the 0-element is the zero element (neutral of addition), and the 1-element is the one element (neutral of
+ * multiplication). Furthermore, we need to sample with uniform distribution in the field.
+ * Note: Multiplication table could be pre-computed.
+ *
+ * We focus on GF(2^8).
+ */
+
 
 class TField {
 private:
