@@ -261,9 +261,9 @@ void Protocol::computationPhase(HIM &m) {
     int count = 0;
     processRandoms();
     do {
-        count = processAdditions();
+        count = processSmul();
+        count += processAdditions();
         count += processMultiplications(m);
-
     } while(count!=0);
 }
 
@@ -960,6 +960,29 @@ int Protocol::processAdditions()
                 && gateDoneArr[circuit.getGates()[k].input2])
         {
             gateShareArr[k] = gateShareArr[circuit.getGates()[k].input1] + gateShareArr[circuit.getGates()[k].input2];
+            gateDoneArr[k] = true;
+            count++;
+        }
+
+    }
+
+    return count;
+}
+
+int Protocol::processSmul()
+{
+    int count =0;
+
+    for(int k=0; k < M; k++)
+    {
+        // its an addition which not yet processed and ready
+        if(circuit.getGates()[k].gateType == SCALAR && !gateDoneArr[k]
+           && gateDoneArr[circuit.getGates()[k].input1])
+        {
+            // scalar = circuit.getGates()[k].input2
+            uint8_t scalar(circuit.getGates()[k].input2);
+            TFieldElement e = TField::getInstance()->GetElementByValue(scalar);
+            gateShareArr[k] = gateShareArr[circuit.getGates()[k].input1] * e;
             gateDoneArr[k] = true;
             count++;
         }

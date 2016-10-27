@@ -185,6 +185,8 @@ public:
      */
     void processRandoms();
 
+    int processSmul();
+
     /**
      * Walk through the circuit and evaluate the gates. Always take as many gates at once as possible,
      * i.e., all gates whose inputs are ready.

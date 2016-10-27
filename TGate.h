@@ -18,6 +18,7 @@
 #define ADD 1
 #define MULT 2
 #define RANDOM 4
+#define SCALAR 5
 
 struct TGate
 {
