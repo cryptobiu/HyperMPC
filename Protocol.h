@@ -166,7 +166,7 @@ public:
      * Check whether given points lie on polynomial of degree d.
      * This check is performed by interpolating x on the first d + 1 positions of α and check the remaining positions.
      */
-    bool checkConsistency(vector<TFieldElement> x, int d);
+    bool checkConsistency(vector<TFieldElement>& x, int d);
 
     /**
      * Process all additions which are ready.
@@ -198,6 +198,8 @@ public:
      * The first (and only) element of the output vector is the secret.
      */
     TFieldElement interpolate(vector<TFieldElement> x);
+
+    TFieldElement tinterpolate(vector<TFieldElement> x);
 
     /**
      * Walk through the circuit and reconstruct output gates.

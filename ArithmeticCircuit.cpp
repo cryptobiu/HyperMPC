@@ -263,6 +263,7 @@ void ArithmeticCircuit::readCircuit(const char* fileName)
         //allocate memory for the gates, We add one gate for the all-one gate whose output is always 1 and thus have a wire who is always 1 without the
         //involvement of the user. This will be useful to turn a NOT gate into a XORGate
         gates.resize(numberOfGates + nrOfInputGates + nrOfOutputGates);
+     //   gates.resize(20);
 
         //create the input gates
 
@@ -339,4 +340,31 @@ void ArithmeticCircuit::readCircuit(const char* fileName)
 
     }
     myfile.close();
+}
+
+void ArithmeticCircuit::add()
+{
+
+    TGate p1;
+    p1.gateType = MULT;
+    p1.party = -1;
+    p1.input1 = 14;
+    p1.input2 = 16;
+    p1.output = 17;
+    gates[17] = p1;
+    TGate p2;
+    p2.gateType = MULT;
+    p2.party = -1;
+    p2.input1 = 15;
+    p2.input2 = 17;
+    p2.output = 18;
+    gates[18] = p2;
+    TGate p3;
+    p3.gateType = OUTPUT;
+    p3.party = 1;
+    p3.input1 = 18;
+    p3.input2 = 0;
+    p3.output = 0;
+    gates[19] = p3;
+
 }

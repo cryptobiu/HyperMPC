@@ -379,8 +379,10 @@ void Communication::roundfunction4(vector<string> &sendBufs, vector<string> &rec
     {
         myTopicForMessage = "roundfunction4" + to_string(i+1);
         // add id party to the message
-        string myMessage = s + "$" + sendBufs[i];
+        string myMessage = "";
+        myMessage = s + "$" + sendBufs[i];
         send(myTopicForMessage, myMessage);
+
         //      cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<'\n';
     }
 

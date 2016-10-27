@@ -52,6 +52,8 @@ public:
     int getNrOfGates() { return (nrOfMultiplicationGates + nrOfAdditionGates + nrOfInputGates + nrOfOutputGates); }
 
     vector<TGate> const & getGates() const {	return gates;};
+
+    void add();
 };
 
 #endif /* CIRCUIT_H_ */

@@ -23,8 +23,6 @@
 #include <iostream>
 #include <cassert>
 
-#include "ProtocolBroadcast.h"
-
 using namespace std;
 
 class TParty {

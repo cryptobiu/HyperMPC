@@ -49,6 +49,16 @@ TFieldElement TFieldElement::operator+(TFieldElement& f2)
 	return answer;
 }
 
+void TFieldElement::operator+=(TFieldElement& f2)
+{
+	this->getElement() += f2.getElement();
+}
+
+void TFieldElement::operator*=(TFieldElement& f2)
+{
+	MulMod(this->getElement(), this->getElement(),  f2.getElement(),  this->irreduciblePolynomial);
+}
+
 TFieldElement TFieldElement::operator/(TFieldElement& f2)
 {
 	TFieldElement answer;
@@ -63,7 +73,6 @@ TFieldElement TFieldElement::operator/(TFieldElement& f2)
 NTL::GF2X TFieldElement::getIrreducible()
 {
     this->irreduciblePolynomial;
-
 }
 
 TFieldElement TFieldElement::operator*(TFieldElement& f2)

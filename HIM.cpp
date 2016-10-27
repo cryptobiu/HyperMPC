@@ -48,7 +48,8 @@ TFieldElement** HIM::InitHIMByVectors(vector<TFieldElement> &alpha, vector<TFiel
                 temp1 = (beta[i]) - (alpha[k]);
                 temp2 = (alpha[j]) - (alpha[k]);
 				temp = temp1 / temp2;
-				lambda = lambda * temp;
+			//	lambda = lambda * temp;
+				lambda *= temp;
 			}
 
             // set the matrix
@@ -108,7 +109,8 @@ void HIM::MatrixMult(std::vector<TFieldElement> &vector, std::vector<TFieldEleme
         for(int j=0; j < m_n; j++)
 		{
 			temp1 = m_matrix[i][j] * vector[j];
-			answer[i] = answer[i] + temp1;
+			//answer[i] = answer[i] + temp1;
+			answer[i] += temp1;
 		}
 	}
 }
