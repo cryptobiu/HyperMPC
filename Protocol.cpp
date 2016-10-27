@@ -1,5 +1,5 @@
 #include "Protocol.h"
-//hello
+
 Protocol::Protocol(int n, int id, string inputsFile, string outputFile)
 {
     GF2X irreduciblePolynomial = BuildSparseIrred_GF2X(8);
