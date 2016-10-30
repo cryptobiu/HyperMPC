@@ -44,33 +44,6 @@ void VDM::Print()
 
 void VDM::MatrixMult(std::vector<TFieldElement> &vector, std::vector<TFieldElement> &answer)
 {
-
-//    TFieldElement temp;
-//    TFieldElement temp1;
-//
-//    for(int i = 0; i < vector.size(); i++) {
-//        if(vector[i].getElement() == NULL) {
-//            temp = TFieldElement("[]");
-//            vector[i] = temp;
-//        }
-//    }
-//
-//    cout << "123  " <<  vector.size()<< '\n';
-//
-//    for(int i = 0; i < m_n; i++)
-//    {
-//        temp = TFieldElement(GF2X::zero());
-//        for(int j=0; j < m_m; j++)
-//        {
-//
-//            temp1 = m_matrix[i][j] * vector[j];
-//            temp = temp + temp1;
-//        }
-//
-//        answer[i]=temp;
-//    }
-
-
     TFieldElement temp1;
     for(int i = 0; i < m_m; i++)
     {
@@ -80,7 +53,6 @@ void VDM::MatrixMult(std::vector<TFieldElement> &vector, std::vector<TFieldEleme
         for(int j=0; j < m_n; j++)
         {
             temp1 = m_matrix[i][j] * vector[j];
-            //answer[i] = answer[i] + temp1;
             answer[i] += temp1;
         }
     }

@@ -8,25 +8,29 @@ Communication* Communication::m_single = NULL;
 
 using namespace std;
 
+
 void ConnectHandler(const char *topicName, MQTTClient_message *&message, const string &str) {
     int elem = stoi(str);
-    bool flag = true;
+    bool flag1 = true;
     for(int i=0; i< Communication::getInstance()->vecConn.size(); i++)
     {
         if(Communication::getInstance()->vecConn[i] == elem)
         {
-            flag = false;
+            flag1 = false;
             break;
         }
     }
-    if (flag == true) {
+    if (flag1 == true) {
 
-        printf("Message arrived\n");
-        printf("   topics: %s\n", topicName);
+        if(flag_print) {
+            printf("Message arrived\n");
+            printf("   topics: %s\n", topicName);
 
-        printf("   message: ");
+            printf("   message: ");
 
-        cout << elem << '\n';
+            cout << elem << '\n';
+        }
+
         Communication::getInstance()->vecConn.push_back(elem);
     }
 
@@ -49,11 +53,7 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
     string temptemp = str;
 
 
-  //  char * ptr_message = NULL;
-
-   // cout << "The REAL str is: " << payloadptr << endl;
     str = strtok(payloadptr, "$");
-   // int prefix_size = str.size();
 
     int pid = atoi(str.c_str());
 
@@ -66,19 +66,7 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
         MQTTClient_free(topicName);
         return 1;
     }
-//
-//    int count = 0;
-//    int div, mod;
-//    div = pid / 10;
-//    mod = pid % 10;
-//    if (mod == 0) {
-//        count = div;
-//    } else {
-//        count = div + 1;
-//    }
-//    for (i = 0; i < count + 1; i++) {
-//        *payloadptr++;
-//    }
+
     len_of_message = message->payloadlen - (str.size() + 1);
 
     string prefix = "";
@@ -87,37 +75,11 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
         if (temptemp[j] == '$'){
             prefix = temptemp.substr(0,j);
             suffix = temptemp.substr(j+1, len_of_message);
-            cout << "prefix: " << prefix << "\nsuffix: " << suffix << endl;
+            if (flag_print) {
+            cout << "prefix: " << prefix << "\nsuffix: " << suffix << endl; }
             break;
         }
     }
-
-////
-////    string str3(payloadptr);
-//////    str = str3.substr(prefix_size-1);
-////
-////    cout << "str3 is : " << str3 << endl;
-////    cout << "str is : " << str << endl;
-//
-//    int count = 0;
-//    int div, mod;
-//    div = Communication::getInstance()->PARTYID / 10;
-//    mod = Communication::getInstance()->PARTYID % 10;
-//    if (mod == 0) {
-//        count = div;
-//    } else {
-//        count = div + 1;
-//    }
-//    for (i = 0; i < count + 1; i++) {
-//        *payloadptr++;
-//    }
-//    len_of_message = message->payloadlen - (count + 1);
-//    for (i = 0; i < len_of_message; i++) {
-//        str_message += (*payloadptr++);
-////        if (pid > 8) {
-////          //  cout << "str_message " << str_message << endl;
-////        }
-//    }
 
     str_message = suffix;
 
@@ -155,12 +117,13 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
         Communication::getInstance()->countRF2++;
     }
 
+    if(flag_print) {
     printf("Message arrived\n");
     printf("     topics: %s\n", topicName);
     printf("   message: ");
 
     cout << str_message;
-    putchar('\n');
+    putchar('\n'); }
     // clean the pointer of the message
     MQTTClient_freeMessage(&message);
     MQTTClient_free(topicName);
@@ -297,7 +260,8 @@ void Communication::ConnectionToServer(const string &s) {
 
     MQTTClient_publishMessage(m_client, myTopicForMessage.c_str(), &m_pubmsg, &m_token);
 
-    cout << "Let's start!" << '\n';
+    if(flag_print) {
+    cout << "Let's start!" << '\n'; }
 }
 
 /**
@@ -332,7 +296,6 @@ void Communication::roundfunction1(vector<string> &sendBufs, vector<string> &rec
         // add id party to the message
         string myMessage = s + "$" + sendBufs[i];
         send(myTopicForMessage, myMessage);
-    //    cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<'\n';
     }
 
     while(countRF1 < N - 1) {}
@@ -349,7 +312,6 @@ void Communication::roundfunction1(vector<string> &sendBufs, vector<string> &rec
 
 void Communication::roundfunction2(string &myMessage, vector<string> &recBufs) {
     recBufs[PARTYID-1] = myMessage;
-    cout << "s 0" << '\n';
     string myTopicForMessage = "SHARE_Ps_VECTOR";
 
     string s = to_string(PARTYID);
@@ -424,10 +386,7 @@ void Communication::roundfunction4(vector<string> &sendBufs, vector<string> &rec
         // add id party to the message
         string myMessage = "";
         myMessage = s + "$" + sendBufs[i];
-      //  cout << "ERROR:   ----" << myMessage << endl;
         send(myTopicForMessage, myMessage);
-
-        //      cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<'\n';
     }
 
     while(countRF4 < N - 1) {}
@@ -453,7 +412,6 @@ void Communication::roundfunction5(vector<string> &sendBufs, vector<string> &rec
         // add id party to the message
         string myMessage = s + "$" + sendBufs[i];
         send(myTopicForMessage, myMessage);
-        //       cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<'\n';
     }
 
     while(countRF5 < N - 1) {}
@@ -479,7 +437,6 @@ void Communication::roundfunction6(vector<string> &sendBufs, vector<string> &rec
         // add id party to the message
         string myMessage = s + "$" + sendBufs[i];
         send(myTopicForMessage, myMessage);
-        //       cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<'\n';
     }
 
     while(countRF6 < N - 1) {}
@@ -506,7 +463,6 @@ void Communication::roundfunction7(vector<string> &sendBufs, vector<string> &rec
         // add id party to the message
         string myMessage = s + "$" + sendBufs[i];
         send(myTopicForMessage, myMessage);
-        //      cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<'\n';
     }
 
     while(countRF7 < N - 1) {}

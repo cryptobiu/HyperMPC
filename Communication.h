@@ -9,6 +9,7 @@
 #include "ArithmeticCircuit.h"
 #include <atomic>
 
+#define flag_print false
 /**
  * We implement a synchronous protocol, but let it run over an asynchronous network.
  * At first glance, this is insane. We can derive what security properties are still achievable and which are not.

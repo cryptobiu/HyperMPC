@@ -223,12 +223,6 @@ stdlib.h
 /home/hila/workspace/paho/src/MQTTClient.h
 TParty.h
 /home/hila/ClionProjects/Secret-Sharing/TParty.h
-VDM.h
-/home/hila/ClionProjects/Secret-Sharing/VDM.h
-TGate.h
-/home/hila/ClionProjects/Secret-Sharing/TGate.h
-Communication.h
-/home/hila/ClionProjects/Secret-Sharing/Communication.h
 thread
 -
 Protocol.h

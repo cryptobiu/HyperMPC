@@ -19,20 +19,7 @@ TField* TField::m_single = NULL;
 TField::TField() {
 
 	GF2X irreduciblePolynomial = BuildSparseIrred_GF2X(8);
-	cout << "Leader irreducible Polynomial is " << irreduciblePolynomial << '\n';
 	GF2E::init(irreduciblePolynomial);
-
-//	GF2X p;
-//	SetCoeff(p, 8, 1);
-//	SetCoeff(p, 4, 1);
-//	SetCoeff(p, 3, 1);
-//	SetCoeff(p, 1, 1);
-//	SetCoeff(p, 0, 1);
-//
-//	cout << p<<'\n';
-//
-//	GF2E::init(p);
-	//m_ZERO = new TFieldElement(GF2X::zero());
     GF2X pone0;
     SetCoeff(pone0, 0, 0);
     m_ZERO = new TFieldElement(GF2X(0));

@@ -1,5 +1,6 @@
 #include "Protocol.h"
-//bye
+
+
 Protocol::Protocol(int n, int id, string inputsFile, string outputFile)
 {
     GF2X irreduciblePolynomial = BuildSparseIrred_GF2X(8);
@@ -15,13 +16,9 @@ Protocol::Protocol(int n, int id, string inputsFile, string outputFile)
     }
     m_partyId = id;
     s = to_string(m_partyId);
-//   ArithmeticCircuit circuit(1);
     circuit.readCircuit("/home/hila/ClionProjects/Secret-Sharing/test11.txt");
-   // circuit.add();
     M = circuit.getNrOfGates();
-   // M=20;
     myInputs.resize(M);
-    //  cout << "size of circuit" << circuit.getGates().size();
 }
 
 void Protocol::split(const string &s, char delim, vector<string> &elems) {
@@ -57,19 +54,17 @@ vector<string> Protocol::split(const string &s, char delim) {
 bool Protocol::broadcast(int party_id, string myMessage, vector<string> &recBufsdiff, HIM &mat)
 {
     int no_buckets;
-    vector<string> buffers(N); // N parties - N buffers
-    string temp = myMessage;
-//    // delete
-//    comm->vecRF2[m_partyId - 1] = temp;
+    vector<string> buffers(N); // N parties = N buffers
     vector<string> recBufs2(N);
 
     // Ps sends his values to all parties and received there values.
     comm->roundfunction2(myMessage, recBufsdiff); // Values are in recBufsdiff
 
-    cout << "recBufsdiff" << endl;
-    for (int i=0; i<N; i++)
-    {
-        cout << i << "  " <<recBufsdiff[i] << endl;
+    if(flag_print) {
+        cout << "recBufsdiff" << endl;
+        for (int i = 0; i < N; i++) {
+            cout << i << "  " << recBufsdiff[i] << endl;
+        }
     }
 
     vector<TFieldElement> X1(N);
@@ -90,7 +85,8 @@ bool Protocol::broadcast(int party_id, string myMessage, vector<string> &recBufs
     // concatenate everything
     for(int l=0; l< N; l++)
     {
-        cout << "recBufsdiff[l]  "  <<recBufsdiff[l]<< endl;
+        if(flag_print) {
+        cout << "recBufsdiff[l]  "  <<recBufsdiff[l]<< endl; }
         vector<string> arr = {};
         arr = split(recBufsdiff[l], '*');
         for (int i = 0; i < arr.size() ; i++) {
@@ -100,15 +96,19 @@ bool Protocol::broadcast(int party_id, string myMessage, vector<string> &recBufs
     }
 
     index = 0;
+
+    if(flag_print) {
     cout << "valBufs " <<endl;
     for(int k = 0; k < count; k++)
     {
         cout << "valBufs " << k << " " << valBufs[k] << endl;
-    }
+    } }
 
     // nr of buckets
     no_buckets = count / (N - T) + 1; // nr of buckets
-    cout << " before the for " << '\n';
+
+    if(flag_print) {
+    cout << " before the for " << '\n';}
 
     for(int k = 0; k < no_buckets; k++)
     {
@@ -125,20 +125,25 @@ bool Protocol::broadcast(int party_id, string myMessage, vector<string> &recBufs
                 X1[i] = TFieldElement(GF2X::zero());
             }
         }
+
+        if(flag_print) {
         for(int i = 0; i < N; i++)
         {
             cout << "X1[i]" << i << " " << X1[i].getElement() << endl;
-        }
+        } }
 
         // x1 contains (up to) N-T values from ValBuf
         mat.MatrixMult(X1, Y1); // no cheating: all parties have same y1
-        cout << "X1[i] after mult" << endl;
+
+        if(flag_print) {
+        cout << "X1[i] after mult" << endl;}
 
         // ‘‘Reconstruct’’ values towards some party (‘‘reconstruct’’ with degree 0)
+        if(flag_print) {
         for(int i = 0; i < N; i++)
         {
             cout << "X1[i]" << i << " " << X1[i].getElement() << endl;
-        }
+        } }
         for(int i = 0; i < N; i++) {
             buffers[i] += Y1[i].toString() + "*";
         }
@@ -148,22 +153,23 @@ bool Protocol::broadcast(int party_id, string myMessage, vector<string> &recBufs
             Y1[i].setPoly(GF2X::zero());
         }
     }
-
+    if(flag_print) {
     cout << "index  2 time :" << index << '\n';
 
     cout  << "before roundfunction3 " << endl;
     for(int k=0; k< N; k++) {
         cout << k << "  " << buffers[k] << endl;
-    }
+    }}
 
     comm->roundfunction3(buffers, recBufs2);
 
+    if(flag_print) {
     cout  << "after roundfunction3 " << endl;
     for(int k=0; k< N; k++) {
         cout << k << "  " << recBufs2[k] << endl;
     }
 
-    cout << "no_buckets  " << no_buckets << endl;
+    cout << "no_buckets  " << no_buckets << endl;}
     vector<string> arr = {};
     vector<string> arr1 = {};
     string temp1;
@@ -172,7 +178,8 @@ bool Protocol::broadcast(int party_id, string myMessage, vector<string> &recBufs
     // ‘‘Reconstruct’’ values towards some party (‘‘reconstruct’’ with degree 0)
 
     for(int k=0; k < no_buckets; k++) {
-        cout << "fff  " << k<< endl;
+        if(flag_print) {
+        cout << "fff  " << k<< endl;}
         arr = split(recBufs2[0], '*');
         if(arr.size() > 0) {
             temp1 = arr[k];
@@ -182,7 +189,8 @@ bool Protocol::broadcast(int party_id, string myMessage, vector<string> &recBufs
                 if(temp1 != arr1[k])
                 {
                     // cheating detected!!!
-                    cout << "                 cheating" << endl;
+                    if(flag_print) {
+                    cout << "                 cheating" << endl;}
                     return false;
                 }
             }
@@ -220,21 +228,25 @@ void Protocol::run() {
     initializationPhase(matrix_him, matrix_vand, m);
 
     if(preparationPhase(matrix_vand, matrix_him) == false) {
-        cout << "cheating!!!" << '\n';
+        if(flag_print) {
+        cout << "cheating!!!" << '\n';}
         return;
     }
     else {
-        cout << "no cheating!!!" << '\n' << "finish Preparation Phase" << '\n';
+        if(flag_print) {
+        cout << "no cheating!!!" << '\n' << "finish Preparation Phase" << '\n';}
     }
 
   //  return;
 
     if(inputPreparation() == false) {
-        cout << "cheating!!!" << '\n';
+        if(flag_print) {
+        cout << "cheating!!!" << '\n';}
         return;
     }
     else {
-        cout << "no cheating!!!" << '\n' << "finish Input Preparation" << '\n';
+        if(flag_print) {
+        cout << "no cheating!!!" << '\n' << "finish Input Preparation" << '\n';}
     }
 
     string sss = "";
@@ -243,13 +255,15 @@ void Protocol::run() {
 
     inputAdjustment(sss, matrix_him);
 
-    cout << "after Input Adjustment " << '\n';
+    if(flag_print) {
+    cout << "after Input Adjustment " << '\n'; }
 
     computationPhase(m);
 
     outputPhase();
 
-    cout << "after output Phase " << '\n';
+    if(flag_print) {
+    cout << "after output Phase " << '\n'; }
     auto t2 = high_resolution_clock::now();
 
     auto duration = duration_cast<milliseconds>(t2-t1).count();
@@ -261,8 +275,8 @@ void Protocol::computationPhase(HIM &m) {
     int count = 0;
     processRandoms();
     do {
-      //  count = processSmul();
-        count = processAdditions();
+        count = processSmul();
+        count += processAdditions();
         count += processMultiplications(m);
     } while(count!=0);
 }
@@ -289,11 +303,12 @@ void Protocol::inputAdjustment(string &diff, HIM &mat)
         {
             input = myInputs[index];
             index++;
-            cout << "input  " << input << endl;
+            if(flag_print) {
+            cout << "input  " << input << endl;}
             // the value is gateValue[k], but should be input.
             TFieldElement myinput = TField::getInstance()->GetElementByValue(input);
-
-            cout << "gateValueArr "<<k<< "   " << gateValueArr[k].toString() << endl;
+            if(flag_print) {
+            cout << "gateValueArr "<<k<< "   " << gateValueArr[k].toString() << endl;}
 
             TFieldElement different = myinput - gateValueArr[k];
             string str = different.toString();
@@ -302,27 +317,30 @@ void Protocol::inputAdjustment(string &diff, HIM &mat)
 
         }
     }
-
+    if(flag_print) {
     cout << "try to print diff" << '\n';
-    cout << diff << '\n';
+    cout << diff << '\n';}
 
     vector<string> recBufsdiff(N);
 
     // Broadcast the difference between GateValue[k] to x.
     if(broadcast(m_partyId, diff, recBufsdiff, mat) == false) {
-        cout << "cheating!!!" << '\n';
+        if(flag_print) {
+        cout << "cheating!!!" << '\n';}
         return;
     }
     else {
-        cout << "no cheating!!!" <<  '\n' << "finish Broadcast" << '\n';
+        if(flag_print) {
+        cout << "no cheating!!!" <<  '\n' << "finish Broadcast" << '\n';}
     }
 
-    cout << "recBufsdiff" << endl;
-    for (int k = 0; k < N; k++)
-    {
-        cout << "recBufsdiff" << k << "  "<< recBufsdiff[k] <<  endl;
-    }
+    if(flag_print) {
 
+        cout << "recBufsdiff" << endl;
+        for (int k = 0; k < N; k++) {
+            cout << "recBufsdiff" << k << "  " << recBufsdiff[k] << endl;
+        }
+    }
     // handle after broadcast
     string str;
     TFieldElement db;
@@ -366,7 +384,7 @@ void Protocol::initializationPhase(HIM &matrix_him, VDM &matrix_vand, HIM &m)
 
     // Compute Vandermonde matrix VDM[i,k] = alpha[i]^k
     matrix_vand.InitVDM();
-    matrix_vand.Print();
+ //   matrix_vand.Print();
 
     // Prepare an N-by-N hyper-invertible matrix
     matrix_him.InitHIM();
@@ -409,9 +427,9 @@ void Protocol::initializationPhase(HIM &matrix_him, VDM &matrix_vand, HIM &m)
 void Protocol::publicReconstruction(vector<string> &myShares, int &count, int d, vector<TFieldElement> &valBuf, HIM &m)
 {
     int no_buckets = count / (N-T) + 1;
-
+    if(flag_print) {
     cout << "public reconstruction" << endl;
-    cout << "no buckets" << no_buckets << endl;
+    cout << "no buckets" << no_buckets << endl; }
     TFieldElement x;
 
     vector<TFieldElement> x1(N);
@@ -429,12 +447,11 @@ void Protocol::publicReconstruction(vector<string> &myShares, int &count, int d,
         sendBufs[i] = "";
         sendBufs2[i] = "";
     }
-
-    for(int i=0; i < myShares.size(); i++)
-    {
-        cout << "myShares " << i << "   " << myShares[i] << endl;
+    if(flag_print) {
+        for (int i = 0; i < myShares.size(); i++) {
+            cout << "myShares " << i << "   " << myShares[i] << endl;
+        }
     }
-
     // init x to be vector of degree-d (d=2*t) shares of n−t secret
     for(int k=0; k < no_buckets; k++)
     {
@@ -465,21 +482,20 @@ void Protocol::publicReconstruction(vector<string> &myShares, int &count, int d,
             sendBufs[i] += x1[i].toString() + "*";
         }
     }
-
-    cout << "sendBufs[i]" << endl;
-    for(int i = 0; i < N; i++)
-    {
-        cout << sendBufs[i] << endl;
+    if(flag_print) {
+        cout << "sendBufs[i]" << endl;
+        for (int i = 0; i < N; i++) {
+            cout << sendBufs[i] << endl;
+        }
     }
-
  //   cout << "before roundfunction1" << '\n';
     comm->roundfunction1(sendBufs, recBufs);
-
+    if(flag_print) {
     cout << "recBufs[i]" << endl;
     for(int i = 0; i < N; i++)
     {
         cout << recBufs[i] << endl;
-    }
+    }}
  //   cout << "after roundfunction1" << '\n';
     vector<string> arr = {};
     for(int k=0; k < no_buckets; k++) {
@@ -489,18 +505,19 @@ void Protocol::publicReconstruction(vector<string> &myShares, int &count, int d,
             arr = split(recBufs[i], '*');
             x1[i] = TFieldElement(arr[k]);
         }
-
+        if(flag_print) {
         cout << "x1[i]" << endl;
         for(int i = 0; i < N; i++)
         {
             cout << x1[i].toString() << endl;
-        }
+        } }
 
         // checking that {xj}i are d-consistent and interpolate them to x j .
         if (!checkConsistency(x1, d)) {
             // halt
             // cheating detected
-            cout << "cheating" << '\n';
+            if(flag_print) {
+            cout << "cheating" << '\n';}
         }
 
         // interpolate {xj}i to x
@@ -511,19 +528,19 @@ void Protocol::publicReconstruction(vector<string> &myShares, int &count, int d,
             sendBufs2[i] += x.toString() + "*";
         }
     }
-
+    if(flag_print) {
     cout << "sendBufs2[i]" << endl;
     for(int i = 0; i < N; i++)
     {
         cout << sendBufs2[i] << endl;
-    }
+    } }
     comm->roundfunction8(sendBufs2, recBufs2);
-
+    if(flag_print) {
     cout << "recBufs2[i]" << endl;
     for(int i = 0; i < N; i++)
     {
         cout << recBufs2[i] << endl;
-    }
+    } }
 //    vector<string> arr = {};
     int index = 0;
     for(int k=0; k < no_buckets; k++) {
@@ -539,8 +556,9 @@ void Protocol::publicReconstruction(vector<string> &myShares, int &count, int d,
         for (int i = 0; i < T; i++) {
             if(x1[N-T+i].toString() != y1[i].toString())
             {
+                if(flag_print) {
                 // halt !
-                cout << "                  cheating" << '\n';
+                cout << "                  cheating" << '\n'; }
             }
         }
 
@@ -599,8 +617,8 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him)
         //x2[0] = x1[0];
         x2[0] = secret;
 
-
-        cout << "k " << k << "s= " << secret.toString() << endl;
+        if(flag_print) {
+        cout << "k " << k << "s= " << secret.toString() << endl;}
 
         for(int i = 1; i < 2*T+1; i++)
         {
@@ -610,9 +628,9 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him)
 
 
         // delete
-
-        x2[0] =  *TField::getInstance()->GetOne();
-        x1[0] =  *TField::getInstance()->GetOne();
+//
+//        x2[0] =  *TField::getInstance()->GetOne();
+//        x1[0] =  *TField::getInstance()->GetOne();
 
         matrix_vand.MatrixMult(x1, y1); // eval poly at alpha-positions
         matrix_vand.MatrixMult(x2, y2); // eval poly at alpha-positions
@@ -626,29 +644,27 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him)
 
 
     }
+    if(flag_print) {
+        cout << "sendBufs" << endl;
+        cout << "N" << N << endl;
+        cout << "T" << T << endl;
 
-    cout << "sendBufs" << endl;
-    cout << "N" << N<< endl;
-    cout << "T" << T<< endl;
 
-
-
-    for (int i=0; i < sendBufs.size();i++)
-    {
-        cout << "sendBufs" << i << " :" << sendBufs[i] << endl;
+        for (int i = 0; i < sendBufs.size(); i++) {
+            cout << "sendBufs" << i << " :" << sendBufs[i] << endl;
+        }
     }
-
     for(int i=0; i < recBufs.size(); i++)
     {
         recBufs[i] = "";
     }
 
     comm->roundfunction4(sendBufs, recBufs);
-
+    if(flag_print) {
     for (int i=0; i < recBufs.size();i++)
     {
         cout << "recBufs" << i << " :" << recBufs[i] << endl;
-    }
+    } }
 
     /**
      * Apply hyper-invertible matrix on each bucket.
@@ -703,7 +719,7 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him)
                 x2[i] = TFieldElement(strX2); // my share of the degree-2t sharings
             }
             else{
-                cout << "                   problemmmmm" << endl;
+                if(flag_print) { cout << "                   problemmmmm" << endl;}
             }
         }
         matrix_him.MatrixMult(x1, y1);
@@ -727,11 +743,11 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him)
             x1[0] = *TField::getInstance()->GetZero();
         }
     }
-
-    cout << "before round" << endl;
+    if(flag_print) {
+    cout << "before round" << endl;}
     comm->roundfunction5(sendBufs1, recBufs);
-
-    cout << "after round" << endl;
+    if(flag_print) {
+    cout << "after round" << endl;}
     int count = no_buckets * (2*T) / N; // nr of sharings *I* have to check
     // got one in the last round
     if(no_buckets * (2*T)%N > m_partyId) { // maybe -1
@@ -775,16 +791,17 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him)
         {
             x_until_d[i] = *TField::getInstance()->GetZero();
         }
+        if(flag_print) {
 
-
-      //  cout <<"k "<<k<< "tinterpolate(x1).toString()  " << tinterpolate(x_until_d).toString() << endl;
-        cout <<"k "<<k<< "interpolate(x1).toString()  " << interpolate(x1).toString() << endl;
-        cout <<"k "<<k<< "interpolate(x2).toString()  " << interpolate(x2).toString() << endl;
-
+            //  cout <<"k "<<k<< "tinterpolate(x1).toString()  " << tinterpolate(x_until_d).toString() << endl;
+            cout << "k " << k << "interpolate(x1).toString()  " << interpolate(x1).toString() << endl;
+            cout << "k " << k << "interpolate(x2).toString()  " << interpolate(x2).toString() << endl;
+        }
         // Check that x1 is t-consistent and x2 is 2t-consistent and secret is the same
         if(!checkConsistency(x1,T) || !checkConsistency(x2,2*T) || (interpolate(x1).toString() != interpolate(x2).toString()) ) {
             // cheating detected, abort
-            cout << "k" << k<< endl;
+            if(flag_print) {
+            cout << "k" << k<< endl;}
             return false;
         }
     }
@@ -826,19 +843,18 @@ bool Protocol::inputPreparation()
 
         }
     }
-
-    cout << "sendBufs[i] in input preperation" << endl;
-    for(int i=0; i< N; i++)
-    {
-        cout << sendBufs[i] << endl;
+    if(flag_print) {
+        cout << "sendBufs[i] in input preperation" << endl;
+        for (int i = 0; i < N; i++) {
+            cout << sendBufs[i] << endl;
+        }
     }
-
     comm->roundfunction6(sendBufs, recBufs);
 
-
+    if(flag_print) {
     for(int k = 0; k < N; k++) {
         cout << "roundfunction6 recBufs" << k << " " << recBufs[k] << endl;
-    }
+    } }
 
     // reconstruct my random input values
     for(int k = 0; k < M; k++) {
@@ -866,8 +882,8 @@ bool Protocol::inputPreparation()
             secret = TFieldElement();
             secret.setPoly(interpolate(x1).getElement());
             gateValueArr[k] = secret;
-
-            cout << "           the secret is " << secret.toString() << endl;
+            if(flag_print) {
+            cout << "           the secret is " << secret.toString() << endl;}
         }
     }
 
@@ -1038,8 +1054,8 @@ int Protocol::processMultiplications(HIM &m)
     {
         return 0;
     }
-
-    cout <<"index for publicReconstruction " << index << '\n';
+    if(flag_print) {
+    cout <<"index for publicReconstruction " << index << '\n'; }
 
     // reconstruct the differences into valBuf
     publicReconstruction(ReconsBuf, index, 2*T, valBuf, m);
@@ -1052,7 +1068,8 @@ int Protocol::processMultiplications(HIM &m)
            && gateDoneArr[circuit.getGates()[k].input1]
            && gateDoneArr[circuit.getGates()[k].input2])
         {
-            cout << "indexForValBuf " << indexForValBuf << endl;
+            if(flag_print) {
+            cout << "indexForValBuf " << indexForValBuf << endl;}
             d = valBuf[indexForValBuf];  // the difference
             indexForValBuf--;
             gateShareArr[k] = gateShareArr[k] + d; // the adjustment
@@ -1121,8 +1138,8 @@ void Protocol::outputPhase()
 
     comm->roundfunction7(sendBuf, recBuf);
 
-
-    cout << "endnend" << endl;
+    if(flag_print) {
+    cout << "endnend" << endl;}
     for(int k=0; k < M; k++) {
         if(circuit.getGates()[k].gateType == OUTPUT && circuit.getGates()[k].party == m_partyId)
         {
@@ -1136,7 +1153,8 @@ void Protocol::outputPhase()
             if (!checkConsistency(x1, T))
             {
                 // someone cheated!
-                cout << "cheating!!!" << '\n';
+                if(flag_print) {
+                cout << "cheating!!!" << '\n';}
                 return;
             }
             cout << "the result is : " << interpolate(x1).toString() << '\n';
