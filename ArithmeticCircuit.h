@@ -4,10 +4,6 @@
 #include "TGate.h"
 #include <vector>
 
-
-#include <vector>
-#include "TGate.h"
-
 /**
 * A software representation of the structure of an arithmetic circuit.
 * The circuit consists of Input, Addition, Multiplication, and Output gates. Technically, a circuit

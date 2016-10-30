@@ -14,7 +14,6 @@ CMakeFiles/Secret_Sharing.dir/Communication.cpp.o: ArithmeticCircuit.h
 CMakeFiles/Secret_Sharing.dir/Communication.cpp.o: Communication.cpp
 CMakeFiles/Secret_Sharing.dir/Communication.cpp.o: Communication.h
 CMakeFiles/Secret_Sharing.dir/Communication.cpp.o: HIM.h
-CMakeFiles/Secret_Sharing.dir/Communication.cpp.o: ProtocolBroadcast.h
 CMakeFiles/Secret_Sharing.dir/Communication.cpp.o: TField.h
 CMakeFiles/Secret_Sharing.dir/Communication.cpp.o: TFieldElement.h
 CMakeFiles/Secret_Sharing.dir/Communication.cpp.o: TGate.h
@@ -37,7 +36,6 @@ CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o: Communication.h
 CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o: HIM.h
 CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o: Protocol.cpp
 CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o: Protocol.h
-CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o: ProtocolBroadcast.h
 CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o: TField.h
 CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o: TFieldElement.h
 CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o: TGate.h
@@ -58,7 +56,6 @@ CMakeFiles/Secret_Sharing.dir/TFieldElement.cpp.o: TFieldElement.h
 
 CMakeFiles/Secret_Sharing.dir/TParty.cpp.o: AES_PRG.h
 CMakeFiles/Secret_Sharing.dir/TParty.cpp.o: HIM.h
-CMakeFiles/Secret_Sharing.dir/TParty.cpp.o: ProtocolBroadcast.h
 CMakeFiles/Secret_Sharing.dir/TParty.cpp.o: TField.h
 CMakeFiles/Secret_Sharing.dir/TParty.cpp.o: TFieldElement.h
 CMakeFiles/Secret_Sharing.dir/TParty.cpp.o: TParty.cpp
@@ -74,12 +71,13 @@ CMakeFiles/Secret_Sharing.dir/VDM.cpp.o: VDM.cpp
 CMakeFiles/Secret_Sharing.dir/VDM.cpp.o: VDM.h
 CMakeFiles/Secret_Sharing.dir/VDM.cpp.o: aes_locl.h
 
+CMakeFiles/Secret_Sharing.dir/Wire.cpp.o: Wire.cpp
+
 CMakeFiles/Secret_Sharing.dir/main.cpp.o: AES_PRG.h
 CMakeFiles/Secret_Sharing.dir/main.cpp.o: ArithmeticCircuit.h
 CMakeFiles/Secret_Sharing.dir/main.cpp.o: Communication.h
 CMakeFiles/Secret_Sharing.dir/main.cpp.o: HIM.h
 CMakeFiles/Secret_Sharing.dir/main.cpp.o: Protocol.h
-CMakeFiles/Secret_Sharing.dir/main.cpp.o: ProtocolBroadcast.h
 CMakeFiles/Secret_Sharing.dir/main.cpp.o: TField.h
 CMakeFiles/Secret_Sharing.dir/main.cpp.o: TFieldElement.h
 CMakeFiles/Secret_Sharing.dir/main.cpp.o: TGate.h
@@ -89,6 +87,4 @@ CMakeFiles/Secret_Sharing.dir/main.cpp.o: aes_locl.h
 CMakeFiles/Secret_Sharing.dir/main.cpp.o: main.cpp
 CMakeFiles/Secret_Sharing.dir/main.cpp.o: /home/hila/workspace/paho/src/MQTTClient.h
 CMakeFiles/Secret_Sharing.dir/main.cpp.o: /home/hila/workspace/paho/src/MQTTClientPersistence.h
-
-CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o: oldmain.cpp
 

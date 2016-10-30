@@ -1,5 +1,4 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o"
   "CMakeFiles/Secret_Sharing.dir/AES_PRG.cpp.o"
   "CMakeFiles/Secret_Sharing.dir/HIM.cpp.o"
   "CMakeFiles/Secret_Sharing.dir/TField.cpp.o"
@@ -10,6 +9,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o"
   "CMakeFiles/Secret_Sharing.dir/Communication.cpp.o"
   "CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o"
+  "CMakeFiles/Secret_Sharing.dir/Wire.cpp.o"
   "Secret_Sharing.pdb"
   "Secret_Sharing"
 )

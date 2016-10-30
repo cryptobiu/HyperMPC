@@ -49,32 +49,9 @@ include CMakeFiles/Secret_Sharing.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/Secret_Sharing.dir/flags.make
 
-CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o: CMakeFiles/Secret_Sharing.dir/flags.make
-CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o: oldmain.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_1)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o -c /home/hila/ClionProjects/Secret-Sharing/oldmain.cpp
-
-CMakeFiles/Secret_Sharing.dir/oldmain.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Secret_Sharing.dir/oldmain.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/hila/ClionProjects/Secret-Sharing/oldmain.cpp > CMakeFiles/Secret_Sharing.dir/oldmain.cpp.i
-
-CMakeFiles/Secret_Sharing.dir/oldmain.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Secret_Sharing.dir/oldmain.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/hila/ClionProjects/Secret-Sharing/oldmain.cpp -o CMakeFiles/Secret_Sharing.dir/oldmain.cpp.s
-
-CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o.requires:
-.PHONY : CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o.requires
-
-CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o.provides: CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o.requires
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o.provides.build
-.PHONY : CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o.provides
-
-CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o.provides.build: CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o
-
 CMakeFiles/Secret_Sharing.dir/AES_PRG.cpp.o: CMakeFiles/Secret_Sharing.dir/flags.make
 CMakeFiles/Secret_Sharing.dir/AES_PRG.cpp.o: AES_PRG.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_2)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/Secret_Sharing.dir/AES_PRG.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/Secret_Sharing.dir/AES_PRG.cpp.o -c /home/hila/ClionProjects/Secret-Sharing/AES_PRG.cpp
 
@@ -97,7 +74,7 @@ CMakeFiles/Secret_Sharing.dir/AES_PRG.cpp.o.provides.build: CMakeFiles/Secret_Sh
 
 CMakeFiles/Secret_Sharing.dir/HIM.cpp.o: CMakeFiles/Secret_Sharing.dir/flags.make
 CMakeFiles/Secret_Sharing.dir/HIM.cpp.o: HIM.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_3)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_2)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/Secret_Sharing.dir/HIM.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/Secret_Sharing.dir/HIM.cpp.o -c /home/hila/ClionProjects/Secret-Sharing/HIM.cpp
 
@@ -120,7 +97,7 @@ CMakeFiles/Secret_Sharing.dir/HIM.cpp.o.provides.build: CMakeFiles/Secret_Sharin
 
 CMakeFiles/Secret_Sharing.dir/TField.cpp.o: CMakeFiles/Secret_Sharing.dir/flags.make
 CMakeFiles/Secret_Sharing.dir/TField.cpp.o: TField.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_4)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_3)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/Secret_Sharing.dir/TField.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/Secret_Sharing.dir/TField.cpp.o -c /home/hila/ClionProjects/Secret-Sharing/TField.cpp
 
@@ -143,7 +120,7 @@ CMakeFiles/Secret_Sharing.dir/TField.cpp.o.provides.build: CMakeFiles/Secret_Sha
 
 CMakeFiles/Secret_Sharing.dir/TFieldElement.cpp.o: CMakeFiles/Secret_Sharing.dir/flags.make
 CMakeFiles/Secret_Sharing.dir/TFieldElement.cpp.o: TFieldElement.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_5)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_4)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/Secret_Sharing.dir/TFieldElement.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/Secret_Sharing.dir/TFieldElement.cpp.o -c /home/hila/ClionProjects/Secret-Sharing/TFieldElement.cpp
 
@@ -166,7 +143,7 @@ CMakeFiles/Secret_Sharing.dir/TFieldElement.cpp.o.provides.build: CMakeFiles/Sec
 
 CMakeFiles/Secret_Sharing.dir/TParty.cpp.o: CMakeFiles/Secret_Sharing.dir/flags.make
 CMakeFiles/Secret_Sharing.dir/TParty.cpp.o: TParty.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_6)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_5)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/Secret_Sharing.dir/TParty.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/Secret_Sharing.dir/TParty.cpp.o -c /home/hila/ClionProjects/Secret-Sharing/TParty.cpp
 
@@ -189,7 +166,7 @@ CMakeFiles/Secret_Sharing.dir/TParty.cpp.o.provides.build: CMakeFiles/Secret_Sha
 
 CMakeFiles/Secret_Sharing.dir/main.cpp.o: CMakeFiles/Secret_Sharing.dir/flags.make
 CMakeFiles/Secret_Sharing.dir/main.cpp.o: main.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_7)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_6)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/Secret_Sharing.dir/main.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/Secret_Sharing.dir/main.cpp.o -c /home/hila/ClionProjects/Secret-Sharing/main.cpp
 
@@ -212,7 +189,7 @@ CMakeFiles/Secret_Sharing.dir/main.cpp.o.provides.build: CMakeFiles/Secret_Shari
 
 CMakeFiles/Secret_Sharing.dir/VDM.cpp.o: CMakeFiles/Secret_Sharing.dir/flags.make
 CMakeFiles/Secret_Sharing.dir/VDM.cpp.o: VDM.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_8)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_7)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/Secret_Sharing.dir/VDM.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/Secret_Sharing.dir/VDM.cpp.o -c /home/hila/ClionProjects/Secret-Sharing/VDM.cpp
 
@@ -235,7 +212,7 @@ CMakeFiles/Secret_Sharing.dir/VDM.cpp.o.provides.build: CMakeFiles/Secret_Sharin
 
 CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o: CMakeFiles/Secret_Sharing.dir/flags.make
 CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o: ArithmeticCircuit.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_9)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_8)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o -c /home/hila/ClionProjects/Secret-Sharing/ArithmeticCircuit.cpp
 
@@ -258,7 +235,7 @@ CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o.provides.build: CMakeFiles
 
 CMakeFiles/Secret_Sharing.dir/Communication.cpp.o: CMakeFiles/Secret_Sharing.dir/flags.make
 CMakeFiles/Secret_Sharing.dir/Communication.cpp.o: Communication.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_10)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_9)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/Secret_Sharing.dir/Communication.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/Secret_Sharing.dir/Communication.cpp.o -c /home/hila/ClionProjects/Secret-Sharing/Communication.cpp
 
@@ -281,7 +258,7 @@ CMakeFiles/Secret_Sharing.dir/Communication.cpp.o.provides.build: CMakeFiles/Sec
 
 CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o: CMakeFiles/Secret_Sharing.dir/flags.make
 CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o: Protocol.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_11)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_10)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o -c /home/hila/ClionProjects/Secret-Sharing/Protocol.cpp
 
@@ -302,9 +279,31 @@ CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o.provides: CMakeFiles/Secret_Sharing
 
 CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o.provides.build: CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o
 
+CMakeFiles/Secret_Sharing.dir/Wire.cpp.o: CMakeFiles/Secret_Sharing.dir/flags.make
+CMakeFiles/Secret_Sharing.dir/Wire.cpp.o: Wire.cpp
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hila/ClionProjects/Secret-Sharing/CMakeFiles $(CMAKE_PROGRESS_11)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/Secret_Sharing.dir/Wire.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/Secret_Sharing.dir/Wire.cpp.o -c /home/hila/ClionProjects/Secret-Sharing/Wire.cpp
+
+CMakeFiles/Secret_Sharing.dir/Wire.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Secret_Sharing.dir/Wire.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/hila/ClionProjects/Secret-Sharing/Wire.cpp > CMakeFiles/Secret_Sharing.dir/Wire.cpp.i
+
+CMakeFiles/Secret_Sharing.dir/Wire.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Secret_Sharing.dir/Wire.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/hila/ClionProjects/Secret-Sharing/Wire.cpp -o CMakeFiles/Secret_Sharing.dir/Wire.cpp.s
+
+CMakeFiles/Secret_Sharing.dir/Wire.cpp.o.requires:
+.PHONY : CMakeFiles/Secret_Sharing.dir/Wire.cpp.o.requires
+
+CMakeFiles/Secret_Sharing.dir/Wire.cpp.o.provides: CMakeFiles/Secret_Sharing.dir/Wire.cpp.o.requires
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/Wire.cpp.o.provides.build
+.PHONY : CMakeFiles/Secret_Sharing.dir/Wire.cpp.o.provides
+
+CMakeFiles/Secret_Sharing.dir/Wire.cpp.o.provides.build: CMakeFiles/Secret_Sharing.dir/Wire.cpp.o
+
 # Object files for target Secret_Sharing
 Secret_Sharing_OBJECTS = \
-"CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o" \
 "CMakeFiles/Secret_Sharing.dir/AES_PRG.cpp.o" \
 "CMakeFiles/Secret_Sharing.dir/HIM.cpp.o" \
 "CMakeFiles/Secret_Sharing.dir/TField.cpp.o" \
@@ -314,12 +313,12 @@ Secret_Sharing_OBJECTS = \
 "CMakeFiles/Secret_Sharing.dir/VDM.cpp.o" \
 "CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o" \
 "CMakeFiles/Secret_Sharing.dir/Communication.cpp.o" \
-"CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o"
+"CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o" \
+"CMakeFiles/Secret_Sharing.dir/Wire.cpp.o"
 
 # External object files for target Secret_Sharing
 Secret_Sharing_EXTERNAL_OBJECTS =
 
-Secret_Sharing: CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o
 Secret_Sharing: CMakeFiles/Secret_Sharing.dir/AES_PRG.cpp.o
 Secret_Sharing: CMakeFiles/Secret_Sharing.dir/HIM.cpp.o
 Secret_Sharing: CMakeFiles/Secret_Sharing.dir/TField.cpp.o
@@ -330,6 +329,7 @@ Secret_Sharing: CMakeFiles/Secret_Sharing.dir/VDM.cpp.o
 Secret_Sharing: CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o
 Secret_Sharing: CMakeFiles/Secret_Sharing.dir/Communication.cpp.o
 Secret_Sharing: CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o
+Secret_Sharing: CMakeFiles/Secret_Sharing.dir/Wire.cpp.o
 Secret_Sharing: CMakeFiles/Secret_Sharing.dir/build.make
 Secret_Sharing: /home/hila/workspace/paho/src/libpaho-mqtt3a.so
 Secret_Sharing: /home/hila/workspace/paho/src/libpaho-mqtt3c.so
@@ -341,7 +341,6 @@ Secret_Sharing: CMakeFiles/Secret_Sharing.dir/link.txt
 CMakeFiles/Secret_Sharing.dir/build: Secret_Sharing
 .PHONY : CMakeFiles/Secret_Sharing.dir/build
 
-CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o.requires
 CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/AES_PRG.cpp.o.requires
 CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/HIM.cpp.o.requires
 CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/TField.cpp.o.requires
@@ -352,6 +351,7 @@ CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/VDM.cpp.o.
 CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/ArithmeticCircuit.cpp.o.requires
 CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/Communication.cpp.o.requires
 CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/Protocol.cpp.o.requires
+CMakeFiles/Secret_Sharing.dir/requires: CMakeFiles/Secret_Sharing.dir/Wire.cpp.o.requires
 .PHONY : CMakeFiles/Secret_Sharing.dir/requires
 
 CMakeFiles/Secret_Sharing.dir/clean:

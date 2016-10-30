@@ -16,7 +16,7 @@ Protocol::Protocol(int n, int id, string inputsFile, string outputFile)
     m_partyId = id;
     s = to_string(m_partyId);
 //   ArithmeticCircuit circuit(1);
-    circuit.readCircuit("/home/hila/ClionProjects/Secret-Sharing/test8.txt");
+    circuit.readCircuit("/home/hila/ClionProjects/Secret-Sharing/test11.txt");
    // circuit.add();
     M = circuit.getNrOfGates();
    // M=20;
@@ -261,8 +261,8 @@ void Protocol::computationPhase(HIM &m) {
     int count = 0;
     processRandoms();
     do {
-        count = processSmul();
-        count += processAdditions();
+      //  count = processSmul();
+        count = processAdditions();
         count += processMultiplications(m);
     } while(count!=0);
 }
@@ -690,9 +690,9 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him)
 //                for(int l=0; l<arr2.size(); l++) {
 //                    cout << "arr2 " << i << arr2[l] << endl;
 //                }
-                if(i == 9 || i == 10) {
-                    strX1 = strX1.substr(1, strX1.size()-1);
-                }
+//                if(i == 9 || i == 10) {
+//                    strX1 = strX1.substr(1, strX1.size()-1);
+//                }
 
           //      if(arr2.size() > 2 ) {
            //         strX1 = "[" + arr2[1];
@@ -748,10 +748,10 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him)
             if (arr.size() == 2) {
 
 
-                // Meital
-                if(i == 9 || i == 10) {
-                    strX1 = strX1.substr(1, strX1.size()-1);
-                }
+//                // Meital
+//                if(i == 9 || i == 10) {
+//                    strX1 = strX1.substr(1, strX1.size()-1);
+//                }
 
                 strX1 = arr[0];
                 strX2 = arr[1];
@@ -777,7 +777,7 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him)
         }
 
 
-        cout <<"k "<<k<< "tinterpolate(x1).toString()  " << tinterpolate(x_until_d).toString() << endl;
+      //  cout <<"k "<<k<< "tinterpolate(x1).toString()  " << tinterpolate(x_until_d).toString() << endl;
         cout <<"k "<<k<< "interpolate(x1).toString()  " << interpolate(x1).toString() << endl;
         cout <<"k "<<k<< "interpolate(x2).toString()  " << interpolate(x2).toString() << endl;
 
@@ -924,22 +924,22 @@ TFieldElement Protocol::interpolate(vector<TFieldElement> x)
 }
 
 
-// Interpolate polynomial at position Zero
-TFieldElement Protocol::tinterpolate(vector<TFieldElement> x)
-{
-    vector<TFieldElement> beta(1), alpha_until_d(T);
-
-    for(int i=0; i<T; i++)
-    {
-        alpha_until_d[i]= alpha[i];
-    }
-    vector<TFieldElement> y(T); // result of interpolate
-    beta[0] = TField::getInstance()->GetElement(0); // zero of the field
-    HIM matrix(1,T);
-    matrix.InitHIMByVectors(alpha_until_d, beta);
-    matrix.MatrixMult(x, y);
-    return y[0];
-}
+//// Interpolate polynomial at position Zero
+//TFieldElement Protocol::tinterpolate(vector<TFieldElement> x)
+//{
+//    vector<TFieldElement> beta(1), alpha_until_d(T);
+//
+//    for(int i=0; i<T; i++)
+//    {
+//        alpha_until_d[i]= alpha[i];
+//    }
+//    vector<TFieldElement> y(T); // result of interpolate
+//    beta[0] = TField::getInstance()->GetElement(0); // zero of the field
+//    HIM matrix(1,T);
+//    matrix.InitHIMByVectors(alpha_until_d, beta);
+//    matrix.MatrixMult(x, y);
+//    return y[0];
+//}
 
 /**
  * the function process all addition gates which are ready.

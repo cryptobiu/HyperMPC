@@ -330,6 +330,30 @@ VDM.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/VDM.cpp.s
 .PHONY : VDM.cpp.s
 
+Wire.o: Wire.cpp.o
+.PHONY : Wire.o
+
+# target to build an object file
+Wire.cpp.o:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/Wire.cpp.o
+.PHONY : Wire.cpp.o
+
+Wire.i: Wire.cpp.i
+.PHONY : Wire.i
+
+# target to preprocess a source file
+Wire.cpp.i:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/Wire.cpp.i
+.PHONY : Wire.cpp.i
+
+Wire.s: Wire.cpp.s
+.PHONY : Wire.s
+
+# target to generate assembly for a file
+Wire.cpp.s:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/Wire.cpp.s
+.PHONY : Wire.cpp.s
+
 main.o: main.cpp.o
 .PHONY : main.o
 
@@ -353,30 +377,6 @@ main.s: main.cpp.s
 main.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/main.cpp.s
 .PHONY : main.cpp.s
-
-oldmain.o: oldmain.cpp.o
-.PHONY : oldmain.o
-
-# target to build an object file
-oldmain.cpp.o:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/oldmain.cpp.o
-.PHONY : oldmain.cpp.o
-
-oldmain.i: oldmain.cpp.i
-.PHONY : oldmain.i
-
-# target to preprocess a source file
-oldmain.cpp.i:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/oldmain.cpp.i
-.PHONY : oldmain.cpp.i
-
-oldmain.s: oldmain.cpp.s
-.PHONY : oldmain.s
-
-# target to generate assembly for a file
-oldmain.cpp.s:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/oldmain.cpp.s
-.PHONY : oldmain.cpp.s
 
 # Help Target
 help:
@@ -414,12 +414,12 @@ help:
 	@echo "... VDM.o"
 	@echo "... VDM.i"
 	@echo "... VDM.s"
+	@echo "... Wire.o"
+	@echo "... Wire.i"
+	@echo "... Wire.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
-	@echo "... oldmain.o"
-	@echo "... oldmain.i"
-	@echo "... oldmain.s"
 .PHONY : help
 
 

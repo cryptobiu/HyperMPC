@@ -41,10 +41,6 @@ TGate.h
 /home/hila/ClionProjects/Secret-Sharing/TGate.h
 vector
 -
-vector
--
-TGate.h
-/home/hila/ClionProjects/Secret-Sharing/TGate.h
 
 /home/hila/ClionProjects/Secret-Sharing/Communication.cpp
 Communication.h
@@ -122,8 +118,6 @@ fstream
 chrono
 -
 
-/home/hila/ClionProjects/Secret-Sharing/ProtocolBroadcast.h
-
 /home/hila/ClionProjects/Secret-Sharing/TField.cpp
 TField.h
 /home/hila/ClionProjects/Secret-Sharing/TField.h
@@ -195,8 +189,6 @@ iostream
 -
 cassert
 -
-ProtocolBroadcast.h
-/home/hila/ClionProjects/Secret-Sharing/ProtocolBroadcast.h
 
 /home/hila/ClionProjects/Secret-Sharing/VDM.cpp
 VDM.h
@@ -211,6 +203,8 @@ vector
 -
 stdio.h
 -
+
+/home/hila/ClionProjects/Secret-Sharing/Wire.cpp
 
 /home/hila/ClionProjects/Secret-Sharing/aes_locl.h
 openssl/e_os2.h
@@ -239,8 +233,6 @@ thread
 -
 Protocol.h
 /home/hila/ClionProjects/Secret-Sharing/Protocol.h
-
-/home/hila/ClionProjects/Secret-Sharing/oldmain.cpp
 
 /home/hila/workspace/paho/src/MQTTClient.h
 stdio.h

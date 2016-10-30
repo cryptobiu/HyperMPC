@@ -46,7 +46,14 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
     payloadptr = (char *) message->payload;
     string str(payloadptr);
 
+    string temptemp = str;
+
+
+  //  char * ptr_message = NULL;
+
+   // cout << "The REAL str is: " << payloadptr << endl;
     str = strtok(payloadptr, "$");
+   // int prefix_size = str.size();
 
     int pid = atoi(str.c_str());
 
@@ -59,24 +66,60 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
         MQTTClient_free(topicName);
         return 1;
     }
+//
+//    int count = 0;
+//    int div, mod;
+//    div = pid / 10;
+//    mod = pid % 10;
+//    if (mod == 0) {
+//        count = div;
+//    } else {
+//        count = div + 1;
+//    }
+//    for (i = 0; i < count + 1; i++) {
+//        *payloadptr++;
+//    }
+    len_of_message = message->payloadlen - (str.size() + 1);
 
-    int count = 0;
-    int div, mod;
-    div = Communication::getInstance()->PARTYID / 10;
-    mod = Communication::getInstance()->PARTYID % 10;
-    if (mod == 0) {
-        count = div;
-    } else {
-        count = div + 1;
-    }
-    for (i = 0; i < count + 1; i++) {
-        *payloadptr++;
-    }
-    len_of_message = message->payloadlen - (count + 1);
-    for (i = 0; i < len_of_message; i++) {
-        str_message += (*payloadptr++);
+    string prefix = "";
+    string suffix = "";
+    for (int j = 0; j < temptemp.size(); ++j) {
+        if (temptemp[j] == '$'){
+            prefix = temptemp.substr(0,j);
+            suffix = temptemp.substr(j+1, len_of_message);
+            cout << "prefix: " << prefix << "\nsuffix: " << suffix << endl;
+            break;
+        }
     }
 
+////
+////    string str3(payloadptr);
+//////    str = str3.substr(prefix_size-1);
+////
+////    cout << "str3 is : " << str3 << endl;
+////    cout << "str is : " << str << endl;
+//
+//    int count = 0;
+//    int div, mod;
+//    div = Communication::getInstance()->PARTYID / 10;
+//    mod = Communication::getInstance()->PARTYID % 10;
+//    if (mod == 0) {
+//        count = div;
+//    } else {
+//        count = div + 1;
+//    }
+//    for (i = 0; i < count + 1; i++) {
+//        *payloadptr++;
+//    }
+//    len_of_message = message->payloadlen - (count + 1);
+//    for (i = 0; i < len_of_message; i++) {
+//        str_message += (*payloadptr++);
+////        if (pid > 8) {
+////          //  cout << "str_message " << str_message << endl;
+////        }
+//    }
+
+    str_message = suffix;
 
     if(topic.find("10_rountfunction") != std::string::npos)
     {
@@ -381,6 +424,7 @@ void Communication::roundfunction4(vector<string> &sendBufs, vector<string> &rec
         // add id party to the message
         string myMessage = "";
         myMessage = s + "$" + sendBufs[i];
+      //  cout << "ERROR:   ----" << myMessage << endl;
         send(myTopicForMessage, myMessage);
 
         //      cout << "i publish my message to :    " << i+1 <<"   "<< myMessage <<'\n';
