@@ -35,6 +35,8 @@ public:
 	 */
 	HIM(int m, int n);
 
+	HIM();
+
 	/**
 	 * This method is a construction of a hyper-invertible m-by-n matrix M over a finite field F with |F| ≥ 2n.
 	 * Let α1,...,αn , β1,...,βm denote fixed distinct elements in F according the vectors alpha and beta,
@@ -63,6 +65,8 @@ public:
 	 * The result is the answer vector.
 	 */
 	void MatrixMult(std::vector<TFieldElement> &vector, std::vector<TFieldElement> &answer);
+
+	void allocate(int m, int n);
 
 	virtual ~HIM();
 };

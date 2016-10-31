@@ -4,7 +4,6 @@
 
 bool Communication::m_instanceFlag = false;
 Communication* Communication::m_single = NULL;
-#define ADDRESS "tcp://localhost:1883"
 
 using namespace std;
 
@@ -76,7 +75,7 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
             prefix = temptemp.substr(0,j);
             suffix = temptemp.substr(j+1, len_of_message);
             if (flag_print) {
-            cout << "prefix: " << prefix << "\nsuffix: " << suffix << endl; }
+                cout << "prefix: " << prefix << "\nsuffix: " << suffix << endl; }
             break;
         }
     }
@@ -118,12 +117,12 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
     }
 
     if(flag_print) {
-    printf("Message arrived\n");
-    printf("     topics: %s\n", topicName);
-    printf("   message: ");
+        printf("Message arrived\n");
+        printf("     topics: %s\n", topicName);
+        printf("   message: ");
 
-    cout << str_message;
-    putchar('\n'); }
+        cout << str_message;
+        putchar('\n'); }
     // clean the pointer of the message
     MQTTClient_freeMessage(&message);
     MQTTClient_free(topicName);
@@ -141,7 +140,7 @@ void delivered(void *context, MQTTClient_deliveryToken dt)
     Communication::getInstance()->deliveredtoken = dt;
 }
 
-Communication::Communication(int n, int id) {
+Communication::Communication(int n, int id, string ADDRESS) {
     PARTYID = id;
     N = n;
     T = N/3 - 1;
@@ -172,7 +171,7 @@ Communication::Communication(int n, int id) {
 
     // create client object
     const char* c ="party" + id;
-    MQTTClient_create(&m_client, ADDRESS, c,
+    MQTTClient_create(&m_client, ADDRESS.c_str(), c,
                       MQTTCLIENT_PERSISTENCE_NONE, NULL);
 
     m_conn_opts.keepAliveInterval = 50000;
@@ -217,12 +216,12 @@ Communication::Communication(int n, int id) {
 /**
  * return the Communication
  */
-Communication* Communication::getInstance(int numOfParties, int id)
+Communication* Communication::getInstance(int numOfParties, int id, string ADDRESS)
 {
     if(!m_instanceFlag)
     {
         m_instanceFlag = true;
-        m_single = new Communication(numOfParties, id);
+        m_single = new Communication(numOfParties, id, ADDRESS);
         return m_single;
     }
     else
@@ -261,7 +260,7 @@ void Communication::ConnectionToServer(const string &s) {
     MQTTClient_publishMessage(m_client, myTopicForMessage.c_str(), &m_pubmsg, &m_token);
 
     if(flag_print) {
-    cout << "Let's start!" << '\n'; }
+        cout << "Let's start!" << '\n'; }
 }
 
 /**

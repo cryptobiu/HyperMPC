@@ -6,7 +6,7 @@ Protocol::Protocol(int n, int id, string inputsFile, string outputFile, string c
     GF2X irreduciblePolynomial = BuildSparseIrred_GF2X(8);
     GF2E::init(irreduciblePolynomial);
     ADDRESS = address;
-    comm = Communication::getInstance(n, id);
+    comm = Communication::getInstance(n, id, address);
     N = n;
     T = n/3 - 1;
     this->inputsFile = inputsFile;
@@ -185,7 +185,7 @@ bool Protocol::broadcast(int party_id, string myMessage, vector<string> &recBufs
         if(arr.size() > 0) {
             temp1 = arr[k];
             //  arr.size()-1
-            for (int i = 1; i < arr.size(); i++) {
+            for (int i = 1; i < N; i++) {
                 arr1 = split(recBufs2[i], '*');
                 if(temp1 != arr1[k])
                 {
@@ -238,8 +238,6 @@ void Protocol::run() {
         cout << "no cheating!!!" << '\n' << "finish Preparation Phase" << '\n';}
     }
 
-  //  return;
-
     if(inputPreparation() == false) {
         if(flag_print) {
         cout << "cheating!!!" << '\n';}
@@ -253,21 +251,49 @@ void Protocol::run() {
     string sss = "";
 
     auto t1 = high_resolution_clock::now();
-
+    auto t1start = high_resolution_clock::now();
     inputAdjustment(sss, matrix_him);
+
+    auto t2 = high_resolution_clock::now();
+
+    auto duration = duration_cast<milliseconds>(t2-t1).count();
+
+    cout << "time in milliseconds inputAdjustment: " << duration << endl;
 
     if(flag_print) {
     cout << "after Input Adjustment " << '\n'; }
 
+    t1 = high_resolution_clock::now();
+
     computationPhase(m);
+
+    t2 = high_resolution_clock::now();
+
+    duration = duration_cast<milliseconds>(t2-t1).count();
+
+    cout << "time in milliseconds computationPhase: " << duration << endl;
+
+    t1 = high_resolution_clock::now();
 
     outputPhase();
 
+    t2 = high_resolution_clock::now();
+
+    duration = duration_cast<milliseconds>(t2-t1).count();
+
+    cout << "time in milliseconds outputPhase: " << duration << endl;
+
     if(flag_print) {
     cout << "after output Phase " << '\n'; }
-    auto t2 = high_resolution_clock::now();
+    t2 = high_resolution_clock::now();
 
-    auto duration = duration_cast<milliseconds>(t2-t1).count();
+    duration = duration_cast<milliseconds>(t2-t1).count();
+
+    cout << "time in milliseconds : " << duration << endl;
+
+    auto t2end = high_resolution_clock::now();
+
+    duration = duration_cast<milliseconds>(t2end-t1start).count();
 
     cout << "time in milliseconds : " << duration << endl;
 }
@@ -376,12 +402,20 @@ void Protocol::inputAdjustment(string &diff, HIM &mat)
  */
 void Protocol::initializationPhase(HIM &matrix_him, VDM &matrix_vand, HIM &m)
 {
+    beta.resize(1);
     gateValueArr.resize(M);  // the value of the gate (for my input and output gates)
     gateShareArr.resize(M); // my share of the gate (for all gates)
     alpha.resize(N); // N distinct non-zero field elements
     gateDoneArr.resize(M);  // true is the gate is processed
     vector<TFieldElement> alpha1(N-T);
     vector<TFieldElement> alpha2(T);
+
+
+
+
+
+    beta[0] = TField::getInstance()->GetElement(0); // zero of the field
+    matrix_for_interpolate.allocate(1,N);
 
     // Compute Vandermonde matrix VDM[i,k] = alpha[i]^k
     matrix_vand.InitVDM();
@@ -412,6 +446,35 @@ void Protocol::initializationPhase(HIM &matrix_him, VDM &matrix_vand, HIM &m)
     }
 
     readMyInputs();
+
+    matrix_for_interpolate.InitHIMByVectors(alpha, beta);
+
+    vector<TFieldElement> alpha_until_t(T + 1);
+    vector<TFieldElement> alpha_from_t(N - 1 - T);
+    for(int i=0; i<T+1; i++)
+    {
+        alpha_until_t[i]= alpha[i];
+    }
+    for (int i = T + 1; i < N; i++) {
+        alpha_from_t[i - (T + 1)] = alpha[i];
+    }
+    // Interpolate first d+1 positions of (alpha,x)
+    matrix_for_t.allocate(N - 1 - T, T + 1); // slices, only positions from 0..d
+    matrix_for_t.InitHIMByVectors(alpha_until_t, alpha_from_t);
+
+    vector<TFieldElement> alpha_until_2t(2*T + 1);
+    vector<TFieldElement> alpha_from_2t(N - 1 - 2*T);
+    for(int i=0; i<2*T+1; i++)
+    {
+        alpha_until_2t[i]= alpha[i];
+    }
+    for (int i = 2*T + 1; i < N; i++) {
+        alpha_from_2t[i - (2*T + 1)] = alpha[i];
+    }
+    // Interpolate first d+1 positions of (alpha,x)
+    matrix_for_2t.allocate(N - 1 - 2*T, 2*T + 1); // slices, only positions from 0..d
+    matrix_for_2t.InitHIMByVectors(alpha_until_2t, alpha_from_2t);
+
 
 }
 
@@ -626,12 +689,6 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him)
             x2[i] = TField::getInstance()->Random();
         }
 
-
-        // delete
-//
-//        x2[0] =  *TField::getInstance()->GetOne();
-//        x1[0] =  *TField::getInstance()->GetOne();
-
         matrix_vand.MatrixMult(x1, y1); // eval poly at alpha-positions
         matrix_vand.MatrixMult(x2, y2); // eval poly at alpha-positions
 
@@ -695,27 +752,7 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him)
             if(arr.size() >1 ) {
                 strX1 = arr[0];
                 strX2 = arr[1];
-
-                //MEITAL
                 x1[i] = TFieldElement(strX1); // my share of the degree-t sharings
-//
-//
-//                arr2 = split(strX1, '[');
-//
-//                cout << "----------------------" << endl;
-//                for(int l=0; l<arr2.size(); l++) {
-//                    cout << "arr2 " << i << arr2[l] << endl;
-//                }
-//                if(i == 9 || i == 10) {
-//                    strX1 = strX1.substr(1, strX1.size()-1);
-//                }
-
-          //      if(arr2.size() > 2 ) {
-           //         strX1 = "[" + arr2[1];
-                    x1[i] = TFieldElement(strX1);
-           //     }
-
-
                 x2[i] = TFieldElement(strX2); // my share of the degree-2t sharings
             }
             else{
@@ -762,13 +799,6 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him)
             arr1 = split(str, '$');
             arr = split(arr1[k], '*');
             if (arr.size() == 2) {
-
-
-//                // Meital
-//                if(i == 9 || i == 10) {
-//                    strX1 = strX1.substr(1, strX1.size()-1);
-//                }
-
                 strX1 = arr[0];
                 strX2 = arr[1];
             } else {
@@ -891,54 +921,127 @@ bool Protocol::inputPreparation()
 
 }
 
+///**
+// * Check whether given points lie on polynomial of degree d. This check is performed by interpolating x on
+// * the first d + 1 positions of α and check the remaining positions.
+// */
+//bool Protocol::checkConsistency(vector<TFieldElement>& x, int d)
+//{
+//    vector<TFieldElement> alpha_until_d(d+1);
+//    vector<TFieldElement> alpha_from_d(N-1-d);
+//    vector<TFieldElement> x_until_d(d+1);
+//    vector<TFieldElement> y(N-1-d); // the result of multiplication
+//
+//    for(int i=0; i<d+1; i++)
+//    {
+//        alpha_until_d[i]= alpha[i];
+//        x_until_d[i] = x[i];
+//    }
+//    for(int i=d+1; i<N; i++)
+//    {
+//        alpha_from_d[i-(d+1)]= alpha[i];
+//    }
+//    // Interpolate first d+1 positions of (alpha,x)
+//    HIM matrix(N-1-d,d+1); // slices, only positions from 0..d
+//    matrix.InitHIMByVectors(alpha_until_d, alpha_from_d);
+//    matrix.MatrixMult(x_until_d, y);
+//
+//    // compare that the result is equal to the according positions in x
+//    for(int i = 0; i < N-d-1; i++)   // n-d-2 or n-d-1 ??
+//    {
+//        if(y[i].toString() != x[d+1+i].toString())
+//        {
+//            return false;
+//        }
+//    }
+//    return true;
+//}
+
+
 /**
  * Check whether given points lie on polynomial of degree d. This check is performed by interpolating x on
  * the first d + 1 positions of α and check the remaining positions.
  */
 bool Protocol::checkConsistency(vector<TFieldElement>& x, int d)
 {
-    vector<TFieldElement> alpha_until_d(d+1);
-    vector<TFieldElement> alpha_from_d(N-1-d);
-    vector<TFieldElement> x_until_d(d+1);
-    vector<TFieldElement> y(N-1-d); // the result of multiplication
+   if(d == T)
+   {
+       vector<TFieldElement> y(N - 1 - d); // the result of multiplication
+       vector<TFieldElement> x_until_t(T + 1);
 
-    for(int i=0; i<d+1; i++)
-    {
-        alpha_until_d[i]= alpha[i];
-        x_until_d[i] = x[i];
-    }
-    for(int i=d+1; i<N; i++)
-    {
-        alpha_from_d[i-(d+1)]= alpha[i];
-    }
-    // Interpolate first d+1 positions of (alpha,x)
-    HIM matrix(N-1-d,d+1); // slices, only positions from 0..d
-    matrix.InitHIMByVectors(alpha_until_d, alpha_from_d);
-    matrix.MatrixMult(x_until_d, y);
+       for (int i = 0; i < T + 1; i++) {
+           x_until_t[i] = x[i];
+       }
 
-    // compare that the result is equal to the according positions in x
-    for(int i = 0; i < N-d-1; i++)   // n-d-2 or n-d-1 ??
-    {
-        if(y[i].toString() != x[d+1+i].toString())
-        {
-            return false;
-        }
-    }
-    return true;
+
+       matrix_for_t.MatrixMult(x_until_t, y);
+
+       // compare that the result is equal to the according positions in x
+       for (int i = 0; i < N - d - 1; i++)   // n-d-2 or n-d-1 ??
+       {
+           if (y[i].toString() != x[d + 1 + i].toString()) {
+               return false;
+           }
+       }
+       return true;
+   } else if (d == 2*T)
+   {
+       vector<TFieldElement> y(N - 1 - d); // the result of multiplication
+
+       vector<TFieldElement> x_until_2t(2*T + 1);
+
+       for (int i = 0; i < 2*T + 1; i++) {
+           x_until_2t[i] = x[i];
+       }
+
+       matrix_for_2t.MatrixMult(x_until_2t, y);
+
+       // compare that the result is equal to the according positions in x
+       for (int i = 0; i < N - d - 1; i++)   // n-d-2 or n-d-1 ??
+       {
+           if (y[i].toString() != x[d + 1 + i].toString()) {
+               return false;
+           }
+       }
+       return true;
+
+   } else {
+       vector<TFieldElement> alpha_until_d(d + 1);
+       vector<TFieldElement> alpha_from_d(N - 1 - d);
+       vector<TFieldElement> x_until_d(d + 1);
+       vector<TFieldElement> y(N - 1 - d); // the result of multiplication
+
+       for (int i = 0; i < d + 1; i++) {
+           alpha_until_d[i] = alpha[i];
+           x_until_d[i] = x[i];
+       }
+       for (int i = d + 1; i < N; i++) {
+           alpha_from_d[i - (d + 1)] = alpha[i];
+       }
+       // Interpolate first d+1 positions of (alpha,x)
+       HIM matrix(N - 1 - d, d + 1); // slices, only positions from 0..d
+       matrix.InitHIMByVectors(alpha_until_d, alpha_from_d);
+       matrix.MatrixMult(x_until_d, y);
+
+       // compare that the result is equal to the according positions in x
+       for (int i = 0; i < N - d - 1; i++)   // n-d-2 or n-d-1 ??
+       {
+           if (y[i].toString() != x[d + 1 + i].toString()) {
+               return false;
+           }
+       }
+       return true;
+   }
+   return true;
 }
 
 // Interpolate polynomial at position Zero
 TFieldElement Protocol::interpolate(vector<TFieldElement> x)
 {
-    vector<TFieldElement> beta(1);
     vector<TFieldElement> y(N); // result of interpolate
-    beta[0] = TField::getInstance()->GetElement(0); // zero of the field
-    HIM matrix(1,N);
-    matrix.InitHIMByVectors(alpha, beta);
-    matrix.MatrixMult(x, y);
+    matrix_for_interpolate.MatrixMult(x, y);
     return y[0];
 }
-
 
 //// Interpolate polynomial at position Zero
 //TFieldElement Protocol::tinterpolate(vector<TFieldElement> x)

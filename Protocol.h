@@ -27,6 +27,10 @@ private:
      */
     int N, M, T, m_partyId;
     string inputsFile, outputFile, ADDRESS;
+    vector<TFieldElement> beta;
+    HIM matrix_for_interpolate;
+    HIM matrix_for_t;
+    HIM matrix_for_2t;
     Communication* comm;
     ArithmeticCircuit circuit;
     vector<TFieldElement> gateValueArr; // the value of the gate (for my input and output gates)

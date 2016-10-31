@@ -52,7 +52,7 @@ class Communication {
 private:
     static bool m_instanceFlag;
     static Communication* m_single;
-    Communication(int n, int id);
+    Communication(int n, int id, string ADDRESS);
 
 public:
 
@@ -65,6 +65,7 @@ public:
     vector<string>  vecRF1, vecRF2, vecRF3, vecRF4,
             vecRF5, vecRF6, vecRF7, vecRF8;
     vector<int> vecConn;
+    string ADDRESS;
 
     // MQTTClient members
     int m_rc;
@@ -79,7 +80,7 @@ public:
     /**
      * This method create an object of Communication and return it.
      */
-    static Communication* getInstance(int numOfParties, int id);
+    static Communication* getInstance(int numOfParties, int id, string ADDRESS);
 
     /**
      * This method return an object of Communication.

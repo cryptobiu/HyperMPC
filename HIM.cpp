@@ -9,7 +9,7 @@
 
 using namespace std;
 using namespace NTL;
-
+HIM::HIM(){}
 
 HIM::HIM(int m, int n) {
     // m rows, n columns
@@ -57,6 +57,18 @@ TFieldElement** HIM::InitHIMByVectors(vector<TFieldElement> &alpha, vector<TFiel
 		}
 	}
 	return m_matrix;
+}
+
+void HIM::allocate(int m, int n)
+{
+	// m rows, n columns
+	this->m_m = m;
+	this->m_n = n;
+	this->m_matrix = new TFieldElement*[m_m];
+	for (int i = 0; i < m_m; i++)
+	{
+		m_matrix[i] = new TFieldElement[m_n];
+	}
 }
 
 TFieldElement** HIM::InitHIM()
