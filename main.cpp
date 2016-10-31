@@ -30,17 +30,19 @@ using namespace std;
  * @param argv[2] = N: number of parties
  * @param argv[3] = path of inputs file
  * @param argv[4] = path of output file
+ * @param argv[5] = path of circuit file
+ * @param argv[6] = address
  * @return
  */
 int main(int argc, char* argv[])
 {
-    if(argc != 5)
+    if(argc != 7)
     {
         cout << "error";
         return 0;
     }
 
-    Protocol protocol(atoi(argv[2]), atoi(argv[1]), argv[3], argv[4]);
+    Protocol protocol(atoi(argv[2]), atoi(argv[1]), argv[3], argv[4], argv[5], argv[6]);
     protocol.run();
 
     cout << "end main" << '\n';

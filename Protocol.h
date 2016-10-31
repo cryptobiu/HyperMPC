@@ -18,8 +18,6 @@
 using namespace std;
 using namespace std::chrono;
 
-#define ADDRESS  "tcp://localhost:1883"
-
 class Protocol {
 private:
     /**
@@ -28,7 +26,7 @@ private:
      * T - number of malicious
      */
     int N, M, T, m_partyId;
-    string inputsFile, outputFile;
+    string inputsFile, outputFile, ADDRESS;
     Communication* comm;
     ArithmeticCircuit circuit;
     vector<TFieldElement> gateValueArr; // the value of the gate (for my input and output gates)
@@ -40,7 +38,7 @@ private:
     string s;
 
 public:
-    Protocol(int n, int id, string inputsFile, string outputFile);
+    Protocol(int n, int id, string inputsFile, string outputFile, string circuitFile, string address);
     void split(const string &s, char delim, vector<string> &elems);
     vector<string> split(const string &s, char delim);
 
@@ -121,13 +119,13 @@ public:
 
     /**
      * For multiplication and for output gates, we need public reconstruction of sharings (degree t and degree 2t).
-     * The straight-forward protocol requires n 2 communication, which is too slow.
+     * The straight-forward protocol requires n^2 communication, which is too slow.
      * We present a protocol which efficiently reconstructs n − t sharings. The basic idea is to compute t shared
      * authentication checks and to reconstruct the n sharings, one towards each party, who then computes the
      * secret and sends it to everybody. Each party receives n − t secrets and t authentication checks.
      *
      * Protocol Public-Reconstruction:
-     * 0. Every party P i holds a vector x(i) of degree-d shares of n−t secret values x. Let M be a t-by-(n−t)
+     * 0. Every party Pi holds a vector x(i) of degree-d shares of n−t secret values x. Let M be a t-by-(n−t)
      *  hyper-invertible matrix.
      * 1. ∀i: Compute y(i) = M*x(i) and append it to x(i). Note that this is now a vector of length n.
      * 2. ∀i,j: Pi sends xj to Pj.

@@ -1,10 +1,11 @@
 #include "Protocol.h"
 
 
-Protocol::Protocol(int n, int id, string inputsFile, string outputFile)
+Protocol::Protocol(int n, int id, string inputsFile, string outputFile, string circuitFile, string address)
 {
     GF2X irreduciblePolynomial = BuildSparseIrred_GF2X(8);
     GF2E::init(irreduciblePolynomial);
+    ADDRESS = address;
     comm = Communication::getInstance(n, id);
     N = n;
     T = n/3 - 1;
@@ -16,7 +17,7 @@ Protocol::Protocol(int n, int id, string inputsFile, string outputFile)
     }
     m_partyId = id;
     s = to_string(m_partyId);
-    circuit.readCircuit("/home/hila/ClionProjects/Secret-Sharing/test11.txt");
+    circuit.readCircuit(circuitFile.c_str());
     M = circuit.getNrOfGates();
     myInputs.resize(M);
 }
@@ -384,7 +385,6 @@ void Protocol::initializationPhase(HIM &matrix_him, VDM &matrix_vand, HIM &m)
 
     // Compute Vandermonde matrix VDM[i,k] = alpha[i]^k
     matrix_vand.InitVDM();
- //   matrix_vand.Print();
 
     // Prepare an N-by-N hyper-invertible matrix
     matrix_him.InitHIM();
