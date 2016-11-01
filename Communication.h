@@ -3,7 +3,6 @@
 
 #include "stdlib.h"
 #include "../../workspace/paho/src/MQTTClient.h"
-#include "TParty.h"
 #include "VDM.h"
 #include "TGate.h"
 #include "ArithmeticCircuit.h"

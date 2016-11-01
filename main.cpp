@@ -1,8 +1,6 @@
 
 #include "stdlib.h"
-#include "../../workspace/paho/src/MQTTClient.h"
-#include "TParty.h"
-#include <thread>
+#include "../../workspace/paho/src/MQTTClient.h"#include <thread>
 #include "Protocol.h"
 using namespace std;
 
