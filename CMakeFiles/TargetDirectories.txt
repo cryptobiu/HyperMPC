@@ -1,1 +1,0 @@
-/home/hila/ClionProjects/Secret-Sharing/CMakeFiles/Secret_Sharing.dir
