@@ -282,6 +282,54 @@ TFieldElement.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldElement.cpp.s
 .PHONY : TFieldElement.cpp.s
 
+TFieldElementZp.o: TFieldElementZp.cpp.o
+.PHONY : TFieldElementZp.o
+
+# target to build an object file
+TFieldElementZp.cpp.o:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldElementZp.cpp.o
+.PHONY : TFieldElementZp.cpp.o
+
+TFieldElementZp.i: TFieldElementZp.cpp.i
+.PHONY : TFieldElementZp.i
+
+# target to preprocess a source file
+TFieldElementZp.cpp.i:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldElementZp.cpp.i
+.PHONY : TFieldElementZp.cpp.i
+
+TFieldElementZp.s: TFieldElementZp.cpp.s
+.PHONY : TFieldElementZp.s
+
+# target to generate assembly for a file
+TFieldElementZp.cpp.s:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldElementZp.cpp.s
+.PHONY : TFieldElementZp.cpp.s
+
+TFieldZp.o: TFieldZp.cpp.o
+.PHONY : TFieldZp.o
+
+# target to build an object file
+TFieldZp.cpp.o:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldZp.cpp.o
+.PHONY : TFieldZp.cpp.o
+
+TFieldZp.i: TFieldZp.cpp.i
+.PHONY : TFieldZp.i
+
+# target to preprocess a source file
+TFieldZp.cpp.i:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldZp.cpp.i
+.PHONY : TFieldZp.cpp.i
+
+TFieldZp.s: TFieldZp.cpp.s
+.PHONY : TFieldZp.s
+
+# target to generate assembly for a file
+TFieldZp.cpp.s:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldZp.cpp.s
+.PHONY : TFieldZp.cpp.s
+
 TParty.o: TParty.cpp.o
 .PHONY : TParty.o
 
@@ -329,30 +377,6 @@ VDM.s: VDM.cpp.s
 VDM.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/VDM.cpp.s
 .PHONY : VDM.cpp.s
-
-Wire.o: Wire.cpp.o
-.PHONY : Wire.o
-
-# target to build an object file
-Wire.cpp.o:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/Wire.cpp.o
-.PHONY : Wire.cpp.o
-
-Wire.i: Wire.cpp.i
-.PHONY : Wire.i
-
-# target to preprocess a source file
-Wire.cpp.i:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/Wire.cpp.i
-.PHONY : Wire.cpp.i
-
-Wire.s: Wire.cpp.s
-.PHONY : Wire.s
-
-# target to generate assembly for a file
-Wire.cpp.s:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/Wire.cpp.s
-.PHONY : Wire.cpp.s
 
 main.o: main.cpp.o
 .PHONY : main.o
@@ -408,15 +432,18 @@ help:
 	@echo "... TFieldElement.o"
 	@echo "... TFieldElement.i"
 	@echo "... TFieldElement.s"
+	@echo "... TFieldElementZp.o"
+	@echo "... TFieldElementZp.i"
+	@echo "... TFieldElementZp.s"
+	@echo "... TFieldZp.o"
+	@echo "... TFieldZp.i"
+	@echo "... TFieldZp.s"
 	@echo "... TParty.o"
 	@echo "... TParty.i"
 	@echo "... TParty.s"
 	@echo "... VDM.o"
 	@echo "... VDM.i"
 	@echo "... VDM.s"
-	@echo "... Wire.o"
-	@echo "... Wire.i"
-	@echo "... Wire.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

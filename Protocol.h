@@ -4,6 +4,7 @@
 #include "stdlib.h"
 #include "../../workspace/paho/src/MQTTClient.h"
 #include "VDM.h"
+#include "HIM.h"
 #include "TGate.h"
 #include "ArithmeticCircuit.h"
 #include "Communication.h"
@@ -13,6 +14,9 @@
 #include <iostream>
 #include <fstream>
 #include <chrono>
+#include "TFieldElementZp.h"
+#include "TFieldZp.h"
+#include "Def.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -26,15 +30,15 @@ private:
      */
     int N, M, T, m_partyId;
     string inputsFile, outputFile, ADDRESS;
-    vector<TFieldElement> beta;
+    vector<TFIELD_ELEMENT> beta;
     HIM matrix_for_interpolate;
     HIM matrix_for_t;
     HIM matrix_for_2t;
     Communication* comm;
     ArithmeticCircuit circuit;
-    vector<TFieldElement> gateValueArr; // the value of the gate (for my input and output gates)
-    vector<TFieldElement> gateShareArr; // my share of the gate (for all gates)
-    vector<TFieldElement> alpha; // N distinct non-zero field elements
+    vector<TFIELD_ELEMENT> gateValueArr; // the value of the gate (for my input and output gates)
+    vector<TFIELD_ELEMENT> gateShareArr; // my share of the gate (for all gates)
+    vector<TFIELD_ELEMENT> alpha; // N distinct non-zero field elements
     vector<bool> gateDoneArr; // true is the gate is processed
     vector<string> sharingBuf; // prepared double-sharings (my shares)
     vector<int> myInputs;
@@ -139,7 +143,7 @@ public:
      * However, in our protocol, arbitrary many sharings can be reconstructed.
      * This is achieved by dividing the sharings into buckets of size n − t.
      */
-    void publicReconstruction(vector<string> &myShares, int &count, int d, vector<TFieldElement> &valBuf, HIM &m);
+    void publicReconstruction(vector<string> &myShares, int &count, int d, vector<TFIELD_ELEMENT> &valBuf, HIM &m);
 
     /**
      * The input phase proceeds in two steps: input preparation and input adjustment
@@ -167,7 +171,7 @@ public:
      * Check whether given points lie on polynomial of degree d.
      * This check is performed by interpolating x on the first d + 1 positions of α and check the remaining positions.
      */
-    bool checkConsistency(vector<TFieldElement>& x, int d);
+    bool checkConsistency(vector<TFIELD_ELEMENT>& x, int d);
 
     /**
      * Process all additions which are ready.
@@ -200,9 +204,9 @@ public:
      * this HIM with the given x-vector (this is actually a scalar product).
      * The first (and only) element of the output vector is the secret.
      */
-    TFieldElement interpolate(vector<TFieldElement> x);
+    TFIELD_ELEMENT interpolate(vector<TFIELD_ELEMENT> x);
 
-    TFieldElement tinterpolate(vector<TFieldElement> x);
+    TFIELD_ELEMENT tinterpolate(vector<TFIELD_ELEMENT> x);
 
     /**
      * Walk through the circuit and reconstruct output gates.

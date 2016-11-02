@@ -3,8 +3,8 @@
 
 Protocol::Protocol(int n, int id, string inputsFile, string outputFile, string circuitFile, string address)
 {
-    GF2X irreduciblePolynomial = BuildSparseIrred_GF2X(8);
-    GF2E::init(irreduciblePolynomial);
+//    GF2X irreduciblePolynomial = BuildSparseIrred_GF2X(8);
+//    GF2E::init(irreduciblePolynomial);
     ADDRESS = address;
     comm = Communication::getInstance(n, id, address);
     N = n;
@@ -68,8 +68,8 @@ bool Protocol::broadcast(int party_id, string myMessage, vector<string> &recBufs
         }
     }
 
-    vector<TFieldElement> X1(N);
-    vector<TFieldElement> Y1(N);
+    vector<TFIELD_ELEMENT> X1(N);
+    vector<TFIELD_ELEMENT> Y1(N);
 
     // calculate total number of values which received
     int count = 0;
@@ -117,20 +117,20 @@ bool Protocol::broadcast(int party_id, string myMessage, vector<string> &recBufs
         {
             if((i < N-T) && (k*(N-T)+i < count))
             {
-                X1[i]= TFieldElement(valBufs[index]);
+                X1[i]= TFIELD_ELEMENT(valBufs[index]);
                 index++;
             }
             else
             {
                 // padding zero
-                X1[i] = TFieldElement(GF2X::zero());
+                X1[i] = *TFIELD::getInstance()->GetZero();
             }
         }
 
         if(flag_print) {
         for(int i = 0; i < N; i++)
         {
-            cout << "X1[i]" << i << " " << X1[i].getElement() << endl;
+            cout << "X1[i]" << i << " " << X1[i].toString() << endl;
         } }
 
         // x1 contains (up to) N-T values from ValBuf
@@ -143,15 +143,15 @@ bool Protocol::broadcast(int party_id, string myMessage, vector<string> &recBufs
         if(flag_print) {
         for(int i = 0; i < N; i++)
         {
-            cout << "X1[i]" << i << " " << X1[i].getElement() << endl;
+            cout << "X1[i]" << i << " " << X1[i].toString()<< endl;
         } }
         for(int i = 0; i < N; i++) {
             buffers[i] += Y1[i].toString() + "*";
         }
         for(int i = 0; i < N; i++)
         {
-            X1[i].setPoly(GF2X::zero());
-            Y1[i].setPoly(GF2X::zero());
+            X1[i] = *TFIELD::getInstance()->GetZero();
+            Y1[i] = *TFIELD::getInstance()->GetZero();
         }
     }
     if(flag_print) {
@@ -333,11 +333,11 @@ void Protocol::inputAdjustment(string &diff, HIM &mat)
             if(flag_print) {
             cout << "input  " << input << endl;}
             // the value is gateValue[k], but should be input.
-            TFieldElement myinput = TField::getInstance()->GetElementByValue(input);
+            TFIELD_ELEMENT myinput = TFIELD::getInstance()->GetElement(input);
             if(flag_print) {
             cout << "gateValueArr "<<k<< "   " << gateValueArr[k].toString() << endl;}
 
-            TFieldElement different = myinput - gateValueArr[k];
+            TFIELD_ELEMENT different = myinput - gateValueArr[k];
             string str = different.toString();
 
             diff += str + "*";
@@ -370,7 +370,7 @@ void Protocol::inputAdjustment(string &diff, HIM &mat)
     }
     // handle after broadcast
     string str;
-    TFieldElement db;
+    TFIELD_ELEMENT db;
 
     vector<string> arr = {};
     for (int k = 0; k < M; k++)
@@ -379,7 +379,7 @@ void Protocol::inputAdjustment(string &diff, HIM &mat)
         {
             str = recBufsdiff[circuit.getGates()[k].party - 1];
             arr = split(str, '*');
-            db = TFieldElement(arr[0]);
+            db = TFIELD_ELEMENT(arr[0]);
             gateShareArr[k] = gateShareArr[k] + db; // adjustment
             recBufsdiff[circuit.getGates()[k].party - 1] = "";
             for(int i=1; i<arr.size(); i++) {
@@ -407,14 +407,14 @@ void Protocol::initializationPhase(HIM &matrix_him, VDM &matrix_vand, HIM &m)
     gateShareArr.resize(M); // my share of the gate (for all gates)
     alpha.resize(N); // N distinct non-zero field elements
     gateDoneArr.resize(M);  // true is the gate is processed
-    vector<TFieldElement> alpha1(N-T);
-    vector<TFieldElement> alpha2(T);
+    vector<TFIELD_ELEMENT> alpha1(N-T);
+    vector<TFIELD_ELEMENT> alpha2(T);
 
 
 
 
 
-    beta[0] = TField::getInstance()->GetElement(0); // zero of the field
+    beta[0] = TFIELD::getInstance()->GetElement(0); // zero of the field
     matrix_for_interpolate.allocate(1,N);
 
     // Compute Vandermonde matrix VDM[i,k] = alpha[i]^k
@@ -426,7 +426,7 @@ void Protocol::initializationPhase(HIM &matrix_him, VDM &matrix_vand, HIM &m)
     // N distinct non-zero field elements
     for(int i=0; i<N; i++)
     {
-        alpha[i]=(TField::getInstance()->GetElementByValue(i+1));
+        alpha[i]=(TFIELD::getInstance()->GetElement(i+1));
     }
 
     for(int i = 0; i < N-T; i++)
@@ -449,8 +449,8 @@ void Protocol::initializationPhase(HIM &matrix_him, VDM &matrix_vand, HIM &m)
 
     matrix_for_interpolate.InitHIMByVectors(alpha, beta);
 
-    vector<TFieldElement> alpha_until_t(T + 1);
-    vector<TFieldElement> alpha_from_t(N - 1 - T);
+    vector<TFIELD_ELEMENT> alpha_until_t(T + 1);
+    vector<TFIELD_ELEMENT> alpha_from_t(N - 1 - T);
     for(int i=0; i<T+1; i++)
     {
         alpha_until_t[i]= alpha[i];
@@ -462,8 +462,8 @@ void Protocol::initializationPhase(HIM &matrix_him, VDM &matrix_vand, HIM &m)
     matrix_for_t.allocate(N - 1 - T, T + 1); // slices, only positions from 0..d
     matrix_for_t.InitHIMByVectors(alpha_until_t, alpha_from_t);
 
-    vector<TFieldElement> alpha_until_2t(2*T + 1);
-    vector<TFieldElement> alpha_from_2t(N - 1 - 2*T);
+    vector<TFIELD_ELEMENT> alpha_until_2t(2*T + 1);
+    vector<TFIELD_ELEMENT> alpha_from_2t(N - 1 - 2*T);
     for(int i=0; i<2*T+1; i++)
     {
         alpha_until_2t[i]= alpha[i];
@@ -487,17 +487,17 @@ void Protocol::initializationPhase(HIM &matrix_him, VDM &matrix_vand, HIM &m)
  * @param alpha
  * @param valBuf
  */
-void Protocol::publicReconstruction(vector<string> &myShares, int &count, int d, vector<TFieldElement> &valBuf, HIM &m)
+void Protocol::publicReconstruction(vector<string> &myShares, int &count, int d, vector<TFIELD_ELEMENT> &valBuf, HIM &m)
 {
     int no_buckets = count / (N-T) + 1;
     if(flag_print) {
     cout << "public reconstruction" << endl;
     cout << "no buckets" << no_buckets << endl; }
-    TFieldElement x;
+    TFIELD_ELEMENT x;
 
-    vector<TFieldElement> x1(N);
-    vector<TFieldElement> y1(N);
-    vector<TFieldElement> y2(N);
+    vector<TFIELD_ELEMENT> x1(N);
+    vector<TFIELD_ELEMENT> y1(N);
+    vector<TFIELD_ELEMENT> y2(N);
     vector<string> sendBufs(N);
     vector<string> sendBufs2(N);
     vector<string> recBufs(N);
@@ -523,11 +523,11 @@ void Protocol::publicReconstruction(vector<string> &myShares, int &count, int d,
             if( k*(N-T)+i < count)
             {
                 // k*(N-T)+i
-                x1[i] = TFieldElement(myShares[k*(N-T)+i]);
+                x1[i] = TFIELD_ELEMENT(myShares[k*(N-T)+i]);
             }
             else
             {
-                x1[i] = *TField::getInstance()->GetZero();
+                x1[i] = *TFIELD::getInstance()->GetZero();
             }
         }
 
@@ -566,7 +566,7 @@ void Protocol::publicReconstruction(vector<string> &myShares, int &count, int d,
         for (int i = 0; i < N; i++) {
 
             arr = split(recBufs[i], '*');
-            x1[i] = TFieldElement(arr[k]);
+            x1[i] = TFIELD_ELEMENT(arr[k]);
         }
         if(flag_print) {
         cout << "x1[i]" << endl;
@@ -610,7 +610,7 @@ void Protocol::publicReconstruction(vector<string> &myShares, int &count, int d,
         for (int i = 0; i < N; i++) {
 
             arr = split(recBufs2[i], '*');
-            x1[i] = TFieldElement(arr[k]);
+            x1[i] = TFIELD_ELEMENT(arr[k]);
         }
 
         // checking that (Xn−t,...,Xn) = M*(X1,...,Xn−t)
@@ -644,7 +644,7 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him)
 
     // the number of random double sharings we need altogether
     int no_random = circuit.getNrOfMultiplicationGates() + circuit.getNrOfInputGates();
-    vector<TFieldElement> x1(N),x2(N),y1(N),y2(N);
+    vector<TFIELD_ELEMENT> x1(N),x2(N),y1(N),y2(N);
     vector<string> sendBufs(N);
 
     // the number of buckets (each bucket requires one double-sharing
@@ -671,22 +671,18 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him)
         for(int i = 0; i < T+1; i++)
         {
             // A random field element, uniform distribution
-            x1[i] = TField::getInstance()->Random();
+            x1[i] = TFIELD::getInstance()->Random();
         }
 
-        // same secret
-        TFieldElement secret;
-        secret.setPoly(x1[0].getElement());
-        //x2[0] = x1[0];
-        x2[0] = secret;
+        x2[0] = x1[0];
 
         if(flag_print) {
-        cout << "k " << k << "s= " << secret.toString() << endl;}
+        cout << "k " << k << "s= " << x1[0].toString() << endl;}
 
         for(int i = 1; i < 2*T+1; i++)
         {
             // otherwise random
-            x2[i] = TField::getInstance()->Random();
+            x2[i] = TFIELD::getInstance()->Random();
         }
 
         matrix_vand.MatrixMult(x1, y1); // eval poly at alpha-positions
@@ -752,8 +748,8 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him)
             if(arr.size() >1 ) {
                 strX1 = arr[0];
                 strX2 = arr[1];
-                x1[i] = TFieldElement(strX1); // my share of the degree-t sharings
-                x2[i] = TFieldElement(strX2); // my share of the degree-2t sharings
+                x1[i] = TFIELD_ELEMENT(strX1); // my share of the degree-t sharings
+                x2[i] = TFIELD_ELEMENT(strX2); // my share of the degree-2t sharings
             }
             else{
                 if(flag_print) { cout << "                   problemmmmm" << endl;}
@@ -776,8 +772,8 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him)
 
         for (int i=0; i < sendBufs.size();i++)
         {
-            x2[0] = *TField::getInstance()->GetZero();
-            x1[0] = *TField::getInstance()->GetZero();
+            x2[0] = *TFIELD::getInstance()->GetZero();
+            x1[0] = *TFIELD::getInstance()->GetZero();
         }
     }
     if(flag_print) {
@@ -807,19 +803,19 @@ bool Protocol::preparationPhase(VDM &matrix_vand, HIM &matrix_him)
                 strX2 = "";
             }
 
-            x1[i] = TFieldElement(strX1);
-            x2[i] = TFieldElement(strX2);
+            x1[i] = TFIELD_ELEMENT(strX1);
+            x2[i] = TFIELD_ELEMENT(strX2);
         }
 
 
-        vector<TFieldElement> x_until_d(N);
+        vector<TFIELD_ELEMENT> x_until_d(N);
         for(int i=0; i<T; i++)
         {
             x_until_d[i] = x1[i];
         }
         for(int i=T; i<N; i++)
         {
-            x_until_d[i] = *TField::getInstance()->GetZero();
+            x_until_d[i] = *TFIELD::getInstance()->GetZero();
         }
         if(flag_print) {
 
@@ -847,9 +843,9 @@ bool Protocol::inputPreparation()
 {
     vector<string> sendBufs(N); // upper bound
     vector<string> recBufs(N); // dito
-    vector<TFieldElement> x1(N); // vector for the shares of my inputs
-    TFieldElement elem;
-    TFieldElement secret;
+    vector<TFIELD_ELEMENT> x1(N); // vector for the shares of my inputs
+    TFIELD_ELEMENT elem;
+    TFIELD_ELEMENT secret;
     int i;
 
     for(int k = 0; k < M; k++)
@@ -862,9 +858,9 @@ bool Protocol::inputPreparation()
                 // waste the 2T-sharing
                 vector<string> arr = {};
                 arr = split(str, '*');
-                elem = TFieldElement(arr[0]);
+                elem = TFIELD_ELEMENT(arr[0]);
             } else {
-                elem = TFieldElement("[]");
+                elem = TFIELD_ELEMENT(*TFIELD::getInstance()->GetZero());
             }
             gateShareArr[k] = elem;
             i = (circuit.getGates())[k].party; // the number of party which has the input
@@ -893,7 +889,7 @@ bool Protocol::inputPreparation()
             for (int i = 0; i < N; i++) {
                 vector<string> arr = {};
                 arr = split(recBufs[i], '*');
-                elem = TFieldElement(arr[0]);
+                elem = TFIELD_ELEMENT(arr[0]);
                 x1[i] = elem;
 
                 recBufs[i]="";
@@ -909,8 +905,9 @@ bool Protocol::inputPreparation()
                 return false;
             }
             // the (random) secret
-            secret = TFieldElement();
-            secret.setPoly(interpolate(x1).getElement());
+            secret = interpolate(x1);
+          //  secret.setPoly(interpolate(x1).getElement());
+
             gateValueArr[k] = secret;
             if(flag_print) {
             cout << "           the secret is " << secret.toString() << endl;}
@@ -921,53 +918,16 @@ bool Protocol::inputPreparation()
 
 }
 
-///**
-// * Check whether given points lie on polynomial of degree d. This check is performed by interpolating x on
-// * the first d + 1 positions of α and check the remaining positions.
-// */
-//bool Protocol::checkConsistency(vector<TFieldElement>& x, int d)
-//{
-//    vector<TFieldElement> alpha_until_d(d+1);
-//    vector<TFieldElement> alpha_from_d(N-1-d);
-//    vector<TFieldElement> x_until_d(d+1);
-//    vector<TFieldElement> y(N-1-d); // the result of multiplication
-//
-//    for(int i=0; i<d+1; i++)
-//    {
-//        alpha_until_d[i]= alpha[i];
-//        x_until_d[i] = x[i];
-//    }
-//    for(int i=d+1; i<N; i++)
-//    {
-//        alpha_from_d[i-(d+1)]= alpha[i];
-//    }
-//    // Interpolate first d+1 positions of (alpha,x)
-//    HIM matrix(N-1-d,d+1); // slices, only positions from 0..d
-//    matrix.InitHIMByVectors(alpha_until_d, alpha_from_d);
-//    matrix.MatrixMult(x_until_d, y);
-//
-//    // compare that the result is equal to the according positions in x
-//    for(int i = 0; i < N-d-1; i++)   // n-d-2 or n-d-1 ??
-//    {
-//        if(y[i].toString() != x[d+1+i].toString())
-//        {
-//            return false;
-//        }
-//    }
-//    return true;
-//}
-
-
 /**
  * Check whether given points lie on polynomial of degree d. This check is performed by interpolating x on
  * the first d + 1 positions of α and check the remaining positions.
  */
-bool Protocol::checkConsistency(vector<TFieldElement>& x, int d)
+bool Protocol::checkConsistency(vector<TFIELD_ELEMENT>& x, int d)
 {
    if(d == T)
    {
-       vector<TFieldElement> y(N - 1 - d); // the result of multiplication
-       vector<TFieldElement> x_until_t(T + 1);
+       vector<TFIELD_ELEMENT> y(N - 1 - d); // the result of multiplication
+       vector<TFIELD_ELEMENT> x_until_t(T + 1);
 
        for (int i = 0; i < T + 1; i++) {
            x_until_t[i] = x[i];
@@ -986,9 +946,9 @@ bool Protocol::checkConsistency(vector<TFieldElement>& x, int d)
        return true;
    } else if (d == 2*T)
    {
-       vector<TFieldElement> y(N - 1 - d); // the result of multiplication
+       vector<TFIELD_ELEMENT> y(N - 1 - d); // the result of multiplication
 
-       vector<TFieldElement> x_until_2t(2*T + 1);
+       vector<TFIELD_ELEMENT> x_until_2t(2*T + 1);
 
        for (int i = 0; i < 2*T + 1; i++) {
            x_until_2t[i] = x[i];
@@ -1006,10 +966,10 @@ bool Protocol::checkConsistency(vector<TFieldElement>& x, int d)
        return true;
 
    } else {
-       vector<TFieldElement> alpha_until_d(d + 1);
-       vector<TFieldElement> alpha_from_d(N - 1 - d);
-       vector<TFieldElement> x_until_d(d + 1);
-       vector<TFieldElement> y(N - 1 - d); // the result of multiplication
+       vector<TFIELD_ELEMENT> alpha_until_d(d + 1);
+       vector<TFIELD_ELEMENT> alpha_from_d(N - 1 - d);
+       vector<TFIELD_ELEMENT> x_until_d(d + 1);
+       vector<TFIELD_ELEMENT> y(N - 1 - d); // the result of multiplication
 
        for (int i = 0; i < d + 1; i++) {
            alpha_until_d[i] = alpha[i];
@@ -1036,29 +996,12 @@ bool Protocol::checkConsistency(vector<TFieldElement>& x, int d)
 }
 
 // Interpolate polynomial at position Zero
-TFieldElement Protocol::interpolate(vector<TFieldElement> x)
+TFIELD_ELEMENT Protocol::interpolate(vector<TFIELD_ELEMENT> x)
 {
-    vector<TFieldElement> y(N); // result of interpolate
+    vector<TFIELD_ELEMENT> y(N); // result of interpolate
     matrix_for_interpolate.MatrixMult(x, y);
     return y[0];
 }
-
-//// Interpolate polynomial at position Zero
-//TFieldElement Protocol::tinterpolate(vector<TFieldElement> x)
-//{
-//    vector<TFieldElement> beta(1), alpha_until_d(T);
-//
-//    for(int i=0; i<T; i++)
-//    {
-//        alpha_until_d[i]= alpha[i];
-//    }
-//    vector<TFieldElement> y(T); // result of interpolate
-//    beta[0] = TField::getInstance()->GetElement(0); // zero of the field
-//    HIM matrix(1,T);
-//    matrix.InitHIMByVectors(alpha_until_d, beta);
-//    matrix.MatrixMult(x, y);
-//    return y[0];
-//}
 
 /**
  * the function process all addition gates which are ready.
@@ -1100,7 +1043,7 @@ int Protocol::processSmul()
         {
             // scalar = circuit.getGates()[k].input2
             uint8_t scalar(circuit.getGates()[k].input2);
-            TFieldElement e = TField::getInstance()->GetElementByValue(scalar);
+            TFIELD_ELEMENT e = TFIELD::getInstance()->GetElement(scalar);
             gateShareArr[k] = gateShareArr[circuit.getGates()[k].input1] * e;
             gateDoneArr[k] = true;
             count++;
@@ -1124,10 +1067,10 @@ int Protocol::processMultiplications(HIM &m)
 {
     int count =0;
     int index = 0;
-    TFieldElement p2, d2;
-    TFieldElement r1, r2;
-    vector<TFieldElement> valBuf(M); // Buffers for differences
-    TFieldElement d;
+    TFIELD_ELEMENT p2, d2;
+    TFIELD_ELEMENT r1, r2;
+    vector<TFIELD_ELEMENT> valBuf(M); // Buffers for differences
+    TFIELD_ELEMENT d;
     int indexForValBuf = 0;
     vector<string> ReconsBuf(M);
 
@@ -1141,8 +1084,8 @@ int Protocol::processMultiplications(HIM &m)
         {
 
             arr = split(sharingBuf[k], '*');
-            r1 = TFieldElement(arr[0]); // t-share of random r
-            r2 = TFieldElement(arr[1]); // t2-share of same r
+            r1 = TFIELD_ELEMENT(arr[0]); // t-share of random r
+            r2 = TFIELD_ELEMENT(arr[1]); // t2-share of same r
             p2 = gateShareArr[circuit.getGates()[k].input1] * gateShareArr[circuit.getGates()[k].input2]; // product share (degree-2t)
             d2 = p2 - r2; // t2-share of difference
             ReconsBuf[index] = d2.toString(); // reconstruct difference (later)
@@ -1195,7 +1138,7 @@ int Protocol::processMultiplications(HIM &m)
  */
 void Protocol::processRandoms()
 {
-    TFieldElement r1;
+    TFIELD_ELEMENT r1;
     vector<string> arr = {};
     for(int k = 0; k < M; k++)
     {
@@ -1203,7 +1146,7 @@ void Protocol::processRandoms()
         {
             arr = split(sharingBuf[k], '*');
             // t-share of random r. t2-share of same r, IGNORED!
-            r1 = TFieldElement(arr[0]);
+            r1 = TFIELD_ELEMENT(arr[0]);
             gateShareArr[k] = r1;
         }
     }
@@ -1218,10 +1161,10 @@ void Protocol::processRandoms()
 void Protocol::outputPhase()
 {
     int count=0;
-    vector<TFieldElement> x1(N); // vector for the shares of my outputs
+    vector<TFIELD_ELEMENT> x1(N); // vector for the shares of my outputs
     vector<string> sendBuf(N);
     vector<string> recBuf(N);
-    TFieldElement num;
+    TFIELD_ELEMENT num;
     ofstream myfile;
     myfile.open(outputFile);
 
@@ -1248,7 +1191,7 @@ void Protocol::outputPhase()
         {
             for(int i=0; i < N; i++) {
                 // change from string to field element
-                num = TFieldElement(recBuf[i]);
+                num = TFIELD_ELEMENT(recBuf[i]);
                 x1[i] = num;
             }
 

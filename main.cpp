@@ -1,8 +1,15 @@
 
 #include "stdlib.h"
-#include "../../workspace/paho/src/MQTTClient.h"#include <thread>
+#include "../../workspace/paho/src/MQTTClient.h"
 #include "Protocol.h"
 using namespace std;
+
+#include "NTL/ZZ_p.h"
+#include "NTL/ZZ.h"
+#include "TFieldElementZp.h"
+#include "TFieldZp.h"
+
+using namespace NTL;
 
 /**
  * The main structure of our protocol is as follows:
@@ -34,6 +41,53 @@ using namespace std;
  */
 int main(int argc, char* argv[])
 {
+//    ZZ_p::init(ZZ(5));
+//    ZZ accum, t;
+//
+//    ZZ_p x;
+//    ZZ_p a(3);
+//    ZZ_p b(ZZ_p::zero());
+//
+//
+//    ZZ_p::zero();
+//    cout << "a "<< a << endl;
+//    cout << "b "<< b << endl;
+//
+//    TFieldElementZp a1(a);
+//    TFieldElementZp b1(b);
+//    TFieldElementZp x1(x);
+//
+//
+//    cout << "a1 "<< a1.toString() << endl;
+//    cout << "b1 "<< b1.toString() << endl;
+//
+//    ZZ_p a3(3);
+//    TFieldElementZp accum1(a3);
+//    accum = 0;
+//    mul(t, rep(a), rep(b));
+//
+//    x1 = a1 * b1;
+//
+//    cout << "t "<< t << endl;
+//    cout << "x1 "<< x1.toString() << endl;
+//
+//    add(accum, accum, t);
+//
+//    accum1 = accum1 + x1;
+//
+//
+//    cout << "accum "<< accum << endl;
+//    cout << "accum1 "<< accum1.toString() << endl;
+//
+//
+//    conv(x, accum);
+//
+//
+//    cout << "x "<< x << endl;
+
+//    return 0;
+
+
     if(argc != 7)
     {
         cout << "error";
@@ -44,5 +98,10 @@ int main(int argc, char* argv[])
     protocol.run();
 
     cout << "end main" << '\n';
+
+    ZZ_p::init(ZZ(5));
+    ZZ_p a(1000);
+
+    cout << a << endl;
     return 0;
 }

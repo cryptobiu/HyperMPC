@@ -1,6 +1,10 @@
 #include "Communication.h"
 #include <thread>
 #include <mutex>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+
 
 bool Communication::m_instanceFlag = false;
 Communication* Communication::m_single = NULL;

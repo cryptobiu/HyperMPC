@@ -7,8 +7,6 @@
 
 #include "TField.h"
 
-
-
 bool TField::m_instanceFlag = false;
 TField* TField::m_single = NULL;
 /**
@@ -20,20 +18,10 @@ TField::TField() {
 
 	GF2X irreduciblePolynomial = BuildSparseIrred_GF2X(8);
 	GF2E::init(irreduciblePolynomial);
-    GF2X pone0;
-    SetCoeff(pone0, 0, 0);
+
     m_ZERO = new TFieldElement(GF2X(0));
-	GF2X pone;
-	SetCoeff(pone, 0, 1);
 	m_ONE = new TFieldElement(GF2X(1));
 }
-
-// Read field description from a config file
-/*TField TField::ReadField ()
-{
-	// how to read
-
-}*/
 
 /*
  * The i-th field element. The ordering is arbitrary, *except* that

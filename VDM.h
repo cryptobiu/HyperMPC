@@ -3,19 +3,22 @@
 
 #include "TFieldElement.h"
 #include "TField.h"
+#include "TFieldZp.h"
+#include "TFieldElementZp.h"
+#include "Def.h"
 #include <vector>
 #include <stdio.h>
 
 class VDM {
 private:
     int m_n,m_m;
-    TFieldElement** m_matrix;
+    TFIELD_ELEMENT** m_matrix;
 public:
     VDM(int n, int m);
     ~VDM();
     void InitVDM();
     void Print();
-    void MatrixMult(std::vector<TFieldElement> &vector, std::vector<TFieldElement> &answer);
+    void MatrixMult(std::vector<TFIELD_ELEMENT> &vector, std::vector<TFIELD_ELEMENT> &answer);
 
 };
 

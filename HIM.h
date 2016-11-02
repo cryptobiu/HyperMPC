@@ -2,8 +2,11 @@
 #define HIM_H_
 
 #include <iostream>
+#include "Def.h"
 #include "TFieldElement.h"
+#include "TFieldElementZp.h"
 #include "TField.h"
+#include "TFieldZp.h"
 #include <NTL/GF2X.h>
 #include <iostream>
 #include <vector>
@@ -26,7 +29,7 @@ using namespace std;
 class HIM {
 private:
 	int m_n,m_m;
-	TFieldElement** m_matrix;
+	TFIELD_ELEMENT** m_matrix;
 public:
 
 	/**
@@ -47,13 +50,13 @@ public:
 	 * M = {λi,j} j=1,...n i=1,...,m
 	 * where λ i,j = {multiplication}k=1,..n (βi−αk)/(αj−αk)
 	 */
-	TFieldElement** InitHIMByVectors(vector<TFieldElement> &alpha, vector<TFieldElement> &beta);
+	TFIELD_ELEMENT** InitHIMByVectors(vector<TFIELD_ELEMENT> &alpha, vector<TFIELD_ELEMENT> &beta);
 
 	/**
 	 * This method create vectors alpha and beta,
 	 * and init the matrix by the method InitHIMByVectors(alpha, beta).
 	 */
-	TFieldElement** InitHIM();
+	TFIELD_ELEMENT** InitHIM();
 
 	/**
 	 * This method print the matrix
@@ -64,7 +67,7 @@ public:
 	 * matrix/vector multiplication.
 	 * The result is the answer vector.
 	 */
-	void MatrixMult(std::vector<TFieldElement> &vector, std::vector<TFieldElement> &answer);
+	void MatrixMult(std::vector<TFIELD_ELEMENT> &vector, std::vector<TFIELD_ELEMENT> &answer);
 
 	void allocate(int m, int n);
 

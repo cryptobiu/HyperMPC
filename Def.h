@@ -1,0 +1,13 @@
+#ifndef SECRET_SHARING_DEF_H
+#define SECRET_SHARING_DEF_H
+
+//#define TFIELD_ELEMENT TFieldElement
+//#define TFIELD TField
+//#define ZERO GF2X
+
+
+#define ZERO ZZ_p
+#define TFIELD_ELEMENT TFieldElementZp
+#define TFIELD TFieldZp
+
+#endif //SECRET_SHARING_DEF_H

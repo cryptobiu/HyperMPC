@@ -3,21 +3,21 @@
 VDM::VDM(int n, int m) {
     this->m_m = m;
     this->m_n = n;
-    this->m_matrix = new TFieldElement*[m_n];
+    this->m_matrix = new TFIELD_ELEMENT*[m_n];
     for (int i = 0; i < m_n; i++)
     {
-        m_matrix[i] = new TFieldElement[m_m];
+        m_matrix[i] = new TFIELD_ELEMENT[m_m];
     }
 }
 
 void VDM::InitVDM() {
-    vector<TFieldElement> alpha(m_n);
+    vector<TFIELD_ELEMENT> alpha(m_n);
     for (int i = 0; i < m_n; i++) {
-        alpha[i] = (TField::getInstance()->GetElement(i + 1));
+        alpha[i] = (TFIELD::getInstance()->GetElement(i + 1));
     }
 
     for (int i = 0; i < m_n; i++) {
-        m_matrix[i][0] = *(TField::getInstance()->GetOne());
+        m_matrix[i][0] = *(TFIELD::getInstance()->GetOne());
         for (int k = 1; k < m_n; k++) {
             m_matrix[i][k] = m_matrix[i][k - 1] * (alpha[i]);
         }
@@ -42,13 +42,13 @@ void VDM::Print()
 }
 
 
-void VDM::MatrixMult(std::vector<TFieldElement> &vector, std::vector<TFieldElement> &answer)
+void VDM::MatrixMult(std::vector<TFIELD_ELEMENT> &vector, std::vector<TFIELD_ELEMENT> &answer)
 {
-    TFieldElement temp1;
+    TFIELD_ELEMENT temp1;
     for(int i = 0; i < m_m; i++)
     {
         // answer[i] = 0
-        answer[i] = TFieldElement(GF2X::zero());
+        answer[i] = TFIELD_ELEMENT(ZERO::zero());
 
         for(int j=0; j < m_n; j++)
         {
