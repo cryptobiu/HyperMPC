@@ -11,6 +11,7 @@
 #include "AES_PRG.h"
 #include <stdint.h>
 #include <bitset>
+#include "Def.h"
 
 using namespace std;
 using namespace NTL;
@@ -54,7 +55,7 @@ public:
 	 * the 0-th field element must be the neutral w.r.t. addition, and the
 	 * 1-st field element must be the neutral w.r.t. multiplication.
 	 */
-	TFieldElement GetElement(uint8_t b);
+	TFieldElement GetElement(TYPE b);
 //	TFieldElement GetElementByValue(uint8_t b);
 	TFieldElement Random();
 	virtual ~TField();

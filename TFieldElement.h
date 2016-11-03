@@ -15,6 +15,7 @@
 #include <string>
 #include<NTL/GF2XFactoring.h>
 #include <sstream>
+#include "Def.h"
 
 using namespace std;
 

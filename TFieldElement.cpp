@@ -10,18 +10,18 @@ class GF2XModulus;
 
 using namespace NTL;
 
-TFieldElement::TFieldElement() : m_poly(8) {
-	 irreduciblePolynomial = BuildSparseIrred_GF2X(8);
+TFieldElement::TFieldElement() : m_poly(NUM) {
+	 irreduciblePolynomial = BuildSparseIrred_GF2X(NUM);
 }
 
-TFieldElement::TFieldElement(NTL::GF2X poly) : m_poly(8) {
-	irreduciblePolynomial = BuildSparseIrred_GF2X(8);
+TFieldElement::TFieldElement(NTL::GF2X poly) : m_poly(NUM) {
+	irreduciblePolynomial = BuildSparseIrred_GF2X(NUM);
 	this->m_poly = poly;
 }
 
-TFieldElement::TFieldElement(string str) : m_poly(8) {
+TFieldElement::TFieldElement(string str) : m_poly(NUM) {
 
-	irreduciblePolynomial = BuildSparseIrred_GF2X(8);
+	irreduciblePolynomial = BuildSparseIrred_GF2X(NUM);
 	istringstream iss(str);
 	iss >> this->m_poly;
 }
