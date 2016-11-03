@@ -186,6 +186,30 @@ Communication.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/Communication.cpp.s
 .PHONY : Communication.cpp.s
 
+Field.o: Field.cpp.o
+.PHONY : Field.o
+
+# target to build an object file
+Field.cpp.o:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/Field.cpp.o
+.PHONY : Field.cpp.o
+
+Field.i: Field.cpp.i
+.PHONY : Field.i
+
+# target to preprocess a source file
+Field.cpp.i:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/Field.cpp.i
+.PHONY : Field.cpp.i
+
+Field.s: Field.cpp.s
+.PHONY : Field.s
+
+# target to generate assembly for a file
+Field.cpp.s:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/Field.cpp.s
+.PHONY : Field.cpp.s
+
 HIM.o: HIM.cpp.o
 .PHONY : HIM.o
 
@@ -420,6 +444,9 @@ help:
 	@echo "... Communication.o"
 	@echo "... Communication.i"
 	@echo "... Communication.s"
+	@echo "... Field.o"
+	@echo "... Field.i"
+	@echo "... Field.s"
 	@echo "... HIM.o"
 	@echo "... HIM.i"
 	@echo "... HIM.s"

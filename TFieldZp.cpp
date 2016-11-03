@@ -21,7 +21,7 @@ TFieldZp::TFieldZp(int p) {
  * the 0-th field element must be the neutral w.r.t. addition, and the
  * 1-st field element must be the neutral w.r.t. multiplication.
  */
-TFieldElementZp TFieldZp::GetElement(uint8_t b) {
+TFieldElementZp TFieldZp::GetElement(int b) {
     ZZ_p element(b);
     if(b == 1)
     {
@@ -44,7 +44,10 @@ TFieldZp* TFieldZp::getInstance()
 {
     if(!m_instanceFlag)
     {
-        m_single = new TFieldZp(5);
+        cout << "enter p" << endl;
+        int p;
+        cin >> p;
+        m_single = new TFieldZp(p);
         m_instanceFlag = true;
         return m_single;
     }

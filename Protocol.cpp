@@ -1042,7 +1042,7 @@ int Protocol::processSmul()
            && gateDoneArr[circuit.getGates()[k].input1])
         {
             // scalar = circuit.getGates()[k].input2
-            uint8_t scalar(circuit.getGates()[k].input2);
+            TYPE scalar(circuit.getGates()[k].input2);
             TFIELD_ELEMENT e = TFIELD::getInstance()->GetElement(scalar);
             gateShareArr[k] = gateShareArr[circuit.getGates()[k].input1] * e;
             gateDoneArr[k] = true;

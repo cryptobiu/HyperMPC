@@ -48,31 +48,31 @@ TFieldElement TField::GetElement(uint8_t b) {
 	return element;
 }
 
-
-/*
- * The i-th field element. The ordering is arbitrary, *except* that
- * the 0-th field element must be the neutral w.r.t. addition, and the
- * 1-st field element must be the neutral w.r.t. multiplication.
- */
-TFieldElement TField::GetElementByValue(uint8_t b) {
-
-	if(b == 1)
-	{
-		return *this->GetOne();
-	}
-	if(b == 0)
-	{
-		return *this->GetZero();
-	}
-	TFieldElement element;
-	bitset<8> bits(b);
-
-	for(int i=0; i < 8; i++) {
-		// set the coefficient of x^i to 1
-		SetCoeff(element.getElement(),i,bits[i]);
-	}
-	return element;
-}
+//
+///*
+// * The i-th field element. The ordering is arbitrary, *except* that
+// * the 0-th field element must be the neutral w.r.t. addition, and the
+// * 1-st field element must be the neutral w.r.t. multiplication.
+// */
+//TFieldElement TField::GetElementByValue(uint8_t b) {
+//
+//	if(b == 1)
+//	{
+//		return *this->GetOne();
+//	}
+//	if(b == 0)
+//	{
+//		return *this->GetZero();
+//	}
+//	TFieldElement element;
+//	bitset<8> bits(b);
+//
+//	for(int i=0; i < 8; i++) {
+//		// set the coefficient of x^i to 1
+//		SetCoeff(element.getElement(),i,bits[i]);
+//	}
+//	return element;
+//}
 
 /**
  * return the field

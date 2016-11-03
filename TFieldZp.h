@@ -36,7 +36,8 @@ public:
      */
 
     //Meital : change from uint8_t to int in order to support a larger amount of element creation
-    TFieldElementZp GetElement(uint8_t b);
+   // TFieldElementZp GetElement(uint8_t b);
+    TFieldElementZp GetElement(int b);
     TFieldElementZp Random();
     virtual ~TFieldZp();
 };

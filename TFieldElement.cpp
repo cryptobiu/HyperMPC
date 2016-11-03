@@ -70,10 +70,6 @@ TFieldElement TFieldElement::operator/(TFieldElement& f2)
 	answer.setPoly(rf);
 	return answer;
 }
-NTL::GF2X TFieldElement::getIrreducible()
-{
-    this->irreduciblePolynomial;
-}
 
 TFieldElement TFieldElement::operator*(TFieldElement& f2)
 {
