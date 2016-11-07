@@ -283,19 +283,11 @@ void Protocol::run() {
 
     cout << "time in milliseconds outputPhase: " << duration << endl;
 
-    if(flag_print) {
-    cout << "after output Phase " << '\n'; }
-    t2 = high_resolution_clock::now();
-
-    duration = duration_cast<milliseconds>(t2-t1).count();
-
-    cout << "time in milliseconds : " << duration << endl;
-
     auto t2end = high_resolution_clock::now();
 
     duration = duration_cast<milliseconds>(t2end-t1start).count();
 
-    cout << "time in milliseconds : " << duration << endl;
+    cout << "time in milliseconds for protocol: " << duration << endl;
 }
 
 void Protocol::computationPhase(HIM &m) {

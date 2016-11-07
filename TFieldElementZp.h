@@ -14,15 +14,15 @@ public:
     TFieldElementZp();
     TFieldElementZp(NTL::ZZ_p element);
     TFieldElementZp(std::string str);
-    NTL::ZZ_p& getElement();
+    NTL::ZZ_p getElement() const;
     TFieldElementZp operator+(TFieldElementZp& f2);
     TFieldElementZp operator-(TFieldElementZp& f2);
     TFieldElementZp operator/(TFieldElementZp& f2);
     TFieldElementZp operator*(TFieldElementZp& f2);
-    void operator+=(TFieldElementZp& f2);
-    void operator*=(TFieldElementZp& f2);
+    TFieldElementZp& operator+=(TFieldElementZp& f2);
+    TFieldElementZp& operator*=(TFieldElementZp& f2);
     std::string toString();
-    void operator=(const TFieldElementZp& f2);
+    TFieldElementZp& operator=(const TFieldElementZp& f2);
     virtual ~TFieldElementZp();
 };
 

@@ -5,8 +5,10 @@
 #include "Def.h"
 #include "TFieldElement.h"
 #include "TFieldElementZp.h"
+#include "TFieldElementGF2E.h"
 #include "TField.h"
 #include "TFieldZp.h"
+#include "TFieldGF2E.h"
 #include <NTL/GF2X.h>
 #include <iostream>
 #include <vector>

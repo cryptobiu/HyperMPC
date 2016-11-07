@@ -77,7 +77,7 @@ TFIELD_ELEMENT** HIM::InitHIM()
 	vector<TFIELD_ELEMENT> beta(m_m);
 
 	// check if valid
-	if (256 <= m_m*m_n)
+	if (256 <= m_m+m_n)
 	{
 		cout << "error";
 	}

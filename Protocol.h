@@ -16,6 +16,8 @@
 #include <chrono>
 #include "TFieldElementZp.h"
 #include "TFieldZp.h"
+#include "TFieldElementGF2E.h"
+#include "TFieldGF2E.h"
 #include "Def.h"
 
 using namespace std;
