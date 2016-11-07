@@ -45,7 +45,7 @@ TFieldZp* TFieldZp::getInstance()
     if(!m_instanceFlag)
     {
         //cout << "enter p" << endl;
-        int p = 7;
+        int p = 239;
         //cin >> p;
         m_single = new TFieldZp(p);
         m_instanceFlag = true;

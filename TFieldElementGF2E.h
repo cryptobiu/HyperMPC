@@ -20,7 +20,6 @@ using namespace std;
 class TFieldElementGF2E {
 private:
     NTL::GF2E m_element;
-    NTL::GF2X irreduciblePolynomial;
 public:
     TFieldElementGF2E();
     TFieldElementGF2E(NTL::GF2E element);
