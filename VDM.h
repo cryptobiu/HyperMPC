@@ -2,9 +2,11 @@
 #define VDM_H_
 
 #include "TFieldElement.h"
+#include "TFieldElementGF2E.h"
 #include "TField.h"
 #include "TFieldZp.h"
 #include "TFieldElementZp.h"
+#include "TFieldGF2E.h"
 #include "Def.h"
 #include <vector>
 #include <stdio.h>

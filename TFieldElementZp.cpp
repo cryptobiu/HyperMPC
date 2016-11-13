@@ -16,28 +16,32 @@ TFieldElementZp::TFieldElementZp(string str) : m_element() {
 }
 
 
-NTL::ZZ_p& TFieldElementZp::getElement() {
+NTL::ZZ_p TFieldElementZp::getElement() const{
     return m_element;
 }
 
 TFieldElementZp TFieldElementZp::operator-(TFieldElementZp& f2)
 {
-    return this->getElement() - f2.getElement();
+    return m_element - f2.getElement();
 }
 
 TFieldElementZp TFieldElementZp::operator+(TFieldElementZp& f2)
 {
-    return this->getElement() + f2.getElement();
+    return m_element + f2.getElement();
 }
 
-void TFieldElementZp::operator+=(TFieldElementZp& f2)
+TFieldElementZp& TFieldElementZp::operator+=(TFieldElementZp& f2)
 {
-    this->getElement() += f2.getElement();
+    m_element += f2.getElement();
+
+    return *this;
 }
 
-void TFieldElementZp::operator*=(TFieldElementZp& f2)
+TFieldElementZp& TFieldElementZp::operator*=(TFieldElementZp& f2)
 {
-    mul(this->getElement(), this->getElement(),  f2.getElement());
+    mul(m_element, m_element,  f2.getElement());
+
+    return *this;
 }
 
 TFieldElementZp TFieldElementZp::operator/(TFieldElementZp& f2)
@@ -46,7 +50,7 @@ TFieldElementZp TFieldElementZp::operator/(TFieldElementZp& f2)
     NTL::ZZ_p rf;
     // x = a^{-1} % f, error is a is not invertible
     inv(f,f2.getElement());
-    mul(rf, f,  this->getElement());
+    mul(rf, f,  m_element);
     return rf;
 }
 
@@ -55,9 +59,11 @@ TFieldElementZp TFieldElementZp::operator*(TFieldElementZp& f2)
     return this->getElement() *  f2.getElement();
 }
 
-void TFieldElementZp::operator=(const TFieldElementZp& f2)
+TFieldElementZp& TFieldElementZp::operator=(const TFieldElementZp& f2)
 {
-    this->m_element = f2.m_element;
+    this->m_element = f2.getElement();
+
+    return *this;
 }
 
 string TFieldElementZp::toString()
