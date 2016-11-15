@@ -276,7 +276,7 @@ void Communication::send(const string &myTopicForMessage, const string &myMessag
     // update the details of message
     this->m_pubmsg.payload = (void *) myMessage.c_str();
     this->m_pubmsg.payloadlen = myMessage.size();
-    this->m_pubmsg.qos = 1;
+    this->m_pubmsg.qos = 0;
     this->m_pubmsg.retained = 0;
     this->deliveredtoken = 0;
 
@@ -284,7 +284,7 @@ void Communication::send(const string &myTopicForMessage, const string &myMessag
     MQTTClient_publishMessage(this->m_client, myTopicForMessage.c_str(), &this->m_pubmsg, &this->m_token);
 
     // waiting until the message send
-    while (this->deliveredtoken != this->m_token) {};
+    //while (this->deliveredtoken != this->m_token) {};
 }
 
 void Communication::roundfunction1(vector<string> &sendBufs, vector<string> &recBufs) {
@@ -324,7 +324,7 @@ void Communication::roundfunction2(string &myMessage, vector<string> &recBufs) {
     // update the details of message
     m_pubmsg.payload = (void *) myMessage.c_str();
     m_pubmsg.payloadlen = myMessage.size();
-    m_pubmsg.qos = 1;
+    m_pubmsg.qos = 0;
     m_pubmsg.retained = 0;
     deliveredtoken = 0;
 
@@ -332,7 +332,7 @@ void Communication::roundfunction2(string &myMessage, vector<string> &recBufs) {
     MQTTClient_publishMessage(m_client, myTopicForMessage.c_str(), &m_pubmsg, &m_token);
 
     // waiting until the message send
-    while (deliveredtoken != m_token) {};
+    //while (deliveredtoken != m_token) {};
 
     while (countRF2 < N - 1) {}
 
@@ -359,13 +359,13 @@ void Communication::roundfunction3(vector<string> &buffers, vector<string> &recB
         m_pubmsg.payload = (void *) myMessage.c_str();
 
         m_pubmsg.payloadlen = myMessage.size();
-        m_pubmsg.qos = 1;
+        m_pubmsg.qos = 0;
         m_pubmsg.retained = 0;
         deliveredtoken = 0;
 
         MQTTClient_publishMessage(m_client, myTopicForMessage.c_str(), &m_pubmsg, &m_token);
 
-        while (deliveredtoken != m_token) {};
+        //while (deliveredtoken != m_token) {};
     }
     while (countRF3 < N - 1) {}
 

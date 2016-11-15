@@ -69,7 +69,7 @@ TFieldGF2E* TFieldGF2E::getInstance()
 TFieldElementGF2E TFieldGF2E::Random() {
     TFieldElementGF2E randomElement;
     PRG & prg = PRG::instance();
-    uint8_t b = prg.getRandom();
+    TYPE b = prg.getRandom();
 
     return GetElement(b);
 }

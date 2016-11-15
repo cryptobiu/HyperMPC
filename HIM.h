@@ -13,6 +13,7 @@
 #include <iostream>
 #include <vector>
 #include <array>
+#include "TemplateField.h"
 
 /**
  * A hyper-invertible matrix is a matrix of which every (non-trivial) square sub-matrix is invertible. Given
@@ -27,18 +28,21 @@
  */
 
 using namespace std;
+using namespace NTL;
 
+template <typename FieldType>
 class HIM {
 private:
 	int m_n,m_m;
-	TFIELD_ELEMENT** m_matrix;
+	FieldType** m_matrix;
+	TemplateField<FieldType> *field;
 public:
 
 	/**
 	 * This method allocate m-by-n matrix.
 	 * m rows, n columns.
 	 */
-	HIM(int m, int n);
+	HIM(int m, int n, TemplateField<FieldType> *field);
 
 	HIM();
 
@@ -52,13 +56,13 @@ public:
 	 * M = {λi,j} j=1,...n i=1,...,m
 	 * where λ i,j = {multiplication}k=1,..n (βi−αk)/(αj−αk)
 	 */
-	TFIELD_ELEMENT** InitHIMByVectors(vector<TFIELD_ELEMENT> &alpha, vector<TFIELD_ELEMENT> &beta);
+	FieldType** InitHIMByVectors(vector<FieldType> &alpha, vector<FieldType> &beta);
 
 	/**
 	 * This method create vectors alpha and beta,
 	 * and init the matrix by the method InitHIMByVectors(alpha, beta).
 	 */
-	TFIELD_ELEMENT** InitHIM();
+	FieldType** InitHIM();
 
 	/**
 	 * This method print the matrix
@@ -69,11 +73,148 @@ public:
 	 * matrix/vector multiplication.
 	 * The result is the answer vector.
 	 */
-	void MatrixMult(std::vector<TFIELD_ELEMENT> &vector, std::vector<TFIELD_ELEMENT> &answer);
+	void MatrixMult(std::vector<FieldType> &vector, std::vector<FieldType> &answer);
 
 	void allocate(int m, int n);
 
 	virtual ~HIM();
 };
+
+
+
+template <typename FieldType>
+HIM<FieldType>::HIM(){}
+
+template <typename FieldType>
+HIM<FieldType>::HIM(int m, int n, TemplateField<FieldType> *field) {
+	// m rows, n columns
+	this->m_m = m;
+	this->m_n = n;
+	this->field = field;
+	this->m_matrix = new FieldType*[m_m];
+
+	for (int i = 0; i < m_m; i++)
+	{
+		m_matrix[i] = new FieldType[m_n];
+	}
+}
+
+template <typename FieldType>
+FieldType** HIM<FieldType>::InitHIMByVectors(vector<FieldType> &alpha, vector<FieldType> &beta)
+{
+	FieldType lambda;
+	FieldType temp;
+	FieldType temp1;
+	FieldType temp2;
+
+	int m = beta.size();
+	int n = alpha.size();
+	for (int i = 0; i < m; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			// lambda = 1
+			lambda = *(field->GetOne());
+
+			// compute value for matrix[i,j]
+			for (int k = 0; k < n; k++)
+			{
+				if (k == j)
+				{
+					continue;
+				}
+				temp1 = (beta[i]) - (alpha[k]);
+				temp2 = (alpha[j]) - (alpha[k]);
+				temp = temp1 / temp2;
+				lambda *= temp;
+			}
+
+			// set the matrix
+			(m_matrix[i][j]) = lambda;
+		}
+	}
+	return m_matrix;
+}
+
+template <typename FieldType>
+void HIM<FieldType>::allocate(int m, int n)
+{
+	// m rows, n columns
+	this->m_m = m;
+	this->m_n = n;
+	this->m_matrix = new FieldType*[m_m];
+	for (int i = 0; i < m_m; i++)
+	{
+		m_matrix[i] = new FieldType[m_n];
+	}
+}
+
+template <typename FieldType>
+FieldType** HIM<FieldType>::InitHIM()
+{
+	int i;
+	vector<FieldType> alpha(m_n);
+	vector<FieldType> beta(m_m);
+
+	// check if valid
+	if (256 <= m_m+m_n)
+	{
+		cout << "error";
+	}
+
+	// Let alpha_j and beta_i be arbitrary field elements
+	for (i = 0; i < m_n; i++)
+	{
+		alpha[i] = field->GetElement(i);
+	}
+
+	for (i = 0; i < m_m; i++)
+	{
+		beta[i] = field->GetElement(m_n+i);
+	}
+
+	return(InitHIMByVectors(alpha,beta));
+}
+
+template <typename FieldType>
+void HIM<FieldType>::Print()
+{
+	for (int i = 0; i < m_m; i++) {
+		for (int j = 0; j < m_n; j++) {
+			cout << (m_matrix[i][j]).getElement() << " ";
+		}
+
+		cout << " " << '\n';
+	}
+
+}
+
+template <typename FieldType>
+void HIM<FieldType>::MatrixMult(std::vector<FieldType> &vector, std::vector<FieldType> &answer)
+{
+	FieldType temp1;
+	for(int i = 0; i < m_m; i++)
+	{
+		// answer[i] = 0
+		answer[i] = FieldType(ZERO::zero());
+
+		for(int j=0; j < m_n; j++)
+		{
+			temp1 = m_matrix[i][j] * vector[j];
+			//answer[i] = answer[i] + temp1;
+			answer[i] += temp1;
+		}
+	}
+}
+
+template <typename FieldType>
+HIM<FieldType>::~HIM() {
+	for (int i = 0; i < m_m; i++)
+	{
+		delete[] m_matrix[i];
+	}
+	delete[] m_matrix;
+}
+
 
 #endif /* HIM_H_ */
