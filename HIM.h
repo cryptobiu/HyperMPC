@@ -3,17 +3,16 @@
 
 #include <iostream>
 #include "Def.h"
-#include "TFieldElement.h"
-#include "TFieldElementZp.h"
-#include "TFieldElementGF2E.h"
-#include "TField.h"
-#include "TFieldZp.h"
-#include "TFieldGF2E.h"
+#include <NTL/GF2E.h>
 #include <NTL/GF2X.h>
+#include <NTL/ZZ_p.h>
+#include <NTL/GF2XFactoring.h>
 #include <iostream>
 #include <vector>
 #include <array>
 #include "TemplateField.h"
+
+using namespace NTL;
 
 /**
  * A hyper-invertible matrix is a matrix of which every (non-trivial) square sub-matrix is invertible. Given
@@ -75,7 +74,7 @@ public:
 	 */
 	void MatrixMult(std::vector<FieldType> &vector, std::vector<FieldType> &answer);
 
-	void allocate(int m, int n);
+	void allocate(int m, int n, TemplateField<FieldType> *field);
 
 	virtual ~HIM();
 };
@@ -137,11 +136,12 @@ FieldType** HIM<FieldType>::InitHIMByVectors(vector<FieldType> &alpha, vector<Fi
 }
 
 template <typename FieldType>
-void HIM<FieldType>::allocate(int m, int n)
+void HIM<FieldType>::allocate(int m, int n, TemplateField<FieldType> *field)
 {
 	// m rows, n columns
 	this->m_m = m;
 	this->m_n = n;
+	this->field = field;
 	this->m_matrix = new FieldType*[m_m];
 	for (int i = 0; i < m_m; i++)
 	{
@@ -196,7 +196,7 @@ void HIM<FieldType>::MatrixMult(std::vector<FieldType> &vector, std::vector<Fiel
 	for(int i = 0; i < m_m; i++)
 	{
 		// answer[i] = 0
-		answer[i] = FieldType(ZERO::zero());
+		answer[i] = FieldType(FieldType::zero());
 
 		for(int j=0; j < m_n; j++)
 		{

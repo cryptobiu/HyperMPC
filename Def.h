@@ -3,10 +3,10 @@
 
 //#define FieldType TFieldElementGF2E
 #define TFIELD TFieldGF2E
-#define ZERO GF2E
-#define TYPE long
+//#define ZERO GF2E
+//#define TYPE long
 
-#define NUM 8
+//#define NUM 8
 
 //
 //#define ZERO ZZ_p

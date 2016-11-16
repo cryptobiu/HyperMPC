@@ -6,8 +6,7 @@ using namespace std;
 
 #include "NTL/ZZ_p.h"
 #include "NTL/ZZ.h"
-#include "TFieldElementZp.h"
-#include "TFieldZp.h"
+
 
 using namespace NTL;
 

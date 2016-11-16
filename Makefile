@@ -258,194 +258,32 @@ Protocol.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/Protocol.cpp.s
 .PHONY : Protocol.cpp.s
 
-TField.o: TField.cpp.o
+TemplateField.o: TemplateField.cpp.o
 
-.PHONY : TField.o
-
-# target to build an object file
-TField.cpp.o:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TField.cpp.o
-.PHONY : TField.cpp.o
-
-TField.i: TField.cpp.i
-
-.PHONY : TField.i
-
-# target to preprocess a source file
-TField.cpp.i:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TField.cpp.i
-.PHONY : TField.cpp.i
-
-TField.s: TField.cpp.s
-
-.PHONY : TField.s
-
-# target to generate assembly for a file
-TField.cpp.s:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TField.cpp.s
-.PHONY : TField.cpp.s
-
-TFieldElement.o: TFieldElement.cpp.o
-
-.PHONY : TFieldElement.o
+.PHONY : TemplateField.o
 
 # target to build an object file
-TFieldElement.cpp.o:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldElement.cpp.o
-.PHONY : TFieldElement.cpp.o
+TemplateField.cpp.o:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TemplateField.cpp.o
+.PHONY : TemplateField.cpp.o
 
-TFieldElement.i: TFieldElement.cpp.i
+TemplateField.i: TemplateField.cpp.i
 
-.PHONY : TFieldElement.i
-
-# target to preprocess a source file
-TFieldElement.cpp.i:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldElement.cpp.i
-.PHONY : TFieldElement.cpp.i
-
-TFieldElement.s: TFieldElement.cpp.s
-
-.PHONY : TFieldElement.s
-
-# target to generate assembly for a file
-TFieldElement.cpp.s:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldElement.cpp.s
-.PHONY : TFieldElement.cpp.s
-
-TFieldElementGF2E.o: TFieldElementGF2E.cpp.o
-
-.PHONY : TFieldElementGF2E.o
-
-# target to build an object file
-TFieldElementGF2E.cpp.o:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldElementGF2E.cpp.o
-.PHONY : TFieldElementGF2E.cpp.o
-
-TFieldElementGF2E.i: TFieldElementGF2E.cpp.i
-
-.PHONY : TFieldElementGF2E.i
+.PHONY : TemplateField.i
 
 # target to preprocess a source file
-TFieldElementGF2E.cpp.i:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldElementGF2E.cpp.i
-.PHONY : TFieldElementGF2E.cpp.i
+TemplateField.cpp.i:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TemplateField.cpp.i
+.PHONY : TemplateField.cpp.i
 
-TFieldElementGF2E.s: TFieldElementGF2E.cpp.s
+TemplateField.s: TemplateField.cpp.s
 
-.PHONY : TFieldElementGF2E.s
-
-# target to generate assembly for a file
-TFieldElementGF2E.cpp.s:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldElementGF2E.cpp.s
-.PHONY : TFieldElementGF2E.cpp.s
-
-TFieldElementZp.o: TFieldElementZp.cpp.o
-
-.PHONY : TFieldElementZp.o
-
-# target to build an object file
-TFieldElementZp.cpp.o:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldElementZp.cpp.o
-.PHONY : TFieldElementZp.cpp.o
-
-TFieldElementZp.i: TFieldElementZp.cpp.i
-
-.PHONY : TFieldElementZp.i
-
-# target to preprocess a source file
-TFieldElementZp.cpp.i:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldElementZp.cpp.i
-.PHONY : TFieldElementZp.cpp.i
-
-TFieldElementZp.s: TFieldElementZp.cpp.s
-
-.PHONY : TFieldElementZp.s
+.PHONY : TemplateField.s
 
 # target to generate assembly for a file
-TFieldElementZp.cpp.s:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldElementZp.cpp.s
-.PHONY : TFieldElementZp.cpp.s
-
-TFieldGF2E.o: TFieldGF2E.cpp.o
-
-.PHONY : TFieldGF2E.o
-
-# target to build an object file
-TFieldGF2E.cpp.o:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldGF2E.cpp.o
-.PHONY : TFieldGF2E.cpp.o
-
-TFieldGF2E.i: TFieldGF2E.cpp.i
-
-.PHONY : TFieldGF2E.i
-
-# target to preprocess a source file
-TFieldGF2E.cpp.i:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldGF2E.cpp.i
-.PHONY : TFieldGF2E.cpp.i
-
-TFieldGF2E.s: TFieldGF2E.cpp.s
-
-.PHONY : TFieldGF2E.s
-
-# target to generate assembly for a file
-TFieldGF2E.cpp.s:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldGF2E.cpp.s
-.PHONY : TFieldGF2E.cpp.s
-
-TFieldZp.o: TFieldZp.cpp.o
-
-.PHONY : TFieldZp.o
-
-# target to build an object file
-TFieldZp.cpp.o:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldZp.cpp.o
-.PHONY : TFieldZp.cpp.o
-
-TFieldZp.i: TFieldZp.cpp.i
-
-.PHONY : TFieldZp.i
-
-# target to preprocess a source file
-TFieldZp.cpp.i:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldZp.cpp.i
-.PHONY : TFieldZp.cpp.i
-
-TFieldZp.s: TFieldZp.cpp.s
-
-.PHONY : TFieldZp.s
-
-# target to generate assembly for a file
-TFieldZp.cpp.s:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TFieldZp.cpp.s
-.PHONY : TFieldZp.cpp.s
-
-TParty.o: TParty.cpp.o
-
-.PHONY : TParty.o
-
-# target to build an object file
-TParty.cpp.o:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TParty.cpp.o
-.PHONY : TParty.cpp.o
-
-TParty.i: TParty.cpp.i
-
-.PHONY : TParty.i
-
-# target to preprocess a source file
-TParty.cpp.i:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TParty.cpp.i
-.PHONY : TParty.cpp.i
-
-TParty.s: TParty.cpp.s
-
-.PHONY : TParty.s
-
-# target to generate assembly for a file
-TParty.cpp.s:
-	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TParty.cpp.s
-.PHONY : TParty.cpp.s
+TemplateField.cpp.s:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/TemplateField.cpp.s
+.PHONY : TemplateField.cpp.s
 
 VDM.o: VDM.cpp.o
 
@@ -525,27 +363,9 @@ help:
 	@echo "... Protocol.o"
 	@echo "... Protocol.i"
 	@echo "... Protocol.s"
-	@echo "... TField.o"
-	@echo "... TField.i"
-	@echo "... TField.s"
-	@echo "... TFieldElement.o"
-	@echo "... TFieldElement.i"
-	@echo "... TFieldElement.s"
-	@echo "... TFieldElementGF2E.o"
-	@echo "... TFieldElementGF2E.i"
-	@echo "... TFieldElementGF2E.s"
-	@echo "... TFieldElementZp.o"
-	@echo "... TFieldElementZp.i"
-	@echo "... TFieldElementZp.s"
-	@echo "... TFieldGF2E.o"
-	@echo "... TFieldGF2E.i"
-	@echo "... TFieldGF2E.s"
-	@echo "... TFieldZp.o"
-	@echo "... TFieldZp.i"
-	@echo "... TFieldZp.s"
-	@echo "... TParty.o"
-	@echo "... TParty.i"
-	@echo "... TParty.s"
+	@echo "... TemplateField.o"
+	@echo "... TemplateField.i"
+	@echo "... TemplateField.s"
 	@echo "... VDM.o"
 	@echo "... VDM.i"
 	@echo "... VDM.s"

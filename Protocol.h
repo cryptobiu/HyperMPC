@@ -9,15 +9,9 @@
 #include "ArithmeticCircuit.h"
 #include "Communication.h"
 #include <vector>
-#include <bitset>
-#include "TFieldElement.h"
 #include <iostream>
 #include <fstream>
 #include <chrono>
-#include "TFieldElementZp.h"
-#include "TFieldZp.h"
-#include "TFieldElementGF2E.h"
-#include "TFieldGF2E.h"
 #include "Def.h"
 #include "TemplateField.h"
 
@@ -343,7 +337,7 @@ bool Protocol<FieldType>::broadcast(int party_id, string myMessage, vector<strin
         {
             if((i < N-T) && (k*(N-T)+i < count))
             {
-                X1[i]= FieldType(valBufs[index]);
+                X1[i]= field->stringToElement(valBufs[index]);
                 index++;
             }
             else
@@ -356,7 +350,7 @@ bool Protocol<FieldType>::broadcast(int party_id, string myMessage, vector<strin
         if(flag_print) {
             for(int i = 0; i < N; i++)
             {
-                cout << "X1[i]" << i << " " << X1[i].toString() << endl;
+                cout << "X1[i]" << i << " " << field->elementToString(X1[i]) << endl;
             } }
 
         // x1 contains (up to) N-T values from ValBuf
@@ -369,10 +363,10 @@ bool Protocol<FieldType>::broadcast(int party_id, string myMessage, vector<strin
         if(flag_print) {
             for(int i = 0; i < N; i++)
             {
-                cout << "X1[i]" << i << " " << X1[i].toString()<< endl;
+                cout << "X1[i]" << i << " " << field->elementToString(X1[i])<< endl;
             } }
         for(int i = 0; i < N; i++) {
-            buffers[i] += Y1[i].toString() + "*";
+            buffers[i] += field->elementToString(Y1[i]) + "*";
         }
         for(int i = 0; i < N; i++)
         {
@@ -557,10 +551,10 @@ void Protocol<FieldType>::inputAdjustment(string &diff, HIM<FieldType> &mat)
             // the value is gateValue[k], but should be input.
             FieldType myinput = field->GetElement(input);
             if(flag_print) {
-                cout << "gateValueArr "<<k<< "   " << gateValueArr[k].toString() << endl;}
+                cout << "gateValueArr "<<k<< "   " << field->elementToString(gateValueArr[k]) << endl;}
 
             FieldType different = myinput - gateValueArr[k];
-            string str = different.toString();
+            string str = field->elementToString(different);
 
             diff += str + "*";
 
@@ -601,7 +595,7 @@ void Protocol<FieldType>::inputAdjustment(string &diff, HIM<FieldType> &mat)
         {
             str = recBufsdiff[circuit.getGates()[k].party - 1];
             arr = split(str, '*');
-            db = FieldType(arr[0]);
+            db = field->stringToElement(arr[0]);
             gateShareArr[k] = gateShareArr[k] + db; // adjustment
             recBufsdiff[circuit.getGates()[k].party - 1] = "";
             for(int i=1; i<arr.size(); i++) {
@@ -638,7 +632,7 @@ void Protocol<FieldType>::initializationPhase(HIM<FieldType> &matrix_him, VDM<Fi
 
 
     beta[0] = field->GetElement(0); // zero of the field
-    matrix_for_interpolate.allocate(1,N);
+    matrix_for_interpolate.allocate(1,N, field);
 
     // Compute Vandermonde matrix VDM[i,k] = alpha[i]^k
     matrix_vand.InitVDM();
@@ -682,7 +676,7 @@ void Protocol<FieldType>::initializationPhase(HIM<FieldType> &matrix_him, VDM<Fi
         alpha_from_t[i - (T + 1)] = alpha[i];
     }
     // Interpolate first d+1 positions of (alpha,x)
-    matrix_for_t.allocate(N - 1 - T, T + 1); // slices, only positions from 0..d
+    matrix_for_t.allocate(N - 1 - T, T + 1, field); // slices, only positions from 0..d
     matrix_for_t.InitHIMByVectors(alpha_until_t, alpha_from_t);
 
     vector<FieldType> alpha_until_2t(2*T + 1);
@@ -695,7 +689,7 @@ void Protocol<FieldType>::initializationPhase(HIM<FieldType> &matrix_him, VDM<Fi
         alpha_from_2t[i - (2*T + 1)] = alpha[i];
     }
     // Interpolate first d+1 positions of (alpha,x)
-    matrix_for_2t.allocate(N - 1 - 2*T, 2*T + 1); // slices, only positions from 0..d
+    matrix_for_2t.allocate(N - 1 - 2*T, 2*T + 1, field); // slices, only positions from 0..d
     matrix_for_2t.InitHIMByVectors(alpha_until_2t, alpha_from_2t);
 
 
@@ -747,7 +741,7 @@ void Protocol<FieldType>::publicReconstruction(vector<string> &myShares, int &co
             if( k*(N-T)+i < count)
             {
                 // k*(N-T)+i
-                x1[i] = FieldType(myShares[k*(N-T)+i]);
+                x1[i] = field->stringToElement(myShares[k*(N-T)+i]);
             }
             else
             {
@@ -766,7 +760,7 @@ void Protocol<FieldType>::publicReconstruction(vector<string> &myShares, int &co
         // ∀i, j: Pi sends xj to Pj
         for(int i = 0; i < N; i++)
         {
-            sendBufs[i] += x1[i].toString() + "*";
+            sendBufs[i] += field->elementToString(x1[i]) + "*";
         }
     }
     if(flag_print) {
@@ -790,13 +784,13 @@ void Protocol<FieldType>::publicReconstruction(vector<string> &myShares, int &co
         for (int i = 0; i < N; i++) {
 
             arr = split(recBufs[i], '*');
-            x1[i] = FieldType(arr[k]);
+            x1[i] = field->stringToElement(arr[k]);
         }
         if(flag_print) {
             cout << "x1[i]" << endl;
             for(int i = 0; i < N; i++)
             {
-                cout << x1[i].toString() << endl;
+                cout << field->elementToString(x1[i]) << endl;
             } }
 
         // checking that {xj}i are d-consistent and interpolate them to x j .
@@ -812,7 +806,7 @@ void Protocol<FieldType>::publicReconstruction(vector<string> &myShares, int &co
 
         // send x to all parties
         for (int i = 0; i < N; i++) {
-            sendBufs2[i] += x.toString() + "*";
+            sendBufs2[i] += field->elementToString(x) + "*";
         }
     }
     if(flag_print) {
@@ -834,14 +828,14 @@ void Protocol<FieldType>::publicReconstruction(vector<string> &myShares, int &co
         for (int i = 0; i < N; i++) {
 
             arr = split(recBufs2[i], '*');
-            x1[i] = FieldType(arr[k]);
+            x1[i] = field->stringToElement(arr[k]);
         }
 
         // checking that (Xn−t,...,Xn) = M*(X1,...,Xn−t)
         m.MatrixMult(x1, y1);
 
         for (int i = 0; i < T; i++) {
-            if(x1[N-T+i].toString() != y1[i].toString())
+            if(field->elementToString(x1[N-T+i]) != field->elementToString(y1[i]))
             {
                 if(flag_print) {
                     // halt !
@@ -902,7 +896,7 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
         x2[0] = x1[0];
 
         if(flag_print) {
-            cout << "k " << k << "s= " << x1[0].toString() << endl;}
+            cout << "k " << k << "s= " << field->elementToString(x1[0]) << endl;}
 
         for(int i = 1; i < 2*T+1; i++)
         {
@@ -916,8 +910,8 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
         // prepare shares to be sent
         for(int i=0; i < N; i++)
         {
-            sendBufs[i] += y1[i].toString() + "*"; // the degree-t shares of my poly
-            sendBufs[i] += y2[i].toString() + "$"; // the degree 2t shares of my poly
+            sendBufs[i] += field->elementToString(y1[i]) + "*"; // the degree-t shares of my poly
+            sendBufs[i] += field->elementToString(y2[i]) + "$"; // the degree 2t shares of my poly
         }
 
 
@@ -973,8 +967,8 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
             if(arr.size() >1 ) {
                 strX1 = arr[0];
                 strX2 = arr[1];
-                x1[i] = FieldType(strX1); // my share of the degree-t sharings
-                x2[i] = FieldType(strX2); // my share of the degree-2t sharings
+                x1[i] = field->stringToElement(strX1); // my share of the degree-t sharings
+                x2[i] = field->stringToElement(strX2); // my share of the degree-2t sharings
             }
             else{
                 if(flag_print) { cout << "                   problemmmmm" << endl;}
@@ -984,14 +978,14 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
         matrix_him.MatrixMult(x2, y2);
         // these shall be checked
         for (int i = 0; i < 2 * T; i++) {
-            sendBufs1[robin] += y1[i].toString() + "*";
-            sendBufs1[robin] += y2[i].toString() + "$";
+            sendBufs1[robin] += field->elementToString(y1[i]) + "*";
+            sendBufs1[robin] += field->elementToString(y2[i]) + "$";
             robin = (robin+1) % N; // next robin
         }
         // Y1 : the degree-t shares of my poly
         // Y2 : the degree 2t shares of my poly
         for (int i = 2 * T; i < N; i++) {
-            sharingBuf[k*(N-2*T) + i - 2*T] = y1[i].toString() + "*" + y2[i].toString();
+            sharingBuf[k*(N-2*T) + i - 2*T] = field->elementToString(y1[i]) + "*" + field->elementToString(y2[i]);
         }
 
 
@@ -1028,8 +1022,8 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
                 strX2 = "";
             }
 
-            x1[i] = FieldType(strX1);
-            x2[i] = FieldType(strX2);
+            x1[i] = field->stringToElement(strX1);
+            x2[i] = field->stringToElement(strX2);
         }
 
 
@@ -1045,11 +1039,12 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
         if(flag_print) {
 
             //  cout <<"k "<<k<< "tinterpolate(x1).toString()  " << tinterpolate(x_until_d).toString() << endl;
-            cout << "k " << k << "interpolate(x1).toString()  " << interpolate(x1).toString() << endl;
-            cout << "k " << k << "interpolate(x2).toString()  " << interpolate(x2).toString() << endl;
+            cout << "k " << k << "interpolate(x1).toString()  " << field->elementToString(interpolate(x1)) << endl;
+            cout << "k " << k << "interpolate(x2).toString()  " << field->elementToString(interpolate(x2)) << endl;
         }
         // Check that x1 is t-consistent and x2 is 2t-consistent and secret is the same
-        if(!checkConsistency(x1,T) || !checkConsistency(x2,2*T) || (interpolate(x1).toString() != interpolate(x2).toString()) ) {
+        if(!checkConsistency(x1,T) || !checkConsistency(x2,2*T) ||
+                field->elementToString(interpolate(x1)) != field->elementToString(interpolate(x2)))  {
             // cheating detected, abort
             if(flag_print) {
                 cout << "k" << k<< endl;}
@@ -1084,14 +1079,14 @@ bool Protocol<FieldType>::inputPreparation()
                 // waste the 2T-sharing
                 vector<string> arr = {};
                 arr = split(str, '*');
-                elem = FieldType(arr[0]);
+                elem = field->stringToElement(arr[0]);
             } else {
-                elem = *(FieldType(field->GetZero()));
+                elem = *(field->GetZero());
             }
             gateShareArr[k] = elem;
             i = (circuit.getGates())[k].party; // the number of party which has the input
             // reconstruct sharing towards input party
-            sendBufs[i-1] += gateShareArr[k].toString() + "*";
+            sendBufs[i-1] += field->elementToString(gateShareArr[k]) + "*";
 
         }
     }
@@ -1115,7 +1110,7 @@ bool Protocol<FieldType>::inputPreparation()
             for (int i = 0; i < N; i++) {
                 vector<string> arr = {};
                 arr = split(recBufs[i], '*');
-                elem = FieldType(arr[0]);
+                elem = field->stringToElement(arr[0]);
                 x1[i] = elem;
 
                 recBufs[i]="";
@@ -1136,7 +1131,7 @@ bool Protocol<FieldType>::inputPreparation()
 
             gateValueArr[k] = secret;
             if(flag_print) {
-                cout << "           the secret is " << secret.toString() << endl;}
+                cout << "           the secret is " << field->elementToString(secret) << endl;}
         }
     }
 
@@ -1166,7 +1161,7 @@ bool Protocol<FieldType>::checkConsistency(vector<FieldType>& x, int d)
         // compare that the result is equal to the according positions in x
         for (int i = 0; i < N - d - 1; i++)   // n-d-2 or n-d-1 ??
         {
-            if (y[i].toString() != x[d + 1 + i].toString()) {
+            if (field->elementToString(y[i]) != field->elementToString(x[d + 1 + i])) {
                 return false;
             }
         }
@@ -1186,7 +1181,7 @@ bool Protocol<FieldType>::checkConsistency(vector<FieldType>& x, int d)
         // compare that the result is equal to the according positions in x
         for (int i = 0; i < N - d - 1; i++)   // n-d-2 or n-d-1 ??
         {
-            if (y[i].toString() != x[d + 1 + i].toString()) {
+            if (field->elementToString(y[i]) != field->elementToString(x[d + 1 + i])) {
                 return false;
             }
         }
@@ -1206,14 +1201,14 @@ bool Protocol<FieldType>::checkConsistency(vector<FieldType>& x, int d)
             alpha_from_d[i - (d + 1)] = alpha[i];
         }
         // Interpolate first d+1 positions of (alpha,x)
-        HIM<FieldType> matrix(N - 1 - d, d + 1); // slices, only positions from 0..d
+        HIM<FieldType> matrix(N - 1 - d, d + 1, field); // slices, only positions from 0..d
         matrix.InitHIMByVectors(alpha_until_d, alpha_from_d);
         matrix.MatrixMult(x_until_d, y);
 
         // compare that the result is equal to the according positions in x
         for (int i = 0; i < N - d - 1; i++)   // n-d-2 or n-d-1 ??
         {
-            if (y[i].toString() != x[d + 1 + i].toString()) {
+            if (field->elementToString(y[i]) != field->elementToString(x[d + 1 + i])) {
                 return false;
             }
         }
@@ -1272,8 +1267,8 @@ int Protocol<FieldType>::processSmul()
            && gateDoneArr[circuit.getGates()[k].input1])
         {
             // scalar = circuit.getGates()[k].input2
-            TYPE scalar(circuit.getGates()[k].input2);
-            FieldType e = *(field->GetElement(scalar));
+            long scalar(circuit.getGates()[k].input2);
+            FieldType e = field->GetElement(scalar);
             gateShareArr[k] = gateShareArr[circuit.getGates()[k].input1] * e;
             gateDoneArr[k] = true;
             count++;
@@ -1315,11 +1310,11 @@ int Protocol<FieldType>::processMultiplications(HIM<FieldType> &m)
         {
 
             arr = split(sharingBuf[k], '*');
-            r1 = FieldType(arr[0]); // t-share of random r
-            r2 = FieldType(arr[1]); // t2-share of same r
+            r1 = field->stringToElement(arr[0]); // t-share of random r
+            r2 = field->stringToElement(arr[1]); // t2-share of same r
             p2 = gateShareArr[circuit.getGates()[k].input1] * gateShareArr[circuit.getGates()[k].input2]; // product share (degree-2t)
             d2 = p2 - r2; // t2-share of difference
-            ReconsBuf[index] = d2.toString(); // reconstruct difference (later)
+            ReconsBuf[index] = field->elementToString(d2); // reconstruct difference (later)
             index++;
             // for now gateShareArr[k] is random sharing, needs to be adjusted (later)
             gateShareArr[k] = r1;
@@ -1378,7 +1373,7 @@ void Protocol<FieldType>::processRandoms()
         {
             arr = split(sharingBuf[k], '*');
             // t-share of random r. t2-share of same r, IGNORED!
-            r1 = FieldType(arr[0]);
+            r1 = field->stringToElement(arr[0]);
             gateShareArr[k] = r1;
         }
     }
@@ -1411,7 +1406,7 @@ void Protocol<FieldType>::outputPhase()
         if(circuit.getGates()[k].gateType == OUTPUT)
         {
             // send to party (which need this gate) your share for this gate
-            sendBuf[circuit.getGates()[k].party - 1] = gateShareArr[circuit.getGates()[k].input1].toString();
+            sendBuf[circuit.getGates()[k].party - 1] = field->elementToString(gateShareArr[circuit.getGates()[k].input1]);
         }
     }
 
@@ -1424,7 +1419,7 @@ void Protocol<FieldType>::outputPhase()
         {
             for(int i=0; i < N; i++) {
                 // change from string to field element
-                num = FieldType(recBuf[i]);
+                num = field->stringToElement(recBuf[i]);
                 x1[i] = num;
             }
 
@@ -1436,8 +1431,8 @@ void Protocol<FieldType>::outputPhase()
                     cout << "cheating!!!" << '\n';}
                 return;
             }
-            cout << "the result is : " << interpolate(x1).toString() << '\n';
-            myfile << interpolate(x1).toString();
+            cout << "the result is : " << field->elementToString(interpolate(x1)) << '\n';
+            myfile << field->elementToString(interpolate(x1));
 
         }
     }

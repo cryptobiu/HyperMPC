@@ -1,16 +1,12 @@
 #ifndef VDM_H_
 #define VDM_H_
 
-#include "TFieldElement.h"
-#include "TFieldElementGF2E.h"
-#include "TField.h"
-#include "TFieldZp.h"
-#include "TFieldElementZp.h"
-#include "TFieldGF2E.h"
 #include "Def.h"
 #include <vector>
 #include <stdio.h>
 #include "TemplateField.h"
+
+using namespace NTL;
 
 template<typename FieldType>
 class VDM {
@@ -80,7 +76,7 @@ void VDM<FieldType>::MatrixMult(std::vector<FieldType> &vector, std::vector<Fiel
     for(int i = 0; i < m_m; i++)
     {
         // answer[i] = 0
-        answer[i] = FieldType(ZERO::zero());
+        answer[i] = FieldType(FieldType::zero());
 
         for(int j=0; j < m_n; j++)
         {
