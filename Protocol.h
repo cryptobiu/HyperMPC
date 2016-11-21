@@ -1208,7 +1208,8 @@ bool Protocol<FieldType>::checkConsistency(vector<FieldType>& x, int d)
         // compare that the result is equal to the according positions in x
         for (int i = 0; i < N - d - 1; i++)   // n-d-2 or n-d-1 ??
         {
-            if (field->elementToString(y[i]) != field->elementToString(x[d + 1 + i])) {
+            //if (field->elementToString(y[i]) != field->elementToString(x[d + 1 + i])) {
+            if (y[i] != x[d + 1 + i]) {
                 return false;
             }
         }

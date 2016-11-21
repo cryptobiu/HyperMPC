@@ -102,9 +102,7 @@ template <typename FieldType>
 FieldType** HIM<FieldType>::InitHIMByVectors(vector<FieldType> &alpha, vector<FieldType> &beta)
 {
 	FieldType lambda;
-	FieldType temp;
-	FieldType temp1;
-	FieldType temp2;
+
 
 	int m = beta.size();
 	int n = alpha.size();
@@ -122,10 +120,8 @@ FieldType** HIM<FieldType>::InitHIMByVectors(vector<FieldType> &alpha, vector<Fi
 				{
 					continue;
 				}
-				temp1 = (beta[i]) - (alpha[k]);
-				temp2 = (alpha[j]) - (alpha[k]);
-				temp = temp1 / temp2;
-				lambda *= temp;
+
+				lambda *= ((beta[i]) - (alpha[k])) / ((alpha[j]) - (alpha[k]));
 			}
 
 			// set the matrix

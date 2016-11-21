@@ -72,7 +72,6 @@ void VDM<FieldType>::Print()
 template<typename FieldType>
 void VDM<FieldType>::MatrixMult(std::vector<FieldType> &vector, std::vector<FieldType> &answer)
 {
-    FieldType temp1;
     for(int i = 0; i < m_m; i++)
     {
         // answer[i] = 0
@@ -80,8 +79,7 @@ void VDM<FieldType>::MatrixMult(std::vector<FieldType> &vector, std::vector<Fiel
 
         for(int j=0; j < m_n; j++)
         {
-            temp1 = m_matrix[i][j] * vector[j];
-            answer[i] += temp1;
+            answer[i] += (m_matrix[i][j] * vector[j]);
         }
     }
 
