@@ -287,6 +287,27 @@ void Communication::send(const string &myTopicForMessage, const string &myMessag
     //while (this->deliveredtoken != this->m_token) {};
 }
 
+
+/**
+* the function update the details of message and send it.
+* @param myTopicForMessage
+* @param myMessage
+*/
+void Communication::sendBytes(const string &myTopicForMessage, byte *msg, int size) {
+    // update the details of message
+    this->m_pubmsg.payload = (void *) msg;
+    this->m_pubmsg.payloadlen = size;
+    this->m_pubmsg.qos = 0;
+    this->m_pubmsg.retained = 0;
+    this->deliveredtoken = 0;
+
+    // publish the message to all parties
+    MQTTClient_publishMessage(this->m_client, myTopicForMessage.c_str(), &this->m_pubmsg, &this->m_token);
+
+}
+
+
+
 void Communication::roundfunction1(vector<string> &sendBufs, vector<string> &recBufs) {
     string s = to_string(PARTYID);
     string myTopicForMessage;

@@ -121,6 +121,7 @@ public:
      * This method send the message with the currect topic.
      */
     void send(const string &myTopicForMessage, const string &myMessage);
+    void sendBytes(const string &myTopicForMessage, byte *msg, int size);
 
     virtual ~Communication();
 };

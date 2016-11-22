@@ -22,6 +22,7 @@ class TemplateField {
 private:
 
     long fieldParam;
+    int elementSizeInBytes;
     FieldType* m_ZERO;
     FieldType* m_ONE;
 public:
@@ -38,18 +39,23 @@ public:
      * return the field
      */
 
-    string elementToString(FieldType element);
-    FieldType stringToElement(string str);
+    string elementToString(const FieldType &element);
+    FieldType stringToElement(const string &str);
+
+    void elementToBytes(unsigned char* output,FieldType &element);
+    FieldType bytesToElement(unsigned char* elemenetInBytes);
+
 
     FieldType* GetZero();
     FieldType* GetOne();
+
+    int getElementSizeInBytes(){ return elementSizeInBytes;}
     /*
      * The i-th field element. The ordering is arbitrary, *except* that
      * the 0-th field element must be the neutral w.r.t. addition, and the
      * 1-st field element must be the neutral w.r.t. multiplication.
      */
     FieldType GetElement(long b);
-//	TFieldElement GetElementByValue(uint8_t b);
     FieldType Random();
      ~TemplateField();
 
@@ -58,7 +64,7 @@ public:
 
 
 template <class FieldType>
-string TemplateField<FieldType>::elementToString(FieldType element)
+string TemplateField<FieldType>::elementToString(const FieldType& element)
 {
     ostringstream stream;
     stream << element;
@@ -68,7 +74,7 @@ string TemplateField<FieldType>::elementToString(FieldType element)
 
 
 template <class FieldType>
-FieldType TemplateField<FieldType>::stringToElement(string str) {
+FieldType TemplateField<FieldType>::stringToElement(const string &str) {
 
     FieldType element;
 

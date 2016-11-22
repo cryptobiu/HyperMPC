@@ -40,7 +40,11 @@ private:
     vector<FieldType> gateShareArr; // my share of the gate (for all gates)
     vector<FieldType> alpha; // N distinct non-zero field elements
     vector<bool> gateDoneArr; // true is the gate is processed
-    vector<string> sharingBuf; // prepared double-sharings (my shares)
+
+    vector<FieldType> sharingBufTElements; // prepared T-sharings (my shares)
+    vector<FieldType> sharingBuf2TElements; // prepared 2T-sharings (my shares)
+
+
     vector<int> myInputs;
     string s;
 
@@ -870,7 +874,8 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
     // from each party and gives N-2T random double-sharings)
     int no_buckets = (no_random / (N-2*T))+1;
 
-    sharingBuf.resize(no_buckets*(N-2*T)); // my shares of the double-sharings
+    sharingBufTElements.resize(no_buckets*(N-2*T)); // my shares of the double-sharings
+    sharingBuf2TElements.resize(no_buckets*(N-2*T)); // my shares of the double-sharings
 
     for(int i=0; i < N; i++)
     {
@@ -985,7 +990,9 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
         // Y1 : the degree-t shares of my poly
         // Y2 : the degree 2t shares of my poly
         for (int i = 2 * T; i < N; i++) {
-            sharingBuf[k*(N-2*T) + i - 2*T] = field->elementToString(y1[i]) + "*" + field->elementToString(y2[i]);
+
+            sharingBufTElements[k*(N-2*T) + i - 2*T] = y1[i];
+            sharingBuf2TElements[k*(N-2*T) + i - 2*T] =  y2[i];
         }
 
 
@@ -1073,17 +1080,8 @@ bool Protocol<FieldType>::inputPreparation()
     {
         if((circuit.getGates())[k].gateType == INPUT)
         {
-            string str = sharingBuf[k]; // use the t-sharing (correction will come)
-            // change !!!
-            if(str!="") {
-                // waste the 2T-sharing
-                vector<string> arr = {};
-                arr = split(str, '*');
-                elem = field->stringToElement(arr[0]);
-            } else {
-                elem = *(field->GetZero());
-            }
-            gateShareArr[k] = elem;
+
+            gateShareArr[k] = sharingBufTElements[k];
             i = (circuit.getGates())[k].party; // the number of party which has the input
             // reconstruct sharing towards input party
             sendBufs[i-1] += field->elementToString(gateShareArr[k]) + "*";
@@ -1310,9 +1308,10 @@ int Protocol<FieldType>::processMultiplications(HIM<FieldType> &m)
            && gateDoneArr[circuit.getGates()[k].input2])
         {
 
-            arr = split(sharingBuf[k], '*');
-            r1 = field->stringToElement(arr[0]); // t-share of random r
-            r2 = field->stringToElement(arr[1]); // t2-share of same r
+            r1 = sharingBufTElements[k]; // t-share of random r
+            r2 = sharingBuf2TElements[k]; // t2-share of same r
+
+
             p2 = gateShareArr[circuit.getGates()[k].input1] * gateShareArr[circuit.getGates()[k].input2]; // product share (degree-2t)
             d2 = p2 - r2; // t2-share of difference
             ReconsBuf[index] = field->elementToString(d2); // reconstruct difference (later)
@@ -1372,9 +1371,9 @@ void Protocol<FieldType>::processRandoms()
     {
         if(circuit.getGates()[k].gateType == RANDOM)
         {
-            arr = split(sharingBuf[k], '*');
-            // t-share of random r. t2-share of same r, IGNORED!
-            r1 = field->stringToElement(arr[0]);
+
+            r1 = sharingBufTElements[k];
+
             gateShareArr[k] = r1;
         }
     }
@@ -1393,6 +1392,9 @@ void Protocol<FieldType>::outputPhase()
     vector<FieldType> x1(N); // vector for the shares of my outputs
     vector<string> sendBuf(N);
     vector<string> recBuf(N);
+
+    vector<byte *> sendBufBytes(N);
+    vector<byte *> recBufBytes(N);
     FieldType num;
     ofstream myfile;
     myfile.open(outputFile);
