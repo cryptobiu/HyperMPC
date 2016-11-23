@@ -9,6 +9,7 @@
 #include <atomic>
 
 #define flag_print false
+
 /**
  * We implement a synchronous protocol, but let it run over an asynchronous network.
  * At first glance, this is insane. We can derive what security properties are still achievable and which are not.
@@ -61,8 +62,18 @@ public:
     int PARTYID, N, T;
     std::atomic<int> countRF1, countRF2, countRF3, countRF4,
             countRF5, countRF6, countRF7, countRF8;
+
+    std::atomic<int> counterOdd, counterEven;
+
+    vector<int> counters;
+    vector<vector<string>> rfVectors;
+
+
     vector<string>  vecRF1, vecRF2, vecRF3, vecRF4,
             vecRF5, vecRF6, vecRF7, vecRF8;
+
+    vector<string>  vecRFOdd, vecRFEven;
+
     vector<int> vecConn;
     string ADDRESS;
 
@@ -108,6 +119,7 @@ public:
      *
      * Optimization : In this specification, we prefare to separate to 8 different functions, rather one function.
      */
+    void roundfunctionI(vector<string> &sendBufs, vector<string> &recBufs, int roundFunctionId);
     void roundfunction1(vector<string> &sendBufs, vector<string> &recBufs);
     void roundfunction2(string &myMessage, vector<string> &recBufs);
     void roundfunction3(vector<string> &buffers, vector<string> &recBufs);

@@ -15,6 +15,8 @@
 #include "Def.h"
 #include "TemplateField.h"
 
+#define flag_print_timings true
+
 using namespace std;
 using namespace std::chrono;
 
@@ -27,6 +29,7 @@ private:
      * T - number of malicious
      */
     int N, M, T, m_partyId;
+    int numOfInputGates, numOfOutputGates;
     string inputsFile, outputFile, ADDRESS;
     vector<FieldType> beta;
     HIM<FieldType> matrix_for_interpolate;
@@ -39,7 +42,7 @@ private:
     vector<FieldType> gateValueArr; // the value of the gate (for my input and output gates)
     vector<FieldType> gateShareArr; // my share of the gate (for all gates)
     vector<FieldType> alpha; // N distinct non-zero field elements
-    vector<bool> gateDoneArr; // true is the gate is processed
+    vector<bool> gateDoneArr; // true if the gate is processed
 
     vector<FieldType> sharingBufTElements; // prepared T-sharings (my shares)
     vector<FieldType> sharingBuf2TElements; // prepared 2T-sharings (my shares)
@@ -147,7 +150,7 @@ public:
      * However, in our protocol, arbitrary many sharings can be reconstructed.
      * This is achieved by dividing the sharings into buckets of size n − t.
      */
-    void publicReconstruction(vector<string> &myShares, int &count, int d, vector<FieldType> &valBuf, HIM<FieldType> &m);
+    void publicReconstruction(vector<FieldType> &myShares, int &count, int d, vector<FieldType> &valBuf, HIM<FieldType> &m);
 
     /**
      * The input phase proceeds in two steps: input preparation and input adjustment
@@ -240,7 +243,9 @@ Protocol<FieldType>::Protocol(int n, int id, TemplateField<GF2E> *field, string 
     s = to_string(m_partyId);
     circuit.readCircuit(circuitFile.c_str());
     M = circuit.getNrOfGates();
-    myInputs.resize(M);
+    numOfInputGates = circuit.getNrOfInputGates();
+    numOfOutputGates = circuit.getNrOfOutputGates();
+    myInputs.resize(numOfInputGates);
 }
 
 template <class FieldType>
@@ -386,7 +391,7 @@ bool Protocol<FieldType>::broadcast(int party_id, string myMessage, vector<strin
             cout << k << "  " << buffers[k] << endl;
         }}
 
-    comm->roundfunction3(buffers, recBufs2);
+    comm->roundfunctionI(buffers, recBufs2,3);
 
     if(flag_print) {
         cout  << "after roundfunction3 " << endl;
@@ -451,9 +456,20 @@ void Protocol<FieldType>::run() {
     matrix_him.InitHIM();
 
     comm->ConnectionToServer(s);
+    readMyInputs();
 
+    auto t1 = high_resolution_clock::now();
     initializationPhase(matrix_him, matrix_vand, m);
 
+    auto t2 = high_resolution_clock::now();
+
+    auto duration = duration_cast<milliseconds>(t2-t1).count();
+    if(flag_print_timings) {
+        cout << "time in milliseconds initializationPhase: " << duration << endl;
+    }
+
+
+    t1 = high_resolution_clock::now();
     if(preparationPhase(matrix_vand, matrix_him) == false) {
         if(flag_print) {
             cout << "cheating!!!" << '\n';}
@@ -464,6 +480,14 @@ void Protocol<FieldType>::run() {
             cout << "no cheating!!!" << '\n' << "finish Preparation Phase" << '\n';}
     }
 
+    t2 = high_resolution_clock::now();
+
+    duration = duration_cast<milliseconds>(t2-t1).count();
+    if(flag_print_timings) {
+        cout << "time in milliseconds preparationPhase: " << duration << endl;
+    }
+
+    t1 = high_resolution_clock::now();
     if(inputPreparation() == false) {
         if(flag_print) {
             cout << "cheating!!!" << '\n';}
@@ -474,18 +498,27 @@ void Protocol<FieldType>::run() {
             cout << "no cheating!!!" << '\n' << "finish Input Preparation" << '\n';}
     }
 
+    t2 = high_resolution_clock::now();
+
+    duration = duration_cast<milliseconds>(t2-t1).count();
+    if(flag_print_timings) {
+        cout << "time in milliseconds inputPreparation: " << duration << endl;
+    }
+
+
     string sss = "";
 
-    auto t1 = high_resolution_clock::now();
+     t1 = high_resolution_clock::now();
     auto t1start = high_resolution_clock::now();
     inputAdjustment(sss, matrix_him);
 
-    auto t2 = high_resolution_clock::now();
+    t2 = high_resolution_clock::now();
 
-    auto duration = duration_cast<milliseconds>(t2-t1).count();
+    duration = duration_cast<milliseconds>(t2-t1).count();
 
-    cout << "time in milliseconds inputAdjustment: " << duration << endl;
-
+    if(flag_print_timings) {
+        cout << "time in milliseconds inputAdjustment: " << duration << endl;
+    }
     if(flag_print) {
         cout << "after Input Adjustment " << '\n'; }
 
@@ -497,7 +530,9 @@ void Protocol<FieldType>::run() {
 
     duration = duration_cast<milliseconds>(t2-t1).count();
 
-    cout << "time in milliseconds computationPhase: " << duration << endl;
+    if(flag_print_timings) {
+        cout << "time in milliseconds computationPhase: " << duration << endl;
+    }
 
     t1 = high_resolution_clock::now();
 
@@ -507,8 +542,9 @@ void Protocol<FieldType>::run() {
 
     duration = duration_cast<milliseconds>(t2-t1).count();
 
-    cout << "time in milliseconds outputPhase: " << duration << endl;
-
+    if(flag_print_timings) {
+        cout << "time in milliseconds outputPhase: " << duration << endl;
+    }
     auto t2end = high_resolution_clock::now();
 
     duration = duration_cast<milliseconds>(t2end-t1start).count();
@@ -544,7 +580,7 @@ void Protocol<FieldType>::inputAdjustment(string &diff, HIM<FieldType> &mat)
     int index = 0;
 
     // read the inputs of the party
-    for (int k = 0; k < M; k++)
+    for (int k = 0; k < numOfInputGates; k++)
     {
         if(circuit.getGates()[k].gateType == INPUT && circuit.getGates()[k].party == m_partyId)
         {
@@ -593,7 +629,7 @@ void Protocol<FieldType>::inputAdjustment(string &diff, HIM<FieldType> &mat)
     FieldType db;
 
     vector<string> arr = {};
-    for (int k = 0; k < M; k++)
+    for (int k = 0; k < numOfInputGates; k++)
     {
         if(circuit.getGates()[k].gateType == INPUT)
         {
@@ -625,7 +661,7 @@ void Protocol<FieldType>::initializationPhase(HIM<FieldType> &matrix_him, VDM<Fi
 {
     beta.resize(1);
     gateValueArr.resize(M);  // the value of the gate (for my input and output gates)
-    gateShareArr.resize(M); // my share of the gate (for all gates)
+    gateShareArr.resize(M - circuit.getNrOfOutputGates()); // my share of the gate (for all gates)
     alpha.resize(N); // N distinct non-zero field elements
     gateDoneArr.resize(M);  // true is the gate is processed
     vector<FieldType> alpha1(N-T);
@@ -666,35 +702,35 @@ void Protocol<FieldType>::initializationPhase(HIM<FieldType> &matrix_him, VDM<Fi
         gateDoneArr[i] = false;
     }
 
-    readMyInputs();
-
     matrix_for_interpolate.InitHIMByVectors(alpha, beta);
 
     vector<FieldType> alpha_until_t(T + 1);
     vector<FieldType> alpha_from_t(N - 1 - T);
-    for(int i=0; i<T+1; i++)
+    /*for(int i=0; i<T+1; i++)
     {
         alpha_until_t[i]= alpha[i];
     }
     for (int i = T + 1; i < N; i++) {
         alpha_from_t[i - (T + 1)] = alpha[i];
-    }
+    }*/
     // Interpolate first d+1 positions of (alpha,x)
     matrix_for_t.allocate(N - 1 - T, T + 1, field); // slices, only positions from 0..d
-    matrix_for_t.InitHIMByVectors(alpha_until_t, alpha_from_t);
+    //matrix_for_t.InitHIMByVectors(alpha_until_t, alpha_from_t);
+    matrix_for_t.InitHIMVectorAndsizes(alpha, T+1, N-T-1);
 
     vector<FieldType> alpha_until_2t(2*T + 1);
     vector<FieldType> alpha_from_2t(N - 1 - 2*T);
-    for(int i=0; i<2*T+1; i++)
+    /*for(int i=0; i<2*T+1; i++)
     {
         alpha_until_2t[i]= alpha[i];
     }
     for (int i = 2*T + 1; i < N; i++) {
         alpha_from_2t[i - (2*T + 1)] = alpha[i];
-    }
+    }*/
     // Interpolate first d+1 positions of (alpha,x)
     matrix_for_2t.allocate(N - 1 - 2*T, 2*T + 1, field); // slices, only positions from 0..d
-    matrix_for_2t.InitHIMByVectors(alpha_until_2t, alpha_from_2t);
+    //matrix_for_2t.InitHIMByVectors(alpha_until_2t, alpha_from_2t);
+    matrix_for_2t.InitHIMVectorAndsizes(alpha, 2*T + 1, N-(2*T +1));
 
 
 }
@@ -709,7 +745,7 @@ void Protocol<FieldType>::initializationPhase(HIM<FieldType> &matrix_him, VDM<Fi
  * @param valBuf
  */
 template <class FieldType>
-void Protocol<FieldType>::publicReconstruction(vector<string> &myShares, int &count, int d, vector<FieldType> &valBuf, HIM<FieldType> &m)
+void Protocol<FieldType>::publicReconstruction(vector<FieldType> &myShares, int &count, int d, vector<FieldType> &valBuf, HIM<FieldType> &m)
 {
     int no_buckets = count / (N-T) + 1;
     if(flag_print) {
@@ -745,7 +781,7 @@ void Protocol<FieldType>::publicReconstruction(vector<string> &myShares, int &co
             if( k*(N-T)+i < count)
             {
                 // k*(N-T)+i
-                x1[i] = field->stringToElement(myShares[k*(N-T)+i]);
+                x1[i] = myShares[k*(N-T)+i];
             }
             else
             {
@@ -774,7 +810,7 @@ void Protocol<FieldType>::publicReconstruction(vector<string> &myShares, int &co
         }
     }
     //   cout << "before roundfunction1" << '\n';
-    comm->roundfunction1(sendBufs, recBufs);
+    comm->roundfunctionI(sendBufs, recBufs,1);
     if(flag_print) {
         cout << "recBufs[i]" << endl;
         for(int i = 0; i < N; i++)
@@ -819,7 +855,7 @@ void Protocol<FieldType>::publicReconstruction(vector<string> &myShares, int &co
         {
             cout << sendBufs2[i] << endl;
         } }
-    comm->roundfunction8(sendBufs2, recBufs2);
+    comm->roundfunctionI(sendBufs2, recBufs2,8);
     if(flag_print) {
         cout << "recBufs2[i]" << endl;
         for(int i = 0; i < N; i++)
@@ -870,6 +906,9 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
     vector<FieldType> x1(N),x2(N),y1(N),y2(N);
     vector<string> sendBufs(N);
 
+
+    vector<vector<FieldType>> sendBufsElements(N);
+
     // the number of buckets (each bucket requires one double-sharing
     // from each party and gives N-2T random double-sharings)
     int no_buckets = (no_random / (N-2*T))+1;
@@ -880,6 +919,8 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
     for(int i=0; i < N; i++)
     {
         sendBufs[i] = "";
+
+        sendBufsElements[i].resize(no_buckets*2);
     }
 
     /**
@@ -915,8 +956,11 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
         // prepare shares to be sent
         for(int i=0; i < N; i++)
         {
-            sendBufs[i] += field->elementToString(y1[i]) + "*"; // the degree-t shares of my poly
-            sendBufs[i] += field->elementToString(y2[i]) + "$"; // the degree 2t shares of my poly
+            //sendBufs[i] += field->elementToString(y1[i]) + "*"; // the degree-t shares of my poly
+           // sendBufs[i] += field->elementToString(y2[i]) + "$"; // the degree 2t shares of my poly
+
+            sendBufsElements[i][2*k] = y1[i];
+            sendBufsElements[i][2*k+1] = y2[i];
         }
 
 
@@ -936,7 +980,18 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
         recBufs[i] = "";
     }
 
-    comm->roundfunction4(sendBufs, recBufs);
+    for(int i=0; i < N; i++)
+    {
+        for(int k=0; k < no_buckets; k++)
+        {
+            sendBufs[i] += field->elementToString(sendBufsElements[i][2 * k]) + "*" +
+                               field->elementToString(sendBufsElements[i][2 * k + 1]) + "$";
+        }
+    }
+
+
+
+    comm->roundfunctionI(sendBufs, recBufs,4);
     if(flag_print) {
         for (int i=0; i < recBufs.size();i++)
         {
@@ -951,9 +1006,13 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
      */
 
     vector<string> sendBufs1(N);
+    vector<string> sendBufsTest(N);
+    vector<vector<FieldType>> sendBufs1Elements(N);
+
     for(int i=0; i < N; i++)
     {
         sendBufs1[i] = "";
+
 
     }
 
@@ -1004,7 +1063,7 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
     }
     if(flag_print) {
         cout << "before round" << endl;}
-    comm->roundfunction5(sendBufs1, recBufs);
+    comm->roundfunctionI(sendBufs1, recBufs,5);
     if(flag_print) {
         cout << "after round" << endl;}
     int count = no_buckets * (2*T) / N; // nr of sharings *I* have to check
@@ -1070,23 +1129,26 @@ template <class FieldType>
 bool Protocol<FieldType>::inputPreparation()
 {
     vector<string> sendBufs(N); // upper bound
+    vector<vector<FieldType>> sendBufsElements(N); // upper bound
+    //vector<string> sendBufsTest(N); // upper bound
+
     vector<string> recBufs(N); // dito
     vector<FieldType> x1(N); // vector for the shares of my inputs
     FieldType elem;
     FieldType secret;
     int i;
 
-    for(int k = 0; k < M; k++)
+
+    for(int k = 0; k < numOfInputGates; k++)//these are only input gates
     {
-        if((circuit.getGates())[k].gateType == INPUT)
-        {
+        gateShareArr[k] = sharingBufTElements[k];
+        i = (circuit.getGates())[k].party; // the number of party which has the input
+        // reconstruct sharing towards input party
+        //sendBufs[i-1] += field->elementToString(gateShareArr[k]) + "*";
 
-            gateShareArr[k] = sharingBufTElements[k];
-            i = (circuit.getGates())[k].party; // the number of party which has the input
-            // reconstruct sharing towards input party
-            sendBufs[i-1] += field->elementToString(gateShareArr[k]) + "*";
 
-        }
+        sendBufsElements[i-1].push_back(gateShareArr[k]);
+
     }
     if(flag_print) {
         cout << "sendBufs[i] in input preperation" << endl;
@@ -1094,7 +1156,15 @@ bool Protocol<FieldType>::inputPreparation()
             cout << sendBufs[i] << endl;
         }
     }
-    comm->roundfunction6(sendBufs, recBufs);
+
+
+    for(int i=0; i<N; i++){
+
+        for(int j=0; j<sendBufsElements[i].size(); j++){
+            sendBufs[i]+= field->elementToString(sendBufsElements[i][j]) + "*";
+        }
+    }
+    comm->roundfunctionI(sendBufs, recBufs,6);
 
     if(flag_print) {
         for(int k = 0; k < N; k++) {
@@ -1102,8 +1172,8 @@ bool Protocol<FieldType>::inputPreparation()
         } }
 
     // reconstruct my random input values
-    for(int k = 0; k < M; k++) {
-        if (circuit.getGates()[k].gateType == INPUT && circuit.getGates()[k].party == m_partyId) {
+    for(int k = 0; k < numOfInputGates; k++) {
+        if (circuit.getGates()[k].party == m_partyId) {
             // my input: reconstruct received shares
             for (int i = 0; i < N; i++) {
                 vector<string> arr = {};
@@ -1237,7 +1307,7 @@ int Protocol<FieldType>::processAdditions()
 {
     int count =0;
 
-    for(int k=0; k < M; k++)
+    for(int k=(numOfInputGates-1); k < (M - numOfOutputGates); k++)
     {
         // its an addition which not yet processed and ready
         if(circuit.getGates()[k].gateType == ADD && !gateDoneArr[k]
@@ -1259,7 +1329,7 @@ int Protocol<FieldType>::processSmul()
 {
     int count =0;
 
-    for(int k=0; k < M; k++)
+    for(int k=(numOfInputGates - 1); k < (M - numOfOutputGates); k++)
     {
         // its an addition which not yet processed and ready
         if(circuit.getGates()[k].gateType == SCALAR && !gateDoneArr[k]
@@ -1297,10 +1367,10 @@ int Protocol<FieldType>::processMultiplications(HIM<FieldType> &m)
     vector<FieldType> valBuf(M); // Buffers for differences
     FieldType d;
     int indexForValBuf = 0;
-    vector<string> ReconsBuf(M);
+    vector<FieldType> ReconsBuf(M);
 
     vector<string> arr = {};
-    for(int k = 0; k < M; k++)
+    for(int k = (numOfOutputGates - 1); k < (M - numOfOutputGates) ; k++)//go over only the logit gates
     {
         // its a multiplication which not yet processed and ready
         if(circuit.getGates()[k].gateType == MULT && !gateDoneArr[k]
@@ -1314,7 +1384,7 @@ int Protocol<FieldType>::processMultiplications(HIM<FieldType> &m)
 
             p2 = gateShareArr[circuit.getGates()[k].input1] * gateShareArr[circuit.getGates()[k].input2]; // product share (degree-2t)
             d2 = p2 - r2; // t2-share of difference
-            ReconsBuf[index] = field->elementToString(d2); // reconstruct difference (later)
+            ReconsBuf[index] = d2; // reconstruct difference (later)
             index++;
             // for now gateShareArr[k] is random sharing, needs to be adjusted (later)
             gateShareArr[k] = r1;
@@ -1333,7 +1403,7 @@ int Protocol<FieldType>::processMultiplications(HIM<FieldType> &m)
     publicReconstruction(ReconsBuf, index, 2*T, valBuf, m);
     indexForValBuf = index-1;
 
-    for(int k=M-1; k >= 0; k--)
+    for(int k=(M-numOfOutputGates - 1) ; k >= (numOfInputGates - 1); k--)
     {
         // its a multiplication which not yet processed and ready
         if(circuit.getGates()[k].gateType == MULT && !gateDoneArr[k]
@@ -1367,7 +1437,7 @@ void Protocol<FieldType>::processRandoms()
 {
     FieldType r1;
     vector<string> arr = {};
-    for(int k = 0; k < M; k++)
+    for(int k = (numOfInputGates - 1); k < (M - numOfOutputGates); k++)
     {
         if(circuit.getGates()[k].gateType == RANDOM)
         {
@@ -1404,7 +1474,7 @@ void Protocol<FieldType>::outputPhase()
         sendBuf[i] = "";
     }
 
-    for(int k=0; k < M; k++)
+    for(int k=(M-numOfOutputGates - 1); k < M; k++)
     {
         if(circuit.getGates()[k].gateType == OUTPUT)
         {
@@ -1413,11 +1483,11 @@ void Protocol<FieldType>::outputPhase()
         }
     }
 
-    comm->roundfunction7(sendBuf, recBuf);
+    comm->roundfunctionI(sendBuf, recBuf,7);
 
     if(flag_print) {
         cout << "endnend" << endl;}
-    for(int k=0; k < M; k++) {
+    for(int k=(M-numOfOutputGates - 1); k < M; k++) {
         if(circuit.getGates()[k].gateType == OUTPUT && circuit.getGates()[k].party == m_partyId)
         {
             for(int i=0; i < N; i++) {
@@ -1435,7 +1505,7 @@ void Protocol<FieldType>::outputPhase()
                 return;
             }
             cout << "the result is : " << field->elementToString(interpolate(x1)) << '\n';
-            myfile << field->elementToString(interpolate(x1));
+            //myfile << field->elementToString(interpolate(x1));
 
         }
     }

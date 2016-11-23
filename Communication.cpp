@@ -86,39 +86,40 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
 
     str_message = suffix;
 
-    if(topic.find("10_rountfunction") != std::string::npos)
+    if(topic.find("roundfunction8") != std::string::npos)
     {
-        Communication::getInstance()->vecRF8[pid - 1] = str_message;
-        Communication::getInstance()->countRF8++;
+        Communication::getInstance()->rfVectors[7][pid - 1] = str_message;
+        Communication::getInstance()->counters[7]++;
     }
     else if (topic.find("roundfunction1") != std::string::npos)
     {
-        Communication::getInstance()->vecRF1[pid - 1] = str_message;
-        Communication::getInstance()->countRF1++;
+        Communication::getInstance()->rfVectors[0][pid - 1] = str_message;
+        Communication::getInstance()->counters[0]++;
     }
     else if(topic.find("roundfunction7") != std::string::npos)
     {
-        Communication::getInstance()->vecRF7[pid - 1] = str_message;
-        Communication::getInstance()->countRF7++;
+        Communication::getInstance()->rfVectors[6][pid - 1] = str_message;
+        Communication::getInstance()->counters[6]++;
     }
     else if (topic.find("roundfunction6") != std::string::npos) {
-        Communication::getInstance()->vecRF6[pid - 1] = str_message;
-        Communication::getInstance()->countRF6++;
+        Communication::getInstance()->rfVectors[5][pid - 1] = str_message;
+        Communication::getInstance()->counters[5]++;
     }
     else if (topic.find("roundfunction5") != std::string::npos) {
-        Communication::getInstance()->vecRF5[pid - 1] = str_message;
-        Communication::getInstance()->countRF5++;
+        Communication::getInstance()->rfVectors[4][pid - 1] = str_message;
+        Communication::getInstance()->counters[4]++;
     } else if (topic.find("roundfunction4") != std::string::npos) {
-        Communication::getInstance()->vecRF4[pid - 1] = str_message;
-        Communication::getInstance()->countRF4++;
-    } else if (topic.find("SHARE_Yjk_VECTOR") != std::string::npos) {
-        Communication::getInstance()->vecRF3[pid - 1] = str_message;
-        Communication::getInstance()->countRF3++;
+        Communication::getInstance()->rfVectors[3][pid - 1] = str_message;
+        Communication::getInstance()->counters[3]++;
+    } else if (topic.find("roundfunction3") != std::string::npos) {
+        Communication::getInstance()->rfVectors[2][pid - 1] = str_message;
+        Communication::getInstance()->counters[2]++;
     } else {
         // only when all x es recived we can calculate every x
         Communication::getInstance()->vecRF2[pid - 1] = str_message;
         Communication::getInstance()->countRF2++;
     }
+
 
     if(flag_print) {
         printf("Message arrived\n");
@@ -152,6 +153,15 @@ Communication::Communication(int n, int id, string ADDRESS) {
     {
         T++;
     }
+    rfVectors.resize(8);
+    counters.resize(8);
+
+    for(int i=0; i<8; i++){
+        counters[i] = 0;
+        rfVectors[i].resize(N);
+    }
+
+
     vecRF1.resize(N);
     vecRF2.resize(N);
     vecRF3.resize(N);
@@ -168,6 +178,13 @@ Communication::Communication(int n, int id, string ADDRESS) {
     countRF6 = 0;
     countRF7 = 0;
     countRF8 = 0;
+
+    counterEven = 0;
+    counterOdd = 0;
+    vecRFEven.resize(N);
+    vecRFOdd.resize(N);
+
+
 
     // start intialize the connection to server
     // messages
@@ -194,14 +211,14 @@ Communication::Communication(int n, int id, string ADDRESS) {
 
     // create topics
     topic1 = "SHARE_Ps_VECTOR";
-    topic2 = "SHARE_Yjk_VECTOR"+to_string(id);
+    topic2 = "roundfunction3"+to_string(id);
     topic3 = "CONNECT";
     topic4 = "roundfunction4"+to_string(id);
     topic5 = "roundfunction5"+to_string(id);
     topic6 = "roundfunction6"+to_string(id);
     topic7 = "roundfunction7"+to_string(id);
     topic8 = "roundfunction1"+to_string(id);
-    topic9 = "10_rountfunction"+to_string(id);
+    topic9 = "roundfunction8"+to_string(id);
     topics[0] = (char*)topic1.c_str();
     topics[1] = (char*)topic2.c_str();
     topics[2] = (char*)topic3.c_str();
@@ -308,6 +325,43 @@ void Communication::sendBytes(const string &myTopicForMessage, byte *msg, int si
 
 
 
+void Communication::roundfunctionI(vector<string> &sendBufs, vector<string> &recBufs, int roundFunctionId) {
+    string s = to_string(PARTYID);
+    string myTopicForMessage;
+
+    //recBufs[PARTYID-1] = sendBufs[PARTYID-1];
+
+    for(int i=0; i<N; i++)
+    {
+        myTopicForMessage = "roundfunction" + to_string(roundFunctionId) + to_string(i+1);
+        // add id party to the message
+        string myMessage = s + "$" + sendBufs[i];
+        send(myTopicForMessage, myMessage);
+    }
+
+
+
+    while(counters[roundFunctionId-1] < N - 1) {}
+
+    recBufs = rfVectors[roundFunctionId-1];
+    recBufs[PARTYID-1] = sendBufs[PARTYID-1];
+
+    /*for(int i=0; i<N; i++)
+    {
+        if(i != PARTYID-1) {
+
+            recBufs[i] = rfVectors[roundFunctionId-1][i];
+
+        }
+    }*/
+
+
+    counters[roundFunctionId-1] = 0;
+
+}
+
+
+
 void Communication::roundfunction1(vector<string> &sendBufs, vector<string> &recBufs) {
     string s = to_string(PARTYID);
     string myTopicForMessage;
@@ -375,7 +429,7 @@ void Communication::roundfunction3(vector<string> &buffers, vector<string> &recB
     {
         myMessage = s + "$" + buffers[i];
 
-        myTopicForMessage = "SHARE_Yjk_VECTOR" + to_string(i + 1);
+        myTopicForMessage = "roundfunction3" + to_string(i + 1);
 
         m_pubmsg.payload = (void *) myMessage.c_str();
 
@@ -509,7 +563,7 @@ void Communication::roundfunction8(vector<string> &sendBufs, vector<string> &rec
 
     for(int i=0; i<N; i++)
     {
-        myTopicForMessage = "10_rountfunction" + to_string(i+1);
+        myTopicForMessage = "roundfunction8" + to_string(i+1);
         // add id party to the message
         string myMessage = s + "$" + sendBufs[i];
         send(myTopicForMessage, myMessage);

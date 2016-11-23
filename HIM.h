@@ -57,6 +57,8 @@ public:
 	 */
 	FieldType** InitHIMByVectors(vector<FieldType> &alpha, vector<FieldType> &beta);
 
+	FieldType** InitHIMVectorAndsizes(vector<FieldType> &alpha, int n, int m);
+
 	/**
 	 * This method create vectors alpha and beta,
 	 * and init the matrix by the method InitHIMByVectors(alpha, beta).
@@ -130,6 +132,39 @@ FieldType** HIM<FieldType>::InitHIMByVectors(vector<FieldType> &alpha, vector<Fi
 	}
 	return m_matrix;
 }
+
+
+template <typename FieldType>
+FieldType** HIM<FieldType>::InitHIMVectorAndsizes(vector<FieldType> &alpha, int n, int m)
+{
+	FieldType lambda;
+
+	for (int i = 0; i < m; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			// lambda = 1
+			lambda = *(field->GetOne());
+
+			// compute value for matrix[i,j]
+			for (int k = 0; k < n; k++)
+			{
+				if (k == j)
+				{
+					continue;
+				}
+
+				lambda *= ((alpha[n+i]) - (alpha[k])) / ((alpha[j]) - (alpha[k]));
+			}
+
+			// set the matrix
+			(m_matrix[i][j]) = lambda;
+		}
+	}
+	return m_matrix;
+}
+
+
 
 template <typename FieldType>
 void HIM<FieldType>::allocate(int m, int n, TemplateField<FieldType> *field)
