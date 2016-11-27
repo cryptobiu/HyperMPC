@@ -66,7 +66,8 @@ public:
     std::atomic<int> counterOdd, counterEven;
 
     vector<int> counters;
-    vector<vector<string>> rfVectors;
+    //vector<vector<string>> rfVectors;
+    vector<vector<vector<byte>>> rfVectors;
 
 
     vector<string>  vecRF1, vecRF2, vecRF3, vecRF4,
@@ -119,7 +120,7 @@ public:
      *
      * Optimization : In this specification, we prefare to separate to 8 different functions, rather one function.
      */
-    void roundfunctionI(vector<string> &sendBufs, vector<string> &recBufs, int roundFunctionId);
+    void roundfunctionI(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int roundFunctionId);
     void roundfunction1(vector<string> &sendBufs, vector<string> &recBufs);
     void roundfunction2(string &myMessage, vector<string> &recBufs);
     void roundfunction3(vector<string> &buffers, vector<string> &recBufs);

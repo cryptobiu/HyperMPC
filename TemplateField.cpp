@@ -90,7 +90,7 @@ void TemplateField<GF2E>::elementToBytes(unsigned char* elemenetInBytes, GF2E& e
 template <>
 GF2E TemplateField<GF2E>::bytesToElement(unsigned char* elemenetInBytes){
 
-    GF2E outputElement;
+   // GF2E outputElement;
     //first create a GF2X
     GF2X polynomialElement;
 
@@ -99,7 +99,9 @@ GF2E TemplateField<GF2E>::bytesToElement(unsigned char* elemenetInBytes){
 
 
     //convert the GF2X to GF2E
-    outputElement = to_GF2E(polynomialElement);
+    //outputElement = to_GF2E(polynomialElement);
+
+    return to_GF2E(polynomialElement);
 }
 
 

@@ -42,6 +42,7 @@ void ConnectHandler(const char *topicName, MQTTClient_message *&message, const s
 /**
  * the function handle when message arrive
  */
+/*
 int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *message) {
     string topic(topicName);
     string str_message = "";
@@ -133,6 +134,120 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
     MQTTClient_free(topicName);
     return 1;
 }
+
+*/
+
+
+
+
+
+////////////////////////BYTES/////////////////
+int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *message) {
+    string topic(topicName);
+    string str_message = "";
+    int i;
+
+
+    // loop until client_id
+    if (topic == "CONNECT") {
+
+
+
+        string s = to_string(Communication::getInstance()->PARTYID);
+        char *payloadptr;
+        payloadptr = (char *) message->payload;
+        string str(payloadptr);
+
+        str = strtok(payloadptr, "$");
+
+        if(str==s) return 1;
+
+        ConnectHandler(topicName, message, str);
+        MQTTClient_freeMessage(&message);
+        MQTTClient_free(topicName);
+        return 1;
+    }
+
+    byte *payloadptr;
+    //string s = to_string(Communication::getInstance()->PARTYID);
+
+
+    payloadptr = (byte *) message->payload;
+
+
+    uint32_t * getParty = (uint32_t*)payloadptr;
+
+    int pid = getParty[0];
+    string pidStr = to_string(pid);
+
+    if (pid == Communication::getInstance()->PARTYID) return 1;
+
+
+
+
+    //copy the message with out the leading party number of size int
+    vector<byte> recMesg(message->payloadlen - 4);
+
+    memcpy(recMesg.data(), payloadptr+4, recMesg.size());
+
+    if(topic.find("roundfunction8") != std::string::npos)
+    {
+        Communication::getInstance()->rfVectors[7][pid - 1] = recMesg;
+        Communication::getInstance()->counters[7]++;
+    }
+    else if (topic.find("roundfunction1") != std::string::npos)
+    {
+        Communication::getInstance()->rfVectors[0][pid - 1] = recMesg;
+        Communication::getInstance()->counters[0]++;
+    }
+    else if(topic.find("roundfunction7") != std::string::npos)
+    {
+        Communication::getInstance()->rfVectors[6][pid - 1] = recMesg;
+        Communication::getInstance()->counters[6]++;
+    }
+    else if (topic.find("roundfunction6") != std::string::npos) {
+        Communication::getInstance()->rfVectors[5][pid - 1] = recMesg;
+        Communication::getInstance()->counters[5]++;
+    }
+    else if (topic.find("roundfunction5") != std::string::npos) {
+        Communication::getInstance()->rfVectors[4][pid - 1] = recMesg;
+        Communication::getInstance()->counters[4]++;
+    } else if (topic.find("roundfunction4") != std::string::npos) {
+        Communication::getInstance()->rfVectors[3][pid - 1] = recMesg;
+        Communication::getInstance()->counters[3]++;
+    } else if (topic.find("roundfunction3") != std::string::npos) {
+        Communication::getInstance()->rfVectors[2][pid - 1] = recMesg;
+        Communication::getInstance()->counters[2]++;
+    } else {
+        // only when all x es recived we can calculate every x
+        Communication::getInstance()->rfVectors[1][pid - 1] = recMesg;
+        Communication::getInstance()->counters[1]++;
+    }
+
+
+    if(flag_print) {
+        printf("Message arrived\n");
+        printf("     topics: %s\n", topicName);
+        printf("   message: ");
+
+        cout << str_message;
+        putchar('\n'); }
+    // clean the pointer of the message
+    MQTTClient_freeMessage(&message);
+    MQTTClient_free(topicName);
+    return 1;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 void connlost(void *context, char *cause)
 {
@@ -325,36 +440,32 @@ void Communication::sendBytes(const string &myTopicForMessage, byte *msg, int si
 
 
 
-void Communication::roundfunctionI(vector<string> &sendBufs, vector<string> &recBufs, int roundFunctionId) {
+void Communication::roundfunctionI(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int roundFunctionId) {
     string s = to_string(PARTYID);
     string myTopicForMessage;
 
-    //recBufs[PARTYID-1] = sendBufs[PARTYID-1];
 
     for(int i=0; i<N; i++)
     {
         myTopicForMessage = "roundfunction" + to_string(roundFunctionId) + to_string(i+1);
+
         // add id party to the message
-        string myMessage = s + "$" + sendBufs[i];
-        send(myTopicForMessage, myMessage);
+        ((int*)sendBufs[i].data())[0] = PARTYID;
+        sendBytes(myTopicForMessage, sendBufs[i].data(), sendBufs[i].size() );
     }
-
-
 
     while(counters[roundFunctionId-1] < N - 1) {}
 
-    recBufs = rfVectors[roundFunctionId-1];
-    recBufs[PARTYID-1] = sendBufs[PARTYID-1];
+    //there is no farther use of the rfVectors so we can move the data
+    recBufs = move(rfVectors[roundFunctionId-1]);
 
-    /*for(int i=0; i<N; i++)
-    {
-        if(i != PARTYID-1) {
 
-            recBufs[i] = rfVectors[roundFunctionId-1][i];
+    //get the vector without the leading party id.
+    vector<byte> sendCut(sendBufs[PARTYID-1].size() - 4);
 
-        }
-    }*/
+    memcpy(sendCut.data(), sendBufs[PARTYID-1].data()+4, sendCut.size());
 
+    recBufs[PARTYID-1] = move(sendCut);
 
     counters[roundFunctionId-1] = 0;
 
