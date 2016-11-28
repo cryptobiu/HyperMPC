@@ -122,7 +122,7 @@ public:
      */
     void roundfunctionI(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int roundFunctionId);
     void roundfunction1(vector<string> &sendBufs, vector<string> &recBufs);
-    void roundfunction2(string &myMessage, vector<string> &recBufs);
+    void roundfunction2(vector<byte> &myMessage, vector<vector<byte>> &recBufs);
     void roundfunction3(vector<string> &buffers, vector<string> &recBufs);
     void roundfunction4(vector<string> &sendBufs, vector<string> &recBufs);
     void roundfunction5(vector<string> &sendBufs, vector<string> &recBufs);

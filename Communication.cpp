@@ -441,7 +441,6 @@ void Communication::sendBytes(const string &myTopicForMessage, byte *msg, int si
 
 
 void Communication::roundfunctionI(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int roundFunctionId) {
-    string s = to_string(PARTYID);
     string myTopicForMessage;
 
 
@@ -457,7 +456,7 @@ void Communication::roundfunctionI(vector<vector<byte>> &sendBufs, vector<vector
     while(counters[roundFunctionId-1] < N - 1) {}
 
     //there is no farther use of the rfVectors so we can move the data
-    recBufs = move(rfVectors[roundFunctionId-1]);
+    recBufs = rfVectors[roundFunctionId-1];
 
 
     //get the vector without the leading party id.
@@ -472,62 +471,30 @@ void Communication::roundfunctionI(vector<vector<byte>> &sendBufs, vector<vector
 }
 
 
-
-void Communication::roundfunction1(vector<string> &sendBufs, vector<string> &recBufs) {
-    string s = to_string(PARTYID);
-    string myTopicForMessage;
-
-    recBufs[PARTYID-1] = sendBufs[PARTYID-1];
-
-    for(int i=0; i<N; i++)
-    {
-        myTopicForMessage = "roundfunction1" + to_string(i+1);
-        // add id party to the message
-        string myMessage = s + "$" + sendBufs[i];
-        send(myTopicForMessage, myMessage);
-    }
-
-    while(countRF1 < N - 1) {}
-
-    for(int i=0; i<N; i++)
-    {
-        if(i != PARTYID-1) {
-            recBufs[i] = vecRF1[i];
-        }
-    }
-
-    countRF1 = 0;
-}
-
-void Communication::roundfunction2(string &myMessage, vector<string> &recBufs) {
+void Communication::roundfunction2(vector<byte> &myMessage, vector<vector<byte>> &recBufs) {
     recBufs[PARTYID-1] = myMessage;
     string myTopicForMessage = "SHARE_Ps_VECTOR";
 
-    string s = to_string(PARTYID);
     // add id party to the message
-    myMessage = s + "$" + myMessage;
+    ((int*)myMessage.data())[0] = PARTYID;
+    sendBytes(myTopicForMessage, myMessage.data(), myMessage.size() );
 
-    // update the details of message
-    m_pubmsg.payload = (void *) myMessage.c_str();
-    m_pubmsg.payloadlen = myMessage.size();
-    m_pubmsg.qos = 0;
-    m_pubmsg.retained = 0;
-    deliveredtoken = 0;
 
-    // publish the message to all parties
-    MQTTClient_publishMessage(m_client, myTopicForMessage.c_str(), &m_pubmsg, &m_token);
+    while (counters[1] < N - 1) {}
 
-    // waiting until the message send
-    //while (deliveredtoken != m_token) {};
 
-    while (countRF2 < N - 1) {}
+    //there is no farther use of the rfVectors so we can move the data
+    recBufs = move(rfVectors[1]);
 
-    for(int i=0; i<N; i++)
-    {
-        if(i != PARTYID-1) {
-            recBufs[i] =  vecRF2[i];
-        }
-    }
+    //get the vector without the leading party id.
+    vector<byte> sendCut(myMessage.size() - 4);
+
+    memcpy(sendCut.data(), myMessage.data()+4, sendCut.size());
+
+    recBufs[PARTYID-1] = move(sendCut);
+
+    counters[1] = 0;
+
 }
 
 void Communication::roundfunction3(vector<string> &buffers, vector<string> &recBufs) {// buffers[i] = the buffer of party i+1

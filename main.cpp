@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    TemplateField<GF2E> * field = new TemplateField<GF2E>(16);
+    TemplateField<GF2E> * field = new TemplateField<GF2E>(8);
 
     Protocol<GF2E> protocol(atoi(argv[2]), atoi(argv[1]),field, argv[3], argv[4], argv[5], argv[6]);
     protocol.run();
