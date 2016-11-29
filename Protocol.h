@@ -52,7 +52,7 @@ private:
     string s;
 
 public:
-    Protocol(int n, int id,TemplateField<GF2E> *field, string inputsFile, string outputFile, string circuitFile, string address);
+    Protocol(int n, int id,TemplateField<FieldType> *field, string inputsFile, string outputFile, string circuitFile, string address);
     void split(const string &s, char delim, vector<string> &elems);
     vector<string> split(const string &s, char delim);
 
@@ -225,7 +225,7 @@ public:
 
 
 template <class FieldType>
-Protocol<FieldType>::Protocol(int n, int id, TemplateField<GF2E> *field, string inputsFile, string outputFile, string circuitFile, string address)
+Protocol<FieldType>::Protocol(int n, int id, TemplateField<FieldType> *field, string inputsFile, string outputFile, string circuitFile, string address)
 {
 
     this->field = field;
@@ -284,25 +284,18 @@ template <class FieldType>
 bool Protocol<FieldType>::broadcast(int party_id, vector<byte> myMessage, vector<vector<byte>> &recBufsdiffBytes, HIM<FieldType> &mat)
 {
     int no_buckets;
-    //vector<string> buffers(N); // N parties = N buffers
     vector<vector<byte>> sendBufsBytes(N);
     vector<vector<FieldType>> sendBufsElements(N);
     vector<vector<FieldType>> recBufsElements(N);
 
-
-    //vector<string> recBufs2(N);
     vector<vector<byte>> recBufs2Bytes(N);
     vector<vector<FieldType>> recBufs2Elements(N);
-
-
-
 
 
     // Ps sends his values to all parties and received there values.
     comm->roundfunction2(myMessage, recBufsdiffBytes); // Values are in recBufsdiff
 
     //turn the recbuf into recbuf of elements
-
     int fieldByteSize = field->getElementSizeInBytes();
     for(int i=0; i < N; i++)
     {
@@ -327,14 +320,9 @@ bool Protocol<FieldType>::broadcast(int party_id, vector<byte> myMessage, vector
     int count = 0;
     for(int i=0; i< N; i++)
     {
-        //vector<string> arr = {};
-        //arr = split(recBufsdiff[i], '*');
-        //count += arr.size();
-
         count+=recBufsElements[i].size();
     }
 
-    //vector<string> valBufs(count);
 
     vector<FieldType> valBufs(count);
     int index = 0;
@@ -342,22 +330,10 @@ bool Protocol<FieldType>::broadcast(int party_id, vector<byte> myMessage, vector
     // concatenate everything
     for(int l=0; l< N; l++)
     {
-        /*if(flag_print) {
-            cout << "recBufsdiff[l]  "  <<recBufsdiff[l]<< endl; }
-        vector<string> arr = {};
-        arr = split(recBufsdiff[l], '*');
-        for (int i = 0; i < arr.size() ; i++) {
-            valBufs[index] = arr[i]
-            index++;
-        }*/
-
-
         for (int i = 0; i < recBufsElements[l].size() ; i++) {
             valBufs[index] = recBufsElements[l][i];
             index++;
         }
-
-
     }
 
     index = 0;
@@ -367,7 +343,8 @@ bool Protocol<FieldType>::broadcast(int party_id, vector<byte> myMessage, vector
         for(int k = 0; k < count; k++)
         {
             cout << "valBufs " << k << " " << valBufs[k] << endl;
-        } }
+        }
+    }
 
     // nr of buckets
     no_buckets = count / (N - T) + 1; // nr of buckets
@@ -417,10 +394,8 @@ bool Protocol<FieldType>::broadcast(int party_id, vector<byte> myMessage, vector
                 cout << "X1[i]" << i << " " << field->elementToString(X1[i])<< endl;
             } }
         for(int i = 0; i < N; i++) {
-           // buffers[i] += field->elementToString(Y1[i]) + "*";
 
-            sendBufsElements[i][k] = Y1[i];
-
+           sendBufsElements[i][k] = Y1[i];
         }
         for(int i = 0; i < N; i++)
         {
@@ -428,14 +403,6 @@ bool Protocol<FieldType>::broadcast(int party_id, vector<byte> myMessage, vector
             Y1[i] = *(field->GetZero());
         }
     }
-    /*for(int i=0; i < N; i++)
-    {
-        for(int k=0; k < no_buckets; k++)
-        {
-            buffers[i] += field->elementToString(sendBufsElements[i][k]) + "*" ;
-        }
-    }*/
-
 
     if(flag_print) {
         cout << "index  2 time :" << index << '\n';
@@ -473,33 +440,10 @@ bool Protocol<FieldType>::broadcast(int party_id, vector<byte> myMessage, vector
         }
 
         cout << "no_buckets  " << no_buckets << endl;}
-   // vector<string> arr = {};
-    //vector<string> arr1 = {};
     FieldType temp1;
 
     // no cheating: all parties have same y1
     // ‘‘Reconstruct’’ values towards some party (‘‘reconstruct’’ with degree 0)
-
-   /* for(int k=0; k < no_buckets; k++) {
-        if(flag_print) {
-            cout << "fff  " << k<< endl;}
-        arr = split(recBufs2[0], '*');
-        if(arr.size() > 0) {
-            temp1 = arr[k];
-            //  arr.size()-1
-            for (int i = 1; i < N; i++) {
-                arr1 = split(recBufs2[i], '*');
-                if(temp1 != arr1[k])
-                {
-                    // cheating detected!!!
-                    if(flag_print) {
-                        cout << "                 cheating" << endl;}
-                    return false;
-                }
-            }
-        }
-    }*/
-
     for(int k=0; k < no_buckets; k++) {
         if(flag_print) {
             cout << "fff  " << k<< endl;}
@@ -518,12 +462,7 @@ bool Protocol<FieldType>::broadcast(int party_id, vector<byte> myMessage, vector
         }
     }
 
-
-
-
-
     return true;
-
 }
 
 template <class FieldType>
@@ -562,7 +501,6 @@ void Protocol<FieldType>::run() {
     if(flag_print_timings) {
         cout << "time in milliseconds initializationPhase: " << duration << endl;
     }
-
 
     t1 = high_resolution_clock::now();
     if(preparationPhase(matrix_vand, matrix_him) == false) {
@@ -675,7 +613,6 @@ void Protocol<FieldType>::inputAdjustment(string &diff, HIM<FieldType> &mat)
     int input;
     int index = 0;
 
-    //vector<byte> diffBytes;
     vector<FieldType> diffElements;
     vector<byte> sendBufBytes;
 
@@ -694,11 +631,9 @@ void Protocol<FieldType>::inputAdjustment(string &diff, HIM<FieldType> &mat)
                 cout << "gateValueArr "<<k<< "   " << field->elementToString(gateValueArr[k]) << endl;}
 
             FieldType different = myinput - gateValueArr[k];
-            //string str = field->elementToString(different);
 
             diffElements.push_back(different);
 
-            //diff += str + "*";
 
         }
     }
@@ -710,15 +645,10 @@ void Protocol<FieldType>::inputAdjustment(string &diff, HIM<FieldType> &mat)
         field->elementToBytes(sendBufBytes.data() + (4 + j * fieldByteSize), diffElements[j]);
     }
 
-
-
-    //turn the elements to bytes
-
     if(flag_print) {
         cout << "try to print diff" << '\n';
         cout << diff << '\n';}
 
-   // vector<string> recBufsdiff(N);
     vector<vector<byte>> recBufsdiffBytes(N);
     vector<vector<FieldType>> recBufsdiffElements(N);
 
@@ -741,26 +671,9 @@ void Protocol<FieldType>::inputAdjustment(string &diff, HIM<FieldType> &mat)
         }
     }
     // handle after broadcast
-    string str;
     FieldType db;
 
-    /*vector<string> arr = {};
-    for (int k = 0; k < numOfInputGates; k++)
-    {
-        if(circuit.getGates()[k].gateType == INPUT)
-        {
-            str = recBufsdiff[circuit.getGates()[k].party - 1];
-            arr = split(str, '*');
-            db = field->stringToElement(arr[0]);
-            gateShareArr[k] = gateShareArr[k] + db; // adjustment
-            recBufsdiff[circuit.getGates()[k].party - 1] = "";
-            for(int i=1; i<arr.size(); i++) {
-                recBufsdiff[circuit.getGates()[k].party - 1] += arr[i] + "*";
-            }
-            gateDoneArr[k] = true; // gate is processed
-        }
-    }*/
-
+    //turn the elements to bytes
     for(int i=0; i < N; i++)
     {
         recBufsdiffElements[i].resize((recBufsdiffBytes[i].size()) / fieldByteSize);
@@ -811,10 +724,6 @@ void Protocol<FieldType>::initializationPhase(HIM<FieldType> &matrix_him, VDM<Fi
     vector<FieldType> alpha1(N-T);
     vector<FieldType> alpha2(T);
 
-
-
-
-
     beta[0] = field->GetElement(0); // zero of the field
     matrix_for_interpolate.allocate(1,N, field);
 
@@ -850,13 +759,7 @@ void Protocol<FieldType>::initializationPhase(HIM<FieldType> &matrix_him, VDM<Fi
 
     vector<FieldType> alpha_until_t(T + 1);
     vector<FieldType> alpha_from_t(N - 1 - T);
-    /*for(int i=0; i<T+1; i++)
-    {
-        alpha_until_t[i]= alpha[i];
-    }
-    for (int i = T + 1; i < N; i++) {
-        alpha_from_t[i - (T + 1)] = alpha[i];
-    }*/
+
     // Interpolate first d+1 positions of (alpha,x)
     matrix_for_t.allocate(N - 1 - T, T + 1, field); // slices, only positions from 0..d
     //matrix_for_t.InitHIMByVectors(alpha_until_t, alpha_from_t);
@@ -864,13 +767,7 @@ void Protocol<FieldType>::initializationPhase(HIM<FieldType> &matrix_him, VDM<Fi
 
     vector<FieldType> alpha_until_2t(2*T + 1);
     vector<FieldType> alpha_from_2t(N - 1 - 2*T);
-    /*for(int i=0; i<2*T+1; i++)
-    {
-        alpha_until_2t[i]= alpha[i];
-    }
-    for (int i = 2*T + 1; i < N; i++) {
-        alpha_from_2t[i - (2*T + 1)] = alpha[i];
-    }*/
+
     // Interpolate first d+1 positions of (alpha,x)
     matrix_for_2t.allocate(N - 1 - 2*T, 2*T + 1, field); // slices, only positions from 0..d
     //matrix_for_2t.InitHIMByVectors(alpha_until_2t, alpha_from_2t);
@@ -900,17 +797,15 @@ void Protocol<FieldType>::publicReconstruction(vector<FieldType> &myShares, int 
     vector<FieldType> x1(N);
     vector<FieldType> y1(N);
     vector<FieldType> y2(N);
-    //vector<string> sendBufs(N);
+
     vector<vector<FieldType>> sendBufsElements(N);
     vector<vector<byte>> sendBufsBytes(N);
-   // vector<string> sendBufs2(N);
+
     vector<vector<byte>> sendBufs2Bytes(N);
     vector<vector<FieldType>> sendBufsElements2(N);
-   // vector<string> recBufs(N);
+
     vector<vector<byte>> recBufsBytes(N);
     vector<vector<byte>> recBufs2Bytes(N);
-
-   // vector<string> recBufs2(N);
 
     for(int i = 0; i < N; i++)
     {
@@ -949,19 +844,9 @@ void Protocol<FieldType>::publicReconstruction(vector<FieldType> &myShares, int 
         // ∀i, j: Pi sends xj to Pj
         for(int i = 0; i < N; i++)
         {
-            //sendBufs[i] += field->elementToString(x1[i]) + "*";
             sendBufsElements[i][k] = x1[i];
         }
     }
-
-    /*for(int i=0; i < N; i++)
-    {
-        for(int k=0; k < no_buckets; k++)
-        {
-            sendBufs[i] += field->elementToString(sendBufsElements[i][k]) + "*" ;
-        }
-    }*/
-
 
     if(flag_print) {
         cout << "sendBufs[i]" << endl;
@@ -990,13 +875,10 @@ void Protocol<FieldType>::publicReconstruction(vector<FieldType> &myShares, int 
             //cout << recBufs[i] << endl;
         }}
     //   cout << "after roundfunction1" << '\n';
-    //vector<string> arr = {};
     for(int k=0; k < no_buckets; k++) {
 
         for (int i = 0; i < N; i++) {
 
-            //arr = split(recBufs[i], '*');
-            //x1[i] = field->stringToElement(arr[k]);
             x1[i] = field->bytesToElement(recBufsBytes[i].data() + (k*fieldByteSize));
         }
         if(flag_print) {
@@ -1024,14 +906,6 @@ void Protocol<FieldType>::publicReconstruction(vector<FieldType> &myShares, int 
         }
     }
 
-    /*for(int i=0; i < N; i++)
-    {
-        for(int k=0; k < no_buckets; k++)
-        {
-            sendBufs2[i] += field->elementToString(sendBufsElements2[i][k]) + "*" ;
-        }
-    }*/
-
     for(int i=0; i < N; i++)
     {
         sendBufs2Bytes[i].resize(no_buckets*fieldByteSize + 4);
@@ -1055,13 +929,10 @@ void Protocol<FieldType>::publicReconstruction(vector<FieldType> &myShares, int 
         {
             //cout << recBufs2[i] << endl;
         } }
-    //vector<string> arr = {};
     int index = 0;
     for(int k=0; k < no_buckets; k++) {
         for (int i = 0; i < N; i++) {
 
-            //arr = split(recBufs2[i], '*');
-            //x1[i] = field->stringToElement(arr[k]);
             x1[i] = field->bytesToElement(recBufs2Bytes[i].data() + (k*fieldByteSize));
         }
 
@@ -1091,17 +962,13 @@ void Protocol<FieldType>::publicReconstruction(vector<FieldType> &myShares, int 
 template <class FieldType>
 bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<FieldType> &matrix_him)
 {
-    //vector<string> recBufs(N);
     vector<vector<byte>> recBufsBytes(N);
     vector<vector<byte>> recBufs1Bytes(N);
     int robin = 0;
-    //string strX1, strX2, str;
 
     // the number of random double sharings we need altogether
     int no_random = circuit.getNrOfMultiplicationGates() + circuit.getNrOfInputGates();
     vector<FieldType> x1(N),x2(N),y1(N),y2(N);
-    //vector<string> sendBufs(N);
-
 
     vector<vector<FieldType>> sendBufsElements(N);
     vector<vector<byte>> sendBufsBytes(N);
@@ -1126,8 +993,6 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
      *  first degree t.
      *  subsequent: degree 2t with same secret.
      */
-
-
     for(int k=0; k < no_buckets; k++)
     {
         // generate random degree-T polynomial
@@ -1154,9 +1019,6 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
         // prepare shares to be sent
         for(int i=0; i < N; i++)
         {
-            //sendBufs[i] += field->elementToString(y1[i]) + "*"; // the degree-t shares of my poly
-           // sendBufs[i] += field->elementToString(y2[i]) + "$"; // the degree 2t shares of my poly
-
             sendBufsElements[i][2*k] = y1[i];
             sendBufsElements[i][2*k+1] = y2[i];
         }
@@ -1171,17 +1033,6 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
 
 
     }
-
-
-    /*for(int i=0; i < N; i++)
-    {
-        for(int k=0; k < no_buckets; k++)
-        {
-            sendBufs[i] += field->elementToString(sendBufsElements[i][2 * k]) + "*" +
-                               field->elementToString(sendBufsElements[i][2 * k + 1]) + "$";
-        }
-    }*/
-
 
     int fieldByteSize = field->getElementSizeInBytes();
     for(int i=0; i < N; i++)
@@ -1208,21 +1059,9 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
      * For balancing, we do round-robin the party how shall reconstruct and check!
      */
 
-   // vector<string> sendBufs1(N);
-   // vector<string> sendBufsTest(N);
+
     vector<vector<FieldType>> sendBufs1Elements(N);
     vector<vector<byte>> sendBufs1Bytes(N);
-
-//    for(int i=0; i < N; i++)
-//    {
-//        sendBufs1[i] = "";
-//
-//
-//    }
-
-    //vector<string> arr1 = {};
-    //vector<string> arr2 = {};
-    //vector<string> arr = {};
 
     int fieldBytesSize = field->getElementSizeInBytes();
 
@@ -1231,20 +1070,6 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
     for(int k=0; k < no_buckets; k++) {
         // generate random degree-T polynomial
         for (int i = 0; i < N; i++) {
-           /* str = recBufs[i];
-            arr1 = split(str, '$');
-            arr = split(arr1[k], '*');
-            if(arr.size() >1 ) {
-                strX1 = arr[0];
-                strX2 = arr[1];
-                x1[i] = field->stringToElement(strX1); // my share of the degree-t sharings
-                x2[i] = field->stringToElement(strX2); // my share of the degree-2t sharings
-            }
-            else{
-                if(flag_print) { cout << "                   problemmmmm" << endl;}
-            }*/
-
-
             x1[i] = field->bytesToElement(recBufsBytes[i].data() + (2*k*fieldBytesSize));
             x2[i] = field->bytesToElement(recBufsBytes[i].data() + ((2*k + 1)*fieldBytesSize));
 
@@ -1253,11 +1078,7 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
         matrix_him.MatrixMult(x2, y2);
         // these shall be checked
         for (int i = 0; i < 2 * T; i++) {
-            //sendBufs1[robin] += field->elementToString(y1[i]) + "*";
-            //sendBufs1[robin] += field->elementToString(y2[i]) + "$";
-            //robin = (robin+1) % N; // next robin
-
-            sendBufs1Elements[robin].push_back(y1[i]);
+              sendBufs1Elements[robin].push_back(y1[i]);
             sendBufs1Elements[robin].push_back(y2[i]);
             robin = (robin+1) % N; // next robin
 
@@ -1277,17 +1098,6 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
             x1[0] = *(field->GetZero());
         }
     }
-
-    /*for(int i=0; i < N; i++)
-    {
-        for(int k=0; k < sendBufs1Elements[i].size()/2; k++)
-        {
-            sendBufs1[i] += field->elementToString(sendBufs1Elements[i][2 * k]) + "*" +
-                           field->elementToString(sendBufs1Elements[i][2 * k + 1]) + "$";
-        }
-    }*/
-
-
 
     for(int i=0; i < N; i++)
     {
@@ -1309,27 +1119,9 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
         count++;
     }
 
-    //   count--;
 
     for(int k=0; k < count; k++) {
         for (int i = 0; i < N; i++) {
-            /*str = recBufs[i];
-            arr1 = split(str, '$');
-            arr = split(arr1[k], '*');
-            if (arr.size() == 2) {
-                strX1 = arr[0];
-                strX2 = arr[1];
-            } else {
-                // change !!!!
-                strX1 = "";
-                strX2 = "";
-            }
-
-
-            x1[i] = field->stringToElement(strX1);
-            x2[i] = field->stringToElement(strX2);
-
-             */
 
             x1[i] = field->bytesToElement(recBufs1Bytes[i].data() + (2*k*fieldBytesSize));
             x2[i] = field->bytesToElement(recBufs1Bytes[i].data() + ((2*k +1)*fieldBytesSize));
@@ -1371,12 +1163,9 @@ bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<Fiel
 template <class FieldType>
 bool Protocol<FieldType>::inputPreparation()
 {
-    //vector<string> sendBufs(N); // upper bound
     vector<vector<FieldType>> sendBufsElements(N); // upper bound
     vector<vector<byte>> sendBufsBytes(N);
-    //vector<string> sendBufsTest(N); // upper bound
 
-    //vector<string> recBufs(N); // dito
     vector<vector<FieldType>> recBufsElements(N);
     vector<vector<byte>> recBufsBytes(N);
     vector<FieldType> x1(N); // vector for the shares of my inputs
@@ -1390,10 +1179,7 @@ bool Protocol<FieldType>::inputPreparation()
         gateShareArr[k] = sharingBufTElements[k];
         i = (circuit.getGates())[k].party; // the number of party which has the input
         // reconstruct sharing towards input party
-        //sendBufs[i-1] += field->elementToString(gateShareArr[k]) + "*";
-
-
-        sendBufsElements[i-1].push_back(gateShareArr[k]);
+       sendBufsElements[i-1].push_back(gateShareArr[k]);
 
     }
     if(flag_print) {
@@ -1402,14 +1188,6 @@ bool Protocol<FieldType>::inputPreparation()
             //cout << sendBufs[i] << endl;
         }
     }
-
-
-    /*for(int i=0; i<N; i++){
-
-        for(int j=0; j<sendBufsElements[i].size(); j++){
-            sendBufs[i]+= field->elementToString(sendBufsElements[i][j]) + "*";
-        }
-    }*/
 
     int fieldByteSize = field->getElementSizeInBytes();
 
@@ -1442,20 +1220,7 @@ bool Protocol<FieldType>::inputPreparation()
     // reconstruct my random input values
     for(int k = 0; k < numOfInputGates; k++) {
         if (circuit.getGates()[k].party == m_partyId) {
-            // my input: reconstruct received shares
-            /*for (int i = 0; i < N; i++) {
-                vector<string> arr = {};
-                arr = split(recBufs[i], '*');
-                elem = field->stringToElement(arr[0]);
-                x1[i] = elem;
 
-                recBufs[i]="";
-                for(int l=1; l<arr.size(); l++)
-                {
-                    recBufs[i] += arr[l] + "*";
-                }
-
-            }*/
             for (int i = 0; i < N; i++) {
                 x1[i] = recBufsElements[i][counter];
             }
@@ -1467,7 +1232,6 @@ bool Protocol<FieldType>::inputPreparation()
             }
             // the (random) secret
             secret = interpolate(x1);
-            //  secret.setPoly(interpolate(x1).getElement());
 
             gateValueArr[k] = secret;
             if(flag_print) {
@@ -1641,7 +1405,6 @@ int Protocol<FieldType>::processMultiplications(HIM<FieldType> &m)
     int indexForValBuf = 0;
     vector<FieldType> ReconsBuf(M);
 
-    //vector<string> arr = {};
     for(int k = (numOfOutputGates - 1); k < (M - numOfOutputGates) ; k++)//go over only the logit gates
     {
         // its a multiplication which not yet processed and ready
@@ -1732,27 +1495,19 @@ void Protocol<FieldType>::outputPhase()
 {
     int count=0;
     vector<FieldType> x1(N); // vector for the shares of my outputs
-    //vector<string> sendBuf(N);
     vector<vector<FieldType>> sendBufsElements(N);
     vector<vector<byte>> sendBufsBytes(N);
-    //vector<string> recBuf(N);
     vector<vector<byte>> recBufBytes(N);
 
     FieldType num;
     ofstream myfile;
     myfile.open(outputFile);
 
-//    for(int i=0; i < N; i++)
-//    {
-//        sendBuf[i] = "";
-//    }
-
     for(int k=(M-numOfOutputGates - 1); k < M; k++)
     {
         if(circuit.getGates()[k].gateType == OUTPUT)
         {
             // send to party (which need this gate) your share for this gate
-            //sendBuf[circuit.getGates()[k].party - 1] = field->elementToString(gateShareArr[circuit.getGates()[k].input1]);
             sendBufsElements[circuit.getGates()[k].party - 1].push_back(gateShareArr[circuit.getGates()[k].input1]);
         }
     }
@@ -1777,9 +1532,6 @@ void Protocol<FieldType>::outputPhase()
         if(circuit.getGates()[k].gateType == OUTPUT && circuit.getGates()[k].party == m_partyId)
         {
             for(int i=0; i < N; i++) {
-                // change from string to field element
-                //num = field->stringToElement(recBuf[i]);
-                //x1[i] = num;
 
                 x1[i] = field->bytesToElement(recBufBytes[i].data() + (counter*fieldByteSize));
             }

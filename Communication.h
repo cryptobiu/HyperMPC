@@ -60,23 +60,12 @@ public:
      * This members should be public because that the callback methods update them.
      */
     int PARTYID, N, T;
-    std::atomic<int> countRF1, countRF2, countRF3, countRF4,
-            countRF5, countRF6, countRF7, countRF8;
-
-    std::atomic<int> counterOdd, counterEven;
 
     vector<int> counters;
-    //vector<vector<string>> rfVectors;
     vector<vector<vector<byte>>> rfVectors;
 
 
-    vector<string>  vecRF1, vecRF2, vecRF3, vecRF4,
-            vecRF5, vecRF6, vecRF7, vecRF8;
-
-    vector<string>  vecRFOdd, vecRFEven;
-
     vector<int> vecConn;
-    string ADDRESS;
 
     // MQTTClient members
     int m_rc;
@@ -121,19 +110,11 @@ public:
      * Optimization : In this specification, we prefare to separate to 8 different functions, rather one function.
      */
     void roundfunctionI(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int roundFunctionId);
-    void roundfunction1(vector<string> &sendBufs, vector<string> &recBufs);
     void roundfunction2(vector<byte> &myMessage, vector<vector<byte>> &recBufs);
-    void roundfunction3(vector<string> &buffers, vector<string> &recBufs);
-    void roundfunction4(vector<string> &sendBufs, vector<string> &recBufs);
-    void roundfunction5(vector<string> &sendBufs, vector<string> &recBufs);
-    void roundfunction6(vector<string> &sendBufs, vector<string> &recBufs);
-    void roundfunction7(vector<string> &sendBufs, vector<string> &recBufs);
-    void roundfunction8(vector<string> &sendBufs, vector<string> &recBufs);
 
     /**
      * This method send the message with the currect topic.
      */
-    void send(const string &myTopicForMessage, const string &myMessage);
     void sendBytes(const string &myTopicForMessage, byte *msg, int size);
 
     virtual ~Communication();

@@ -39,119 +39,14 @@ void ConnectHandler(const char *topicName, MQTTClient_message *&message, const s
 
 }
 
-/**
- * the function handle when message arrive
- */
-/*
-int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *message) {
-    string topic(topicName);
-    string str_message = "";
-    int i;
-    char *payloadptr;
-    string s = to_string(Communication::getInstance()->PARTYID);
-    int len_of_message;
-
-    payloadptr = (char *) message->payload;
-    string str(payloadptr);
-
-    string temptemp = str;
-
-
-    str = strtok(payloadptr, "$");
-
-    int pid = atoi(str.c_str());
-
-    if (str == s) return 1;
-
-    // loop until client_id
-    if (topic == "CONNECT") {
-        ConnectHandler(topicName, message, str);
-        MQTTClient_freeMessage(&message);
-        MQTTClient_free(topicName);
-        return 1;
-    }
-
-    len_of_message = message->payloadlen - (str.size() + 1);
-
-    string prefix = "";
-    string suffix = "";
-    for (int j = 0; j < temptemp.size(); ++j) {
-        if (temptemp[j] == '$'){
-            prefix = temptemp.substr(0,j);
-            suffix = temptemp.substr(j+1, len_of_message);
-            if (flag_print) {
-                cout << "prefix: " << prefix << "\nsuffix: " << suffix << endl; }
-            break;
-        }
-    }
-
-    str_message = suffix;
-
-    if(topic.find("roundfunction8") != std::string::npos)
-    {
-        Communication::getInstance()->rfVectors[7][pid - 1] = str_message;
-        Communication::getInstance()->counters[7]++;
-    }
-    else if (topic.find("roundfunction1") != std::string::npos)
-    {
-        Communication::getInstance()->rfVectors[0][pid - 1] = str_message;
-        Communication::getInstance()->counters[0]++;
-    }
-    else if(topic.find("roundfunction7") != std::string::npos)
-    {
-        Communication::getInstance()->rfVectors[6][pid - 1] = str_message;
-        Communication::getInstance()->counters[6]++;
-    }
-    else if (topic.find("roundfunction6") != std::string::npos) {
-        Communication::getInstance()->rfVectors[5][pid - 1] = str_message;
-        Communication::getInstance()->counters[5]++;
-    }
-    else if (topic.find("roundfunction5") != std::string::npos) {
-        Communication::getInstance()->rfVectors[4][pid - 1] = str_message;
-        Communication::getInstance()->counters[4]++;
-    } else if (topic.find("roundfunction4") != std::string::npos) {
-        Communication::getInstance()->rfVectors[3][pid - 1] = str_message;
-        Communication::getInstance()->counters[3]++;
-    } else if (topic.find("roundfunction3") != std::string::npos) {
-        Communication::getInstance()->rfVectors[2][pid - 1] = str_message;
-        Communication::getInstance()->counters[2]++;
-    } else {
-        // only when all x es recived we can calculate every x
-        Communication::getInstance()->vecRF2[pid - 1] = str_message;
-        Communication::getInstance()->countRF2++;
-    }
-
-
-    if(flag_print) {
-        printf("Message arrived\n");
-        printf("     topics: %s\n", topicName);
-        printf("   message: ");
-
-        cout << str_message;
-        putchar('\n'); }
-    // clean the pointer of the message
-    MQTTClient_freeMessage(&message);
-    MQTTClient_free(topicName);
-    return 1;
-}
-
-*/
-
-
-
-
-
 ////////////////////////BYTES/////////////////
 int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *message) {
     string topic(topicName);
     string str_message = "";
     int i;
 
-
     // loop until client_id
     if (topic == "CONNECT") {
-
-
 
         string s = to_string(Communication::getInstance()->PARTYID);
         char *payloadptr;
@@ -202,6 +97,7 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
     }
     else if(topic.find("roundfunction7") != std::string::npos)
     {
+
         Communication::getInstance()->rfVectors[6][pid - 1] = recMesg;
         Communication::getInstance()->counters[6]++;
     }
@@ -239,16 +135,6 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
 }
 
 
-
-
-
-
-
-
-
-
-
-
 void connlost(void *context, char *cause)
 {
     printf("\nConnection lost\n");
@@ -275,30 +161,6 @@ Communication::Communication(int n, int id, string ADDRESS) {
         counters[i] = 0;
         rfVectors[i].resize(N);
     }
-
-
-    vecRF1.resize(N);
-    vecRF2.resize(N);
-    vecRF3.resize(N);
-    vecRF4.resize(N);
-    vecRF5.resize(N);
-    vecRF6.resize(N);
-    vecRF7.resize(N);
-    vecRF8.resize(N);
-    countRF1 = 0;
-    countRF2 = 0;
-    countRF3 = 0;
-    countRF4 = 0;
-    countRF5 = 0;
-    countRF6 = 0;
-    countRF7 = 0;
-    countRF8 = 0;
-
-    counterEven = 0;
-    counterOdd = 0;
-    vecRFEven.resize(N);
-    vecRFOdd.resize(N);
-
 
 
     // start intialize the connection to server
@@ -400,27 +262,6 @@ void Communication::ConnectionToServer(const string &s) {
 }
 
 /**
- * the function update the details of message and send it.
- * @param myTopicForMessage
- * @param myMessage
- */
-void Communication::send(const string &myTopicForMessage, const string &myMessage) {
-    // update the details of message
-    this->m_pubmsg.payload = (void *) myMessage.c_str();
-    this->m_pubmsg.payloadlen = myMessage.size();
-    this->m_pubmsg.qos = 0;
-    this->m_pubmsg.retained = 0;
-    this->deliveredtoken = 0;
-
-    // publish the message to all parties
-    MQTTClient_publishMessage(this->m_client, myTopicForMessage.c_str(), &this->m_pubmsg, &this->m_token);
-
-    // waiting until the message send
-    //while (this->deliveredtoken != this->m_token) {};
-}
-
-
-/**
 * the function update the details of message and send it.
 * @param myTopicForMessage
 * @param myMessage
@@ -456,7 +297,9 @@ void Communication::roundfunctionI(vector<vector<byte>> &sendBufs, vector<vector
     while(counters[roundFunctionId-1] < N - 1) {}
 
     //there is no farther use of the rfVectors so we can move the data
-    recBufs = rfVectors[roundFunctionId-1];
+    recBufs = (rfVectors[roundFunctionId-1]);
+
+    //rfVectors[roundFunctionId-1].resize(N);
 
 
     //get the vector without the leading party id.
@@ -484,7 +327,7 @@ void Communication::roundfunction2(vector<byte> &myMessage, vector<vector<byte>>
 
 
     //there is no farther use of the rfVectors so we can move the data
-    recBufs = move(rfVectors[1]);
+    recBufs = (rfVectors[1]);
 
     //get the vector without the leading party id.
     vector<byte> sendCut(myMessage.size() - 4);
@@ -496,169 +339,6 @@ void Communication::roundfunction2(vector<byte> &myMessage, vector<vector<byte>>
     counters[1] = 0;
 
 }
-
-void Communication::roundfunction3(vector<string> &buffers, vector<string> &recBufs) {// buffers[i] = the buffer of party i+1
-    // buffers[0] = party 1
-    recBufs[PARTYID-1] = buffers[PARTYID-1];
-
-    string myMessage, myTopicForMessage;
-    string s= to_string(PARTYID);
-    for(int i=0; i<buffers.size(); i++)
-    {
-        myMessage = s + "$" + buffers[i];
-
-        myTopicForMessage = "roundfunction3" + to_string(i + 1);
-
-        m_pubmsg.payload = (void *) myMessage.c_str();
-
-        m_pubmsg.payloadlen = myMessage.size();
-        m_pubmsg.qos = 0;
-        m_pubmsg.retained = 0;
-        deliveredtoken = 0;
-
-        MQTTClient_publishMessage(m_client, myTopicForMessage.c_str(), &m_pubmsg, &m_token);
-
-        //while (deliveredtoken != m_token) {};
-    }
-    while (countRF3 < N - 1) {}
-
-    for(int i=0; i<N; i++)
-    {
-        if(i != PARTYID-1) {
-            recBufs[i] =  vecRF3[i];
-        }
-    }
-}
-
-void Communication::roundfunction4(vector<string> &sendBufs, vector<string> &recBufs) {
-    string s = to_string(PARTYID);
-    string myTopicForMessage;
-
-    recBufs[PARTYID-1] = sendBufs[PARTYID-1];
-
-    for(int i=0; i<N; i++)
-    {
-        myTopicForMessage = "roundfunction4" + to_string(i+1);
-        // add id party to the message
-        string myMessage = "";
-        myMessage = s + "$" + sendBufs[i];
-        send(myTopicForMessage, myMessage);
-    }
-
-    while(countRF4 < N - 1) {}
-
-    for(int i=0; i<N; i++)
-    {
-        if(i != PARTYID-1) {
-            recBufs[i] = vecRF4[i];
-        }
-    }
-    countRF4 = 0;
-}
-
-void Communication::roundfunction5(vector<string> &sendBufs, vector<string> &recBufs) {
-    string s = to_string(PARTYID);
-    string myTopicForMessage;
-
-    recBufs[PARTYID-1] = sendBufs[PARTYID-1];
-
-    for(int i=0; i<N; i++)
-    {
-        myTopicForMessage = "roundfunction5" + to_string(i+1);
-        // add id party to the message
-        string myMessage = s + "$" + sendBufs[i];
-        send(myTopicForMessage, myMessage);
-    }
-
-    while(countRF5 < N - 1) {}
-
-    for(int i=0; i<N; i++)
-    {
-        if(i != PARTYID-1) {
-            recBufs[i] = vecRF5[i];
-        }
-    }
-    countRF5 = 0;
-}
-
-void Communication::roundfunction6(vector<string> &sendBufs, vector<string> &recBufs) {
-    string s = to_string(PARTYID);
-    string myTopicForMessage;
-
-    recBufs[PARTYID-1] = sendBufs[PARTYID-1];
-
-    for(int i=0; i<N; i++)
-    {
-        myTopicForMessage = "roundfunction6" + to_string(i+1);
-        // add id party to the message
-        string myMessage = s + "$" + sendBufs[i];
-        send(myTopicForMessage, myMessage);
-    }
-
-    while(countRF6 < N - 1) {}
-
-    for(int i=0; i<N; i++)
-    {
-        if(i != PARTYID-1) {
-            recBufs[i] = vecRF6[i];
-        }
-    }
-
-    countRF6 = 0;
-}
-
-void Communication::roundfunction7(vector<string> &sendBufs, vector<string> &recBufs) {
-    string s = to_string(PARTYID);
-    string myTopicForMessage;
-
-    recBufs[PARTYID-1] = sendBufs[PARTYID-1];
-
-    for(int i=0; i<N; i++)
-    {
-        myTopicForMessage = "roundfunction7" + to_string(i+1);
-        // add id party to the message
-        string myMessage = s + "$" + sendBufs[i];
-        send(myTopicForMessage, myMessage);
-    }
-
-    while(countRF7 < N - 1) {}
-
-    for(int i=0; i<N; i++)
-    {
-        if(i != PARTYID-1) {
-            recBufs[i] = vecRF7[i];
-        }
-    }
-    countRF7 = 0;
-}
-
-void Communication::roundfunction8(vector<string> &sendBufs, vector<string> &recBufs) {
-
-    string s = to_string(PARTYID);
-    string myTopicForMessage;
-
-    recBufs[PARTYID-1] = sendBufs[PARTYID-1];
-
-    for(int i=0; i<N; i++)
-    {
-        myTopicForMessage = "roundfunction8" + to_string(i+1);
-        // add id party to the message
-        string myMessage = s + "$" + sendBufs[i];
-        send(myTopicForMessage, myMessage);
-    }
-
-    while(countRF8 < N - 1) {}
-
-    for(int i=0; i<N; i++)
-    {
-        if(i != PARTYID-1) {
-            recBufs[i] = vecRF8[i];
-        }
-    }
-
-    countRF8 = 0;
-}
-
 
 Communication::~Communication() {
     MQTTClient_disconnect(m_client, 10000);

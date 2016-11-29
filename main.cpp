@@ -46,9 +46,15 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    TemplateField<GF2E> * field = new TemplateField<GF2E>(8);
+    //TemplateField<GF2E> * field = new TemplateField<GF2E>(8);
 
-    Protocol<GF2E> protocol(atoi(argv[2]), atoi(argv[1]),field, argv[3], argv[4], argv[5], argv[6]);
+    //Protocol<GF2E> protocol(atoi(argv[2]), atoi(argv[1]),field, argv[3], argv[4], argv[5], argv[6]);
+
+
+    TemplateField<ZZ_p> * field = new TemplateField<ZZ_p>(251);
+
+    Protocol<ZZ_p> protocol(atoi(argv[2]), atoi(argv[1]),field, argv[3], argv[4], argv[5], argv[6]);
+
     protocol.run();
 
     delete field;

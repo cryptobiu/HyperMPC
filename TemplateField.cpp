@@ -90,20 +90,37 @@ void TemplateField<GF2E>::elementToBytes(unsigned char* elemenetInBytes, GF2E& e
 template <>
 GF2E TemplateField<GF2E>::bytesToElement(unsigned char* elemenetInBytes){
 
-   // GF2E outputElement;
     //first create a GF2X
     GF2X polynomialElement;
 
     //translate the bytes into a GF2X element
     GF2XFromBytes(polynomialElement, elemenetInBytes, fieldParam/8);
 
-
     //convert the GF2X to GF2E
-    //outputElement = to_GF2E(polynomialElement);
-
     return to_GF2E(polynomialElement);
 }
 
 
+template <>
+void TemplateField<ZZ_p>::elementToBytes(unsigned char* elemenetInBytes, ZZ_p& element){
 
+    BytesFromZZ(elemenetInBytes,rep(element),elementSizeInBytes);
+}
+
+
+template <>
+ZZ_p TemplateField<ZZ_p>::bytesToElement(unsigned char* elemenetInBytes){
+
+    //first create a ZZ
+    ZZ zz;
+
+    //translate the bytes into a ZZ element
+    ZZFromBytes(zz, elemenetInBytes, elementSizeInBytes);
+
+
+    //convert the ZZ to ZZ_p
+    //outputElement = to_GF2E(polynomialElement);
+
+    return to_ZZ_p(zz);
+}
 
