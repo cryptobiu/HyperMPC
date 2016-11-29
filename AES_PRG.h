@@ -18,7 +18,7 @@ using namespace std;
 
 typedef unsigned char byte;
 
-#define DEFAULT_CACHE_SIZE 11*8
+#define DEFAULT_CACHE_SIZE 11000*8
 
 class PRG
 {

@@ -117,10 +117,7 @@ ZZ_p TemplateField<ZZ_p>::bytesToElement(unsigned char* elemenetInBytes){
     //translate the bytes into a ZZ element
     ZZFromBytes(zz, elemenetInBytes, elementSizeInBytes);
 
-
     //convert the ZZ to ZZ_p
-    //outputElement = to_GF2E(polynomialElement);
-
     return to_ZZ_p(zz);
 }
 

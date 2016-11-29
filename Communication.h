@@ -7,6 +7,8 @@
 #include "TGate.h"
 #include "ArithmeticCircuit.h"
 #include <atomic>
+#include <mutex>              // std::mutex, std::unique_lock
+#include <condition_variable> // std::condition_variable
 
 #define flag_print false
 
@@ -60,6 +62,11 @@ public:
      * This members should be public because that the callback methods update them.
      */
     int PARTYID, N, T;
+
+    std::mutex mtx;
+    std::condition_variable cv;
+    bool ready = false;
+
 
     vector<int> counters;
     vector<vector<vector<byte>>> rfVectors;

@@ -85,39 +85,42 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
 
     memcpy(recMesg.data(), payloadptr+4, recMesg.size());
 
-    if(topic.find("roundfunction8") != std::string::npos)
-    {
-        Communication::getInstance()->rfVectors[7][pid - 1] = recMesg;
-        Communication::getInstance()->counters[7]++;
-    }
-    else if (topic.find("roundfunction1") != std::string::npos)
-    {
-        Communication::getInstance()->rfVectors[0][pid - 1] = recMesg;
-        Communication::getInstance()->counters[0]++;
-    }
-    else if(topic.find("roundfunction7") != std::string::npos)
-    {
 
-        Communication::getInstance()->rfVectors[6][pid - 1] = recMesg;
-        Communication::getInstance()->counters[6]++;
+
+    for(int i=1; i<9; i++){
+
+        if(topic.find("roundfunction" + to_string(i)) != std::string::npos)
+        {
+            Communication::getInstance()->rfVectors[i-1][pid - 1] = recMesg;
+            Communication::getInstance()->counters[i-1]++;
+
+             /*if(Communication::getInstance()->counters[i]>Communication::getInstance()->N-2){
+
+                 std::unique_lock<std::mutex> lck(Communication::getInstance()->mtx);
+                 Communication::getInstance()->ready = true;
+                 Communication::getInstance()->cv.notify_all();
+             }*/
+        }
+        /*else { //broadcast
+            // only when all x es recived we can calculate every x
+            Communication::getInstance()->rfVectors[1][pid - 1] = recMesg;
+            Communication::getInstance()->counters[1]++;
+
+
+        }*/
     }
-    else if (topic.find("roundfunction6") != std::string::npos) {
-        Communication::getInstance()->rfVectors[5][pid - 1] = recMesg;
-        Communication::getInstance()->counters[5]++;
-    }
-    else if (topic.find("roundfunction5") != std::string::npos) {
-        Communication::getInstance()->rfVectors[4][pid - 1] = recMesg;
-        Communication::getInstance()->counters[4]++;
-    } else if (topic.find("roundfunction4") != std::string::npos) {
-        Communication::getInstance()->rfVectors[3][pid - 1] = recMesg;
-        Communication::getInstance()->counters[3]++;
-    } else if (topic.find("roundfunction3") != std::string::npos) {
-        Communication::getInstance()->rfVectors[2][pid - 1] = recMesg;
-        Communication::getInstance()->counters[2]++;
-    } else {
-        // only when all x es recived we can calculate every x
+
+    if(topic.find("SHARE_Ps_VECTOR" ) != std::string::npos)
+    {
         Communication::getInstance()->rfVectors[1][pid - 1] = recMesg;
         Communication::getInstance()->counters[1]++;
+
+        /* if(Communication::getInstance()->counters[i]==Communication::getInstance()->N-1){
+
+             std::unique_lock<std::mutex> lck(Communication::getInstance()->mtx);
+             Communication::getInstance()->ready = true;
+             Communication::getInstance()->cv.notify_all();
+         }*/
     }
 
 
@@ -296,10 +299,17 @@ void Communication::roundfunctionI(vector<vector<byte>> &sendBufs, vector<vector
 
     while(counters[roundFunctionId-1] < N - 1) {}
 
-    //there is no farther use of the rfVectors so we can move the data
-    recBufs = (rfVectors[roundFunctionId-1]);
+    //std::unique_lock<std::mutex> lck(mtx);
+    //    ready = false;
+    //while (!ready) cv.wait(lck);
 
-    //rfVectors[roundFunctionId-1].resize(N);
+
+    //there is no farther use of the rfVectors so we can move the data
+    recBufs = move(rfVectors[roundFunctionId-1]);
+
+    //rounds that may be called more than once
+    if((roundFunctionId==1) || (roundFunctionId==8))
+        rfVectors[roundFunctionId-1].resize(N);
 
 
     //get the vector without the leading party id.
