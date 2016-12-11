@@ -16,6 +16,8 @@
 #include "TemplateField.h"
 
 #define flag_print_timings true
+#define flag_print_output true
+
 
 using namespace std;
 using namespace std::chrono;
@@ -37,6 +39,10 @@ private:
     HIM<FieldType> matrix_for_2t;
     TemplateField<FieldType> *field;
 
+    HIM<FieldType> matrix_him;
+    VDM<FieldType> matrix_vand;
+    HIM<FieldType> m;
+
     Communication* comm;
     ArithmeticCircuit circuit;
     vector<FieldType> gateValueArr; // the value of the gate (for my input and output gates)
@@ -46,6 +52,7 @@ private:
 
     vector<FieldType> sharingBufTElements; // prepared T-sharings (my shares)
     vector<FieldType> sharingBuf2TElements; // prepared 2T-sharings (my shares)
+    int shareIndex;
 
 
     vector<int> myInputs;
@@ -75,7 +82,7 @@ public:
      * We describe the protocol initialization.
      * In particular, some global variables are declared and initialized.
      */
-    void initializationPhase(HIM<FieldType> &matrix_him, VDM<FieldType> &matrix_vand, HIM<FieldType> &m);
+    void initializationPhase(/*HIM<FieldType> &matrix_him, VDM<FieldType> &matrix_vand, HIM<FieldType> &m*/);
 
     /**
      * A random double-sharing is a pair of two sharings of the same random value, where the one sharing is
@@ -113,7 +120,7 @@ public:
      * We use this algorithm, but extend it to capture an arbitrary number of double-sharings.
      * This is, as usual, achieved by processing multiple buckets in parallel.
      */
-    bool preparationPhase(VDM<FieldType> &matrix_vand, HIM<FieldType> &matrix_him);
+    bool preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<FieldType> &matrix_him*/);
 
     /**
      * We do not need robust broadcast (which we require an involved and expensive sub-protocol).
@@ -172,7 +179,7 @@ public:
       *
       * Note that the first step can still be performed in to offline phase.
       */
-    void inputAdjustment(string &diff, HIM<FieldType> &mat);
+    void inputAdjustment(string &diff/*, HIM<FieldType> &mat*/);
 
     /**
      * Check whether given points lie on polynomial of degree d.
@@ -185,6 +192,13 @@ public:
      * Return number of processed gates.
      */
     int processAdditions();
+
+
+    /**
+     * Process all subtractions which are ready.
+     * Return number of processed gates.
+     */
+    int processSubtractions();
 
     /**
      * Process all multiplications which are ready.
@@ -246,6 +260,20 @@ Protocol<FieldType>::Protocol(int n, int id, TemplateField<FieldType> *field, st
     numOfInputGates = circuit.getNrOfInputGates();
     numOfOutputGates = circuit.getNrOfOutputGates();
     myInputs.resize(numOfInputGates);
+    shareIndex = numOfInputGates;
+
+    comm->ConnectionToServer(s);
+    readMyInputs();
+
+    auto t1 = high_resolution_clock::now();
+    initializationPhase(/*matrix_him, matrix_vand, m*/);
+
+    auto t2 = high_resolution_clock::now();
+
+    auto duration = duration_cast<milliseconds>(t2-t1).count();
+    if(flag_print_timings) {
+        cout << "time in milliseconds initializationPhase: " << duration << endl;
+    }
 }
 
 template <class FieldType>
@@ -483,27 +511,18 @@ void Protocol<FieldType>::readMyInputs()
 template <class FieldType>
 void Protocol<FieldType>::run() {
 
-    HIM<FieldType> matrix_him(N,N,field);
+    /*HIM<FieldType> matrix_him(N,N,field);
     VDM<FieldType> matrix_vand(N,N,field);
     HIM<FieldType> m(T, N-T,field);
     matrix_vand.InitVDM();
     matrix_him.InitHIM();
+*/
 
-    comm->ConnectionToServer(s);
-    readMyInputs();
 
+
+    auto t1start = high_resolution_clock::now();
     auto t1 = high_resolution_clock::now();
-    initializationPhase(matrix_him, matrix_vand, m);
-
-    auto t2 = high_resolution_clock::now();
-
-    auto duration = duration_cast<milliseconds>(t2-t1).count();
-    if(flag_print_timings) {
-        cout << "time in milliseconds initializationPhase: " << duration << endl;
-    }
-
-    t1 = high_resolution_clock::now();
-    if(preparationPhase(matrix_vand, matrix_him) == false) {
+    if(preparationPhase(/*matrix_vand, matrix_him*/) == false) {
         if(flag_print) {
             cout << "cheating!!!" << '\n';}
         return;
@@ -513,9 +532,9 @@ void Protocol<FieldType>::run() {
             cout << "no cheating!!!" << '\n' << "finish Preparation Phase" << '\n';}
     }
 
-    t2 = high_resolution_clock::now();
+    auto t2 = high_resolution_clock::now();
 
-    duration = duration_cast<milliseconds>(t2-t1).count();
+    auto duration = duration_cast<milliseconds>(t2-t1).count();
     if(flag_print_timings) {
         cout << "time in milliseconds preparationPhase: " << duration << endl;
     }
@@ -542,8 +561,8 @@ void Protocol<FieldType>::run() {
     string sss = "";
 
     t1 = high_resolution_clock::now();
-    auto t1start = high_resolution_clock::now();
-    inputAdjustment(sss, matrix_him);
+
+    inputAdjustment(sss/*, matrix_him*/);
 
     t2 = high_resolution_clock::now();
 
@@ -593,6 +612,7 @@ void Protocol<FieldType>::computationPhase(HIM<FieldType> &m) {
     do {
         count = processSmul();
         count += processAdditions();
+        count += processSubtractions();
         count += processMultiplications(m);
     } while(count!=0);
 }
@@ -608,7 +628,7 @@ void Protocol<FieldType>::computationPhase(HIM<FieldType> &m) {
  * @param gateDoneArr
  */
 template <class FieldType>
-void Protocol<FieldType>::inputAdjustment(string &diff, HIM<FieldType> &mat)
+void Protocol<FieldType>::inputAdjustment(string &diff/*, HIM<FieldType> &mat*/)
 {
     int input;
     int index = 0;
@@ -653,7 +673,7 @@ void Protocol<FieldType>::inputAdjustment(string &diff, HIM<FieldType> &mat)
     vector<vector<FieldType>> recBufsdiffElements(N);
 
     // Broadcast the difference between GateValue[k] to x.
-    if(broadcast(m_partyId, sendBufBytes, recBufsdiffBytes, mat) == false) {
+    if(broadcast(m_partyId, sendBufBytes, recBufsdiffBytes, matrix_him) == false) {
         if(flag_print) {
             cout << "cheating!!!" << '\n';}
         return;
@@ -714,7 +734,7 @@ void Protocol<FieldType>::inputAdjustment(string &diff, HIM<FieldType> &mat)
  * @param alpha
  */
 template <class FieldType>
-void Protocol<FieldType>::initializationPhase(HIM<FieldType> &matrix_him, VDM<FieldType> &matrix_vand, HIM<FieldType> &m)
+void Protocol<FieldType>::initializationPhase(/*HIM<FieldType> &matrix_him, VDM<FieldType> &matrix_vand, HIM<FieldType> &m*/)
 {
     beta.resize(1);
     gateValueArr.resize(M);  // the value of the gate (for my input and output gates)
@@ -726,6 +746,11 @@ void Protocol<FieldType>::initializationPhase(HIM<FieldType> &matrix_him, VDM<Fi
 
     beta[0] = field->GetElement(0); // zero of the field
     matrix_for_interpolate.allocate(1,N, field);
+
+
+    matrix_him.allocate(N,N,field);
+    matrix_vand.allocate(N,N,field);
+    m.allocate(T, N-T,field);
 
     // Compute Vandermonde matrix VDM[i,k] = alpha[i]^k
     matrix_vand.InitVDM();
@@ -960,7 +985,7 @@ void Protocol<FieldType>::publicReconstruction(vector<FieldType> &myShares, int 
 }
 
 template <class FieldType>
-bool Protocol<FieldType>::preparationPhase(VDM<FieldType> &matrix_vand, HIM<FieldType> &matrix_him)
+bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<FieldType> &matrix_him*/)
 {
     vector<vector<byte>> recBufsBytes(N);
     vector<vector<byte>> recBufs1Bytes(N);
@@ -1360,6 +1385,38 @@ int Protocol<FieldType>::processAdditions()
     return count;
 }
 
+
+/**
+ * the function process all subtraction gates which are ready.
+ * @param circuit
+ * @param gateDoneArr
+ * @param gateShareArr
+ * @return the number of processed gates.
+ */
+template <class FieldType>
+int Protocol<FieldType>::processSubtractions()
+{
+    int count =0;
+
+    for(int k=(numOfInputGates-1); k < (M - numOfOutputGates); k++)
+    {
+        // its an addition which not yet processed and ready
+        if(circuit.getGates()[k].gateType == SUB && !gateDoneArr[k]
+           && gateDoneArr[circuit.getGates()[k].input1]
+           && gateDoneArr[circuit.getGates()[k].input2])
+        {
+            gateShareArr[k] = gateShareArr[circuit.getGates()[k].input1] - gateShareArr[circuit.getGates()[k].input2];
+            gateDoneArr[k] = true;
+            count++;
+        }
+
+    }
+
+    return count;
+}
+
+
+
 template <class FieldType>
 int Protocol<FieldType>::processSmul()
 {
@@ -1405,7 +1462,7 @@ int Protocol<FieldType>::processMultiplications(HIM<FieldType> &m)
     int indexForValBuf = 0;
     vector<FieldType> ReconsBuf(M);
 
-    for(int k = (numOfOutputGates - 1); k < (M - numOfOutputGates) ; k++)//go over only the logit gates
+    for(int k = (numOfInputGates - 1); k < (M - numOfOutputGates) ; k++)//go over only the logit gates
     {
         // its a multiplication which not yet processed and ready
         if(circuit.getGates()[k].gateType == MULT && !gateDoneArr[k]
@@ -1413,8 +1470,10 @@ int Protocol<FieldType>::processMultiplications(HIM<FieldType> &m)
            && gateDoneArr[circuit.getGates()[k].input2])
         {
 
-            r1 = sharingBufTElements[k]; // t-share of random r
-            r2 = sharingBuf2TElements[k]; // t2-share of same r
+            r1 = sharingBufTElements[shareIndex]; // t-share of random r
+            r2 = sharingBuf2TElements[shareIndex]; // t2-share of same r
+
+            shareIndex++;
 
 
             p2 = gateShareArr[circuit.getGates()[k].input1] * gateShareArr[circuit.getGates()[k].input2]; // product share (degree-2t)
@@ -1477,7 +1536,8 @@ void Protocol<FieldType>::processRandoms()
         if(circuit.getGates()[k].gateType == RANDOM)
         {
 
-            r1 = sharingBufTElements[k];
+            r1 = sharingBufTElements[shareIndex];
+            shareIndex++;
 
             gateShareArr[k] = r1;
         }
@@ -1536,6 +1596,7 @@ void Protocol<FieldType>::outputPhase()
                 x1[i] = field->bytesToElement(recBufBytes[i].data() + (counter*fieldByteSize));
             }
 
+
             // my output: reconstruct received shares
             if (!checkConsistency(x1, T))
             {
@@ -1544,9 +1605,11 @@ void Protocol<FieldType>::outputPhase()
                     cout << "cheating!!!" << '\n';}
                 return;
             }
-            cout << "the result is : " << field->elementToString(interpolate(x1)) << '\n';
+            if(flag_print_output)
+                cout << "the result is : " << field->elementToString(interpolate(x1)) << '\n';
             //myfile << field->elementToString(interpolate(x1));
 
+            counter++;
         }
     }
 

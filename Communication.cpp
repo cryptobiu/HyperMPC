@@ -64,11 +64,7 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
     }
 
     byte *payloadptr;
-    //string s = to_string(Communication::getInstance()->PARTYID);
-
-
     payloadptr = (byte *) message->payload;
-
 
     uint32_t * getParty = (uint32_t*)payloadptr;
 
@@ -78,14 +74,11 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
     if (pid == Communication::getInstance()->PARTYID) return 1;
 
 
-
-
     //copy the message with out the leading party number of size int
     vector<byte> recMesg(message->payloadlen - 4);
 
+    //safe to copy since we copy bytes
     memcpy(recMesg.data(), payloadptr+4, recMesg.size());
-
-
 
     for(int i=1; i<9; i++){
 
@@ -94,20 +87,14 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
             Communication::getInstance()->rfVectors[i-1][pid - 1] = recMesg;
             Communication::getInstance()->counters[i-1]++;
 
-             /*if(Communication::getInstance()->counters[i]>Communication::getInstance()->N-2){
+             if(Communication::getInstance()->counters[i-1]>Communication::getInstance()->N-2){
 
                  std::unique_lock<std::mutex> lck(Communication::getInstance()->mtx);
                  Communication::getInstance()->ready = true;
-                 Communication::getInstance()->cv.notify_all();
-             }*/
+                 Communication::getInstance()->cv.notify_one();
+             }
+
         }
-        /*else { //broadcast
-            // only when all x es recived we can calculate every x
-            Communication::getInstance()->rfVectors[1][pid - 1] = recMesg;
-            Communication::getInstance()->counters[1]++;
-
-
-        }*/
     }
 
     if(topic.find("SHARE_Ps_VECTOR" ) != std::string::npos)
@@ -115,12 +102,12 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
         Communication::getInstance()->rfVectors[1][pid - 1] = recMesg;
         Communication::getInstance()->counters[1]++;
 
-        /* if(Communication::getInstance()->counters[i]==Communication::getInstance()->N-1){
+        if(Communication::getInstance()->counters[1]>Communication::getInstance()->N-2){
 
-             std::unique_lock<std::mutex> lck(Communication::getInstance()->mtx);
-             Communication::getInstance()->ready = true;
-             Communication::getInstance()->cv.notify_all();
-         }*/
+            std::unique_lock<std::mutex> lck(Communication::getInstance()->mtx);
+            Communication::getInstance()->ready = true;
+            Communication::getInstance()->cv.notify_one();
+        }
     }
 
 
@@ -297,19 +284,27 @@ void Communication::roundfunctionI(vector<vector<byte>> &sendBufs, vector<vector
         sendBytes(myTopicForMessage, sendBufs[i].data(), sendBufs[i].size() );
     }
 
-    while(counters[roundFunctionId-1] < N - 1) {}
+    //while(counters[roundFunctionId-1] < N - 1) {}
 
-    //std::unique_lock<std::mutex> lck(mtx);
-    //    ready = false;
-    //while (!ready) cv.wait(lck);
+    std::unique_lock<std::mutex> lck(mtx);
+    while (!ready) cv.wait(lck);
+    ready = false;
 
+    /*std::unique_lock<std::mutex> lck(mtx);
+    cv.wait(lck, [&]{return this->ready;});
+    ready = false;
+    processed = true;
+    lck.unlock();
+    cv.notify_all();
+*/
 
     //there is no farther use of the rfVectors so we can move the data
-    recBufs = move(rfVectors[roundFunctionId-1]);
+    //recBufs = move(rfVectors[roundFunctionId-1]);
+    recBufs = rfVectors[roundFunctionId-1];
 
     //rounds that may be called more than once
-    if((roundFunctionId==1) || (roundFunctionId==8))
-        rfVectors[roundFunctionId-1].resize(N);
+    //if((roundFunctionId==1) || (roundFunctionId==8))
+        //rfVectors[roundFunctionId-1].resize(N);
 
 
     //get the vector without the leading party id.
@@ -333,7 +328,10 @@ void Communication::roundfunction2(vector<byte> &myMessage, vector<vector<byte>>
     sendBytes(myTopicForMessage, myMessage.data(), myMessage.size() );
 
 
-    while (counters[1] < N - 1) {}
+    //while (counters[1] < N - 1) {}
+    std::unique_lock<std::mutex> lck(mtx);
+    while (!ready) cv.wait(lck);
+    ready = false;
 
 
     //there is no farther use of the rfVectors so we can move the data

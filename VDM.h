@@ -16,16 +16,31 @@ private:
     TemplateField<FieldType> *field;
 public:
     VDM(int n, int m, TemplateField<FieldType> *field);
+    VDM() {};
     ~VDM();
     void InitVDM();
     void Print();
     void MatrixMult(std::vector<FieldType> &vector, std::vector<FieldType> &answer);
 
+    void allocate(int n, int m, TemplateField<FieldType> *field);
 };
 
 
 template<typename FieldType>
 VDM<FieldType>::VDM(int n, int m, TemplateField<FieldType> *field) {
+    this->m_m = m;
+    this->m_n = n;
+    this->field = field;
+    this->m_matrix = new FieldType*[m_n];
+    for (int i = 0; i < m_n; i++)
+    {
+        m_matrix[i] = new FieldType[m_m];
+    }
+}
+
+template<typename FieldType>
+void VDM<FieldType>::allocate(int n, int m, TemplateField<FieldType> *field) {
+
     this->m_m = m;
     this->m_n = n;
     this->field = field;

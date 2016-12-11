@@ -55,7 +55,17 @@ int main(int argc, char* argv[])
 
     Protocol<ZZ_p> protocol(atoi(argv[2]), atoi(argv[1]),field, argv[3], argv[4], argv[5], argv[6]);
 
+
     protocol.run();
+    int times = 0;
+    auto t1 = high_resolution_clock::now();
+    for(int i=0; i<times; i++) {
+        protocol.run();
+    }
+    auto t2 = high_resolution_clock::now();
+
+    auto duration = duration_cast<milliseconds>(t2-t1).count();
+    cout << "time in milliseconds for " << times << " runs: " << duration << endl;
 
     delete field;
 

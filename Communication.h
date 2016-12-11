@@ -66,6 +66,7 @@ public:
     std::mutex mtx;
     std::condition_variable cv;
     bool ready = false;
+    bool processed = false;
 
 
     vector<int> counters;
