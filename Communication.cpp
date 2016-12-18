@@ -299,12 +299,12 @@ void Communication::roundfunctionI(vector<vector<byte>> &sendBufs, vector<vector
 */
 
     //there is no farther use of the rfVectors so we can move the data
-    //recBufs = move(rfVectors[roundFunctionId-1]);
-    recBufs = rfVectors[roundFunctionId-1];
+    recBufs = move(rfVectors[roundFunctionId-1]);
+    //recBufs = rfVectors[roundFunctionId-1];
 
     //rounds that may be called more than once
     //if((roundFunctionId==1) || (roundFunctionId==8))
-        //rfVectors[roundFunctionId-1].resize(N);
+    rfVectors[roundFunctionId-1].resize(N);
 
 
     //get the vector without the leading party id.

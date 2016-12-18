@@ -2,12 +2,13 @@
 #include "stdlib.h"
 #include "../../workspace/paho/src/MQTTClient.h"
 #include "Protocol.h"
-using namespace std;
+
 
 #include "NTL/ZZ_p.h"
 #include "NTL/ZZ.h"
 
 
+using namespace std;
 using namespace NTL;
 
 /**
@@ -50,17 +51,23 @@ int main(int argc, char* argv[])
 
     //Protocol<GF2E> protocol(atoi(argv[2]), atoi(argv[1]),field, argv[3], argv[4], argv[5], argv[6]);
 
+    int times = 1;
 
-    TemplateField<ZZ_p> * field = new TemplateField<ZZ_p>(251);
+    string outputTimerFileName = string(argv[5]) + "Times" + string(argv[1]) + ".csv";
+    ProtocolTimer p(times, outputTimerFileName);
 
-    Protocol<ZZ_p> protocol(atoi(argv[2]), atoi(argv[1]),field, argv[3], argv[4], argv[5], argv[6]);
+    TemplateField<ZZ_p> * field = new TemplateField<ZZ_p>(22943);
+
+    Protocol<ZZ_p> protocol(atoi(argv[2]), atoi(argv[1]),field, argv[3], argv[4], argv[5], argv[6], &p);
 
 
-    protocol.run();
-    int times = 0;
+
+
+    //protocol.run();
+
     auto t1 = high_resolution_clock::now();
     for(int i=0; i<times; i++) {
-        protocol.run();
+        protocol.run(i);
     }
     auto t2 = high_resolution_clock::now();
 
@@ -68,6 +75,8 @@ int main(int argc, char* argv[])
     cout << "time in milliseconds for " << times << " runs: " << duration << endl;
 
     delete field;
+
+    p.writeToFile();
 
     cout << "end main" << '\n';
 

@@ -14,6 +14,7 @@
 #include <chrono>
 #include "Def.h"
 #include "TemplateField.h"
+#include "ProtocolTimer.h"
 
 #define flag_print_timings true
 #define flag_print_output true
@@ -30,6 +31,7 @@ private:
      * M - number of gates
      * T - number of malicious
      */
+    ProtocolTimer* protocolTimer;
     int N, M, T, m_partyId;
     int numOfInputGates, numOfOutputGates;
     string inputsFile, outputFile, ADDRESS;
@@ -59,7 +61,8 @@ private:
     string s;
 
 public:
-    Protocol(int n, int id,TemplateField<FieldType> *field, string inputsFile, string outputFile, string circuitFile, string address);
+    Protocol(int n, int id,TemplateField<FieldType> *field, string inputsFile, string outputFile, string circuitFile, string address,
+             ProtocolTimer* protocolTimer);
     void split(const string &s, char delim, vector<string> &elems);
     vector<string> split(const string &s, char delim);
 
@@ -71,7 +74,7 @@ public:
      * 4. Computation Phase
      * 5. Output Phase
      */
-    void run();
+    void run(int iteration);
 
     /**
      * This method reads text file and inits a vector of Inputs according to the file.
@@ -213,6 +216,8 @@ public:
 
     int processSmul();
 
+    int processNotMult();
+
     /**
      * Walk through the circuit and evaluate the gates. Always take as many gates at once as possible,
      * i.e., all gates whose inputs are ready.
@@ -239,9 +244,10 @@ public:
 
 
 template <class FieldType>
-Protocol<FieldType>::Protocol(int n, int id, TemplateField<FieldType> *field, string inputsFile, string outputFile, string circuitFile, string address)
+Protocol<FieldType>::Protocol(int n, int id, TemplateField<FieldType> *field, string inputsFile, string outputFile, string circuitFile, string address,
+                              ProtocolTimer* protocolTimer)
 {
-
+    this->protocolTimer = protocolTimer;
     this->field = field;
     ADDRESS = address;
     comm = Communication::getInstance(n, id, address);
@@ -256,6 +262,7 @@ Protocol<FieldType>::Protocol(int n, int id, TemplateField<FieldType> *field, st
     m_partyId = id;
     s = to_string(m_partyId);
     circuit.readCircuit(circuitFile.c_str());
+    circuit.reArrangeCircuit();
     M = circuit.getNrOfGates();
     numOfInputGates = circuit.getNrOfInputGates();
     numOfOutputGates = circuit.getNrOfOutputGates();
@@ -509,7 +516,7 @@ void Protocol<FieldType>::readMyInputs()
 }
 
 template <class FieldType>
-void Protocol<FieldType>::run() {
+void Protocol<FieldType>::run(int iteration) {
 
     /*HIM<FieldType> matrix_him(N,N,field);
     VDM<FieldType> matrix_vand(N,N,field);
@@ -518,7 +525,11 @@ void Protocol<FieldType>::run() {
     matrix_him.InitHIM();
 */
 
-
+    for(int i=0; i<gateDoneArr.size(); i++)
+    {
+        gateDoneArr[i] = false;
+    }
+    shareIndex = numOfInputGates;
 
     auto t1start = high_resolution_clock::now();
     auto t1 = high_resolution_clock::now();
@@ -538,6 +549,7 @@ void Protocol<FieldType>::run() {
     if(flag_print_timings) {
         cout << "time in milliseconds preparationPhase: " << duration << endl;
     }
+    protocolTimer->preparationPhaseArr[iteration] =duration;
 
     t1 = high_resolution_clock::now();
     if(inputPreparation() == false) {
@@ -551,8 +563,8 @@ void Protocol<FieldType>::run() {
     }
 
     t2 = high_resolution_clock::now();
-
     duration = duration_cast<milliseconds>(t2-t1).count();
+    protocolTimer->inputPreparationArr[iteration] = duration;
     if(flag_print_timings) {
         cout << "time in milliseconds inputPreparation: " << duration << endl;
     }
@@ -567,6 +579,7 @@ void Protocol<FieldType>::run() {
     t2 = high_resolution_clock::now();
 
     duration = duration_cast<milliseconds>(t2-t1).count();
+    protocolTimer->inputAdjustmentArr[iteration] = duration;
 
     if(flag_print_timings) {
         cout << "time in milliseconds inputAdjustment: " << duration << endl;
@@ -581,6 +594,7 @@ void Protocol<FieldType>::run() {
     t2 = high_resolution_clock::now();
 
     duration = duration_cast<milliseconds>(t2-t1).count();
+    protocolTimer->computationPhaseArr[iteration] = duration;
 
     if(flag_print_timings) {
         cout << "time in milliseconds computationPhase: " << duration << endl;
@@ -593,6 +607,7 @@ void Protocol<FieldType>::run() {
     t2 = high_resolution_clock::now();
 
     duration = duration_cast<milliseconds>(t2-t1).count();
+    protocolTimer->outputPhaseArr[iteration] = duration;
 
     if(flag_print_timings) {
         cout << "time in milliseconds outputPhase: " << duration << endl;
@@ -600,6 +615,7 @@ void Protocol<FieldType>::run() {
     auto t2end = high_resolution_clock::now();
 
     duration = duration_cast<milliseconds>(t2end-t1start).count();
+    protocolTimer->totalTimeArr[iteration] = duration;
 
     cout << "time in milliseconds for protocol: " << duration << endl;
 
@@ -608,12 +624,16 @@ void Protocol<FieldType>::run() {
 template <class FieldType>
 void Protocol<FieldType>::computationPhase(HIM<FieldType> &m) {
     int count = 0;
-    processRandoms();
+    //processRandoms();
     do {
-        count = processSmul();
-        count += processAdditions();
-        count += processSubtractions();
+//        count = processSmul();
+//        count += processAdditions();
+//        count += processSubtractions();
+//        count += processMultiplications(m);
+
+        count = processNotMult();
         count += processMultiplications(m);
+
     } while(count!=0);
 }
 
@@ -1386,6 +1406,43 @@ int Protocol<FieldType>::processAdditions()
 }
 
 
+
+template <class FieldType>
+int Protocol<FieldType>::processNotMult(){
+    int count=0;
+    for(int k=(numOfInputGates-1); k < (M - numOfOutputGates); k++)
+    {
+        if(!gateDoneArr[k] && gateDoneArr[circuit.getGates()[k].input1]){
+
+            // add gate
+            if(circuit.getGates()[k].gateType == ADD && gateDoneArr[circuit.getGates()[k].input2])
+            {
+                gateShareArr[k] = gateShareArr[circuit.getGates()[k].input1] + gateShareArr[circuit.getGates()[k].input2];
+                gateDoneArr[k] = true;
+                count++;
+            }
+            else if(circuit.getGates()[k].gateType == SUB && gateDoneArr[circuit.getGates()[k].input2])//sub gate
+            {
+                gateShareArr[k] = gateShareArr[circuit.getGates()[k].input1] - gateShareArr[circuit.getGates()[k].input2];
+                gateDoneArr[k] = true;
+                count++;
+            }
+            else if(circuit.getGates()[k].gateType == SCALAR)
+            {
+                // scalar = circuit.getGates()[k].input2
+                long scalar(circuit.getGates()[k].input2);
+                FieldType e = field->GetElement(scalar);
+                gateShareArr[k] = gateShareArr[circuit.getGates()[k].input1] * e;
+                gateDoneArr[k] = true;
+                count++;
+            }
+        }
+
+    }
+    return count;
+
+}
+
 /**
  * the function process all subtraction gates which are ready.
  * @param circuit
@@ -1606,7 +1663,7 @@ void Protocol<FieldType>::outputPhase()
                 return;
             }
             if(flag_print_output)
-                cout << "the result is : " << field->elementToString(interpolate(x1)) << '\n';
+                cout << "the result for "<< circuit.getGates()[k].input1 << " is : " << field->elementToString(interpolate(x1)) << '\n';
             //myfile << field->elementToString(interpolate(x1));
 
             counter++;

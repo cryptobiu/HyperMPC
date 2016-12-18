@@ -258,6 +258,33 @@ Protocol.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/Protocol.cpp.s
 .PHONY : Protocol.cpp.s
 
+ProtocolTimer.o: ProtocolTimer.cpp.o
+
+.PHONY : ProtocolTimer.o
+
+# target to build an object file
+ProtocolTimer.cpp.o:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/ProtocolTimer.cpp.o
+.PHONY : ProtocolTimer.cpp.o
+
+ProtocolTimer.i: ProtocolTimer.cpp.i
+
+.PHONY : ProtocolTimer.i
+
+# target to preprocess a source file
+ProtocolTimer.cpp.i:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/ProtocolTimer.cpp.i
+.PHONY : ProtocolTimer.cpp.i
+
+ProtocolTimer.s: ProtocolTimer.cpp.s
+
+.PHONY : ProtocolTimer.s
+
+# target to generate assembly for a file
+ProtocolTimer.cpp.s:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/ProtocolTimer.cpp.s
+.PHONY : ProtocolTimer.cpp.s
+
 TemplateField.o: TemplateField.cpp.o
 
 .PHONY : TemplateField.o
@@ -363,6 +390,9 @@ help:
 	@echo "... Protocol.o"
 	@echo "... Protocol.i"
 	@echo "... Protocol.s"
+	@echo "... ProtocolTimer.o"
+	@echo "... ProtocolTimer.i"
+	@echo "... ProtocolTimer.s"
 	@echo "... TemplateField.o"
 	@echo "... TemplateField.i"
 	@echo "... TemplateField.s"
