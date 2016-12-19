@@ -124,7 +124,7 @@ void ArithmeticCircuit::readCircuit(const char* fileName)
             if (type == 1) {
                 nrOfAdditionGates++;
             }
-            else if (type = 2) {
+            else if (type == 2) {
                 nrOfMultiplicationGates++;
             }
             else if (type==4){
@@ -196,10 +196,11 @@ void ArithmeticCircuit::reArrangeCircuit() {
 
 
 
-    int count = 0;
+    int count = nrOfInputGates;
     int loopCount=0;
 
-    while(count<(numOfGates-nrOfInputGates-nrOfOutputGates)){
+
+    while(count<(numOfGates-nrOfOutputGates)){
 
         loopCount=count;
         for(int k=(nrOfInputGates); k < (numOfGates - nrOfOutputGates); k++)
@@ -230,13 +231,21 @@ void ArithmeticCircuit::reArrangeCircuit() {
 
         }
 
+        layersIndices.push_back(loopCount);
+
 
 
     }
+    layersIndices.push_back(count);
 
     //copy the right gates
     for(int k=0; k < (getNrOfGates() - nrOfOutputGates); k++) {
         arrangedGates[k] = gates[newOrderedIndices[k]];
+    }
+
+    //copy the output gates
+    for(int k=(getNrOfGates() - nrOfOutputGates); k < getNrOfGates(); k++) {
+        arrangedGates[k] = gates[k];
     }
 
     gates = move(arrangedGates);

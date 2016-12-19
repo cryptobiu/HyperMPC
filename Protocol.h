@@ -32,6 +32,7 @@ private:
      * T - number of malicious
      */
     ProtocolTimer* protocolTimer;
+    int currentCirciutLayer = 0;
     int N, M, T, m_partyId;
     int numOfInputGates, numOfOutputGates;
     string inputsFile, outputFile, ADDRESS;
@@ -50,7 +51,7 @@ private:
     vector<FieldType> gateValueArr; // the value of the gate (for my input and output gates)
     vector<FieldType> gateShareArr; // my share of the gate (for all gates)
     vector<FieldType> alpha; // N distinct non-zero field elements
-    vector<bool> gateDoneArr; // true if the gate is processed
+    //vector<bool> gateDoneArr; // true if the gate is processed
 
     vector<FieldType> sharingBufTElements; // prepared T-sharings (my shares)
     vector<FieldType> sharingBuf2TElements; // prepared 2T-sharings (my shares)
@@ -525,10 +526,10 @@ void Protocol<FieldType>::run(int iteration) {
     matrix_him.InitHIM();
 */
 
-    for(int i=0; i<gateDoneArr.size(); i++)
+    /*for(int i=0; i<gateDoneArr.size(); i++)
     {
         gateDoneArr[i] = false;
-    }
+    }*/
     shareIndex = numOfInputGates;
 
     auto t1start = high_resolution_clock::now();
@@ -625,16 +626,22 @@ template <class FieldType>
 void Protocol<FieldType>::computationPhase(HIM<FieldType> &m) {
     int count = 0;
     //processRandoms();
-    do {
+
+    int numOfLayers = circuit.getLayers().size();
+    for(int i=0; i<numOfLayers-1;i++){
 //        count = processSmul();
 //        count += processAdditions();
 //        count += processSubtractions();
 //        count += processMultiplications(m);
 
+        currentCirciutLayer = i;
         count = processNotMult();
+        cout<<"count mot mult: " << count << "for layer: " << currentCirciutLayer <<"\n";
         count += processMultiplications(m);
+        cout<<"count mult" << count << "for layer: " << currentCirciutLayer<<"\n";
 
-    } while(count!=0);
+
+    }
 }
 
 /**
@@ -737,7 +744,7 @@ void Protocol<FieldType>::inputAdjustment(string &diff/*, HIM<FieldType> &mat*/)
             counters[circuit.getGates()[k].party - 1] += 1;
             gateShareArr[k] = gateShareArr[k] + db; // adjustment
 
-            gateDoneArr[k] = true; // gate is processed
+            //gateDoneArr[k] = true; // gate is processed
         }
     }
 
@@ -760,7 +767,7 @@ void Protocol<FieldType>::initializationPhase(/*HIM<FieldType> &matrix_him, VDM<
     gateValueArr.resize(M);  // the value of the gate (for my input and output gates)
     gateShareArr.resize(M - circuit.getNrOfOutputGates()); // my share of the gate (for all gates)
     alpha.resize(N); // N distinct non-zero field elements
-    gateDoneArr.resize(M);  // true is the gate is processed
+    //gateDoneArr.resize(M);  // true is the gate is processed
     vector<FieldType> alpha1(N-T);
     vector<FieldType> alpha2(T);
 
@@ -795,10 +802,10 @@ void Protocol<FieldType>::initializationPhase(/*HIM<FieldType> &matrix_him, VDM<
 
     m.InitHIMByVectors(alpha1, alpha2);
 
-    for(int i=0; i<gateDoneArr.size(); i++)
+    /*for(int i=0; i<gateDoneArr.size(); i++)
     {
         gateDoneArr[i] = false;
-    }
+    }*/
 
     matrix_for_interpolate.InitHIMByVectors(alpha, beta);
 
@@ -1383,7 +1390,7 @@ FieldType Protocol<FieldType>::interpolate(vector<FieldType> x)
  * @param gateShareArr
  * @return the number of processed gates.
  */
-template <class FieldType>
+/*template <class FieldType>
 int Protocol<FieldType>::processAdditions()
 {
     int count =0;
@@ -1405,26 +1412,26 @@ int Protocol<FieldType>::processAdditions()
     return count;
 }
 
-
+*/
 
 template <class FieldType>
 int Protocol<FieldType>::processNotMult(){
     int count=0;
-    for(int k=(numOfInputGates-1); k < (M - numOfOutputGates); k++)
+    for(int k=circuit.getLayers()[currentCirciutLayer]; k < circuit.getLayers()[currentCirciutLayer+1]; k++)
     {
-        if(!gateDoneArr[k] && gateDoneArr[circuit.getGates()[k].input1]){
+        /*if(!gateDoneArr[k] && gateDoneArr[circuit.getGates()[k].input1]){*/
 
             // add gate
-            if(circuit.getGates()[k].gateType == ADD && gateDoneArr[circuit.getGates()[k].input2])
+            if(circuit.getGates()[k].gateType == ADD /*&& gateDoneArr[circuit.getGates()[k].input2]*/)
             {
                 gateShareArr[k] = gateShareArr[circuit.getGates()[k].input1] + gateShareArr[circuit.getGates()[k].input2];
-                gateDoneArr[k] = true;
+                //gateDoneArr[k] = true;
                 count++;
             }
-            else if(circuit.getGates()[k].gateType == SUB && gateDoneArr[circuit.getGates()[k].input2])//sub gate
+            else if(circuit.getGates()[k].gateType == SUB /* && gateDoneArr[circuit.getGates()[k].input2]*/)//sub gate
             {
                 gateShareArr[k] = gateShareArr[circuit.getGates()[k].input1] - gateShareArr[circuit.getGates()[k].input2];
-                gateDoneArr[k] = true;
+                //gateDoneArr[k] = true;
                 count++;
             }
             else if(circuit.getGates()[k].gateType == SCALAR)
@@ -1433,10 +1440,10 @@ int Protocol<FieldType>::processNotMult(){
                 long scalar(circuit.getGates()[k].input2);
                 FieldType e = field->GetElement(scalar);
                 gateShareArr[k] = gateShareArr[circuit.getGates()[k].input1] * e;
-                gateDoneArr[k] = true;
+                //gateDoneArr[k] = true;
                 count++;
             }
-        }
+        //}
 
     }
     return count;
@@ -1450,7 +1457,7 @@ int Protocol<FieldType>::processNotMult(){
  * @param gateShareArr
  * @return the number of processed gates.
  */
-template <class FieldType>
+/*template <class FieldType>
 int Protocol<FieldType>::processSubtractions()
 {
     int count =0;
@@ -1471,9 +1478,9 @@ int Protocol<FieldType>::processSubtractions()
 
     return count;
 }
+*/
 
-
-
+/*
 template <class FieldType>
 int Protocol<FieldType>::processSmul()
 {
@@ -1497,7 +1504,7 @@ int Protocol<FieldType>::processSmul()
 
     return count;
 }
-
+*/
 /**
  * the Function process all multiplications which are ready.
  * @param circuit
@@ -1519,12 +1526,12 @@ int Protocol<FieldType>::processMultiplications(HIM<FieldType> &m)
     int indexForValBuf = 0;
     vector<FieldType> ReconsBuf(M);
 
-    for(int k = (numOfInputGates - 1); k < (M - numOfOutputGates) ; k++)//go over only the logit gates
+    for(int k = circuit.getLayers()[currentCirciutLayer]; k < circuit.getLayers()[currentCirciutLayer+1] ; k++)//go over only the logit gates
     {
         // its a multiplication which not yet processed and ready
-        if(circuit.getGates()[k].gateType == MULT && !gateDoneArr[k]
+        if(circuit.getGates()[k].gateType == MULT /*&& !gateDoneArr[k]
            && gateDoneArr[circuit.getGates()[k].input1]
-           && gateDoneArr[circuit.getGates()[k].input2])
+           && gateDoneArr[circuit.getGates()[k].input2]*/)
         {
 
             r1 = sharingBufTElements[shareIndex]; // t-share of random r
@@ -1554,19 +1561,19 @@ int Protocol<FieldType>::processMultiplications(HIM<FieldType> &m)
     publicReconstruction(ReconsBuf, index, 2*T, valBuf, m);
     indexForValBuf = index-1;
 
-    for(int k=(M-numOfOutputGates - 1) ; k >= (numOfInputGates - 1); k--)
+    for(int k=circuit.getLayers()[currentCirciutLayer+1]-1 ; k >= circuit.getLayers()[currentCirciutLayer]; k--)
     {
         // its a multiplication which not yet processed and ready
-        if(circuit.getGates()[k].gateType == MULT && !gateDoneArr[k]
+        if(circuit.getGates()[k].gateType == MULT /*&& !gateDoneArr[k]
            && gateDoneArr[circuit.getGates()[k].input1]
-           && gateDoneArr[circuit.getGates()[k].input2])
+           && gateDoneArr[circuit.getGates()[k].input2]*/)
         {
             if(flag_print) {
                 cout << "indexForValBuf " << indexForValBuf << endl;}
             d = valBuf[indexForValBuf];  // the difference
             indexForValBuf--;
             gateShareArr[k] = gateShareArr[k] + d; // the adjustment
-            gateDoneArr[k] = true; // the multiplication is done
+           // gateDoneArr[k] = true; // the multiplication is done
             count++;
         }
     }
@@ -1620,7 +1627,7 @@ void Protocol<FieldType>::outputPhase()
     ofstream myfile;
     myfile.open(outputFile);
 
-    for(int k=(M-numOfOutputGates - 1); k < M; k++)
+    for(int k=M-numOfOutputGates; k < M; k++)
     {
         if(circuit.getGates()[k].gateType == OUTPUT)
         {
@@ -1645,7 +1652,7 @@ void Protocol<FieldType>::outputPhase()
     int counter = 0;
     if(flag_print) {
         cout << "endnend" << endl;}
-    for(int k=(M-numOfOutputGates - 1); k < M; k++) {
+    for(int k=M-numOfOutputGates ; k < M; k++) {
         if(circuit.getGates()[k].gateType == OUTPUT && circuit.getGates()[k].party == m_partyId)
         {
             for(int i=0; i < N; i++) {

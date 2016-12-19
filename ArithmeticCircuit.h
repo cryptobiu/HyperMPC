@@ -30,6 +30,9 @@ private:
     int nrOfInputGates = 0;
     int nrOfOutputGates = 0;
 
+    bool isCircuitArranged = false;
+    vector<int> layersIndices;
+
 public:
 
     ArithmeticCircuit();
@@ -68,6 +71,7 @@ public:
     void reArrangeCircuit();
 
     vector<TGate> const & getGates() const {	return gates;};
+    vector<int> const & getLayers() const {	return layersIndices;};
 
 };
 
