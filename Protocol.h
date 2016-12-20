@@ -1,8 +1,8 @@
 #ifndef PROTOCOL_H_
 #define PROTOCOL_H_
 
-#include "stdlib.h"
-#include "../../workspace/paho/src/MQTTClient.h"
+#include <stdlib.h>
+#include <MQTTClient.h>
 #include "VDM.h"
 #include "HIM.h"
 #include "TGate.h"

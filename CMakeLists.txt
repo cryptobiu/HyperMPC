@@ -9,5 +9,5 @@ set(SOURCE_FILES AES_PRG.cpp HIM.cpp main.cpp VDM.cpp
         TGate.h ArithmeticCircuit.cpp Communication.cpp Communication.h Protocol.cpp Protocol.h TemplateField.h TemplateField.cpp ProtocolTimer.cpp ProtocolTimer.h)
 add_executable(Secret_Sharing ${SOURCE_FILES})
 
-TARGET_LINK_LIBRARIES(Secret_Sharing /home/meital/ClionProjects/Secret-Sharing/ntl.a gmp crypto $ENV{HOME}/workspace/paho/src/libpaho-mqtt3a.so
+TARGET_LINK_LIBRARIES(Secret_Sharing $ENV{HOME}/ntl-9.10.0/src/ntl.a gmp crypto $ENV{HOME}/workspace/paho/src/libpaho-mqtt3a.so
         $ENV{HOME}/workspace/paho/src/libpaho-mqtt3c.so)

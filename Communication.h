@@ -1,8 +1,8 @@
 #ifndef CONTEXT_H_
 #define CONTEXT_H_
 
-#include "stdlib.h"
-#include "../../workspace/paho/src/MQTTClient.h"
+#include <stdlib.h>
+#include <MQTTClient.h>
 #include "VDM.h"
 #include "TGate.h"
 #include "ArithmeticCircuit.h"
