@@ -51,7 +51,6 @@ private:
     vector<FieldType> gateValueArr; // the value of the gate (for my input and output gates)
     vector<FieldType> gateShareArr; // my share of the gate (for all gates)
     vector<FieldType> alpha; // N distinct non-zero field elements
-    //vector<bool> gateDoneArr; // true if the gate is processed
 
     vector<FieldType> sharingBufTElements; // prepared T-sharings (my shares)
     vector<FieldType> sharingBuf2TElements; // prepared 2T-sharings (my shares)
@@ -519,17 +518,6 @@ void Protocol<FieldType>::readMyInputs()
 template <class FieldType>
 void Protocol<FieldType>::run(int iteration) {
 
-    /*HIM<FieldType> matrix_him(N,N,field);
-    VDM<FieldType> matrix_vand(N,N,field);
-    HIM<FieldType> m(T, N-T,field);
-    matrix_vand.InitVDM();
-    matrix_him.InitHIM();
-*/
-
-    /*for(int i=0; i<gateDoneArr.size(); i++)
-    {
-        gateDoneArr[i] = false;
-    }*/
     shareIndex = numOfInputGates;
 
     auto t1start = high_resolution_clock::now();
@@ -649,13 +637,9 @@ void Protocol<FieldType>::computationPhase(HIM<FieldType> &m) {
  * the party broadcasts for each input gate the difference between
  * the random secret and the actual input value.
  * @param diff
- * @param gateValueArr
- * @param circuit
- * @param gateShareArr
- * @param gateDoneArr
  */
 template <class FieldType>
-void Protocol<FieldType>::inputAdjustment(string &diff/*, HIM<FieldType> &mat*/)
+void Protocol<FieldType>::inputAdjustment(string &diff)
 {
     int input;
     int index = 0;
@@ -742,9 +726,8 @@ void Protocol<FieldType>::inputAdjustment(string &diff/*, HIM<FieldType> &mat*/)
         {
             db = recBufsdiffElements[circuit.getGates()[k].party - 1][counters[circuit.getGates()[k].party - 1]];
             counters[circuit.getGates()[k].party - 1] += 1;
-            gateShareArr[k] = gateShareArr[k] + db; // adjustment
+            gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].output] + db; // adjustment
 
-            //gateDoneArr[k] = true; // gate is processed
         }
     }
 
@@ -755,19 +738,17 @@ void Protocol<FieldType>::inputAdjustment(string &diff/*, HIM<FieldType> &mat*/)
  * some global variables are initialized
  * @param GateValueArr
  * @param GateShareArr
- * @param GateDoneArr
  * @param matrix_him
  * @param matrix_vand
  * @param alpha
  */
 template <class FieldType>
-void Protocol<FieldType>::initializationPhase(/*HIM<FieldType> &matrix_him, VDM<FieldType> &matrix_vand, HIM<FieldType> &m*/)
+void Protocol<FieldType>::initializationPhase()
 {
     beta.resize(1);
     gateValueArr.resize(M);  // the value of the gate (for my input and output gates)
     gateShareArr.resize(M - circuit.getNrOfOutputGates()); // my share of the gate (for all gates)
     alpha.resize(N); // N distinct non-zero field elements
-    //gateDoneArr.resize(M);  // true is the gate is processed
     vector<FieldType> alpha1(N-T);
     vector<FieldType> alpha2(T);
 
@@ -801,11 +782,6 @@ void Protocol<FieldType>::initializationPhase(/*HIM<FieldType> &matrix_him, VDM<
     }
 
     m.InitHIMByVectors(alpha1, alpha2);
-
-    /*for(int i=0; i<gateDoneArr.size(); i++)
-    {
-        gateDoneArr[i] = false;
-    }*/
 
     matrix_for_interpolate.InitHIMByVectors(alpha, beta);
 
@@ -1228,10 +1204,10 @@ bool Protocol<FieldType>::inputPreparation()
 
     for(int k = 0; k < numOfInputGates; k++)//these are only input gates
     {
-        gateShareArr[k] = sharingBufTElements[k];
+        gateShareArr[circuit.getGates()[k].output] = sharingBufTElements[k];
         i = (circuit.getGates())[k].party; // the number of party which has the input
         // reconstruct sharing towards input party
-       sendBufsElements[i-1].push_back(gateShareArr[k]);
+       sendBufsElements[i-1].push_back(gateShareArr[circuit.getGates()[k].output]);
 
     }
     if(flag_print) {
@@ -1383,135 +1359,40 @@ FieldType Protocol<FieldType>::interpolate(vector<FieldType> x)
     return y[0];
 }
 
-/**
- * the function process all addition gates which are ready.
- * @param circuit
- * @param gateDoneArr
- * @param gateShareArr
- * @return the number of processed gates.
- */
-/*template <class FieldType>
-int Protocol<FieldType>::processAdditions()
-{
-    int count =0;
-
-    for(int k=(numOfInputGates-1); k < (M - numOfOutputGates); k++)
-    {
-        // its an addition which not yet processed and ready
-        if(circuit.getGates()[k].gateType == ADD && !gateDoneArr[k]
-           && gateDoneArr[circuit.getGates()[k].input1]
-           && gateDoneArr[circuit.getGates()[k].input2])
-        {
-            gateShareArr[k] = gateShareArr[circuit.getGates()[k].input1] + gateShareArr[circuit.getGates()[k].input2];
-            gateDoneArr[k] = true;
-            count++;
-        }
-
-    }
-
-    return count;
-}
-
-*/
-
 template <class FieldType>
 int Protocol<FieldType>::processNotMult(){
     int count=0;
     for(int k=circuit.getLayers()[currentCirciutLayer]; k < circuit.getLayers()[currentCirciutLayer+1]; k++)
     {
-        /*if(!gateDoneArr[k] && gateDoneArr[circuit.getGates()[k].input1]){*/
 
-            // add gate
-            if(circuit.getGates()[k].gateType == ADD /*&& gateDoneArr[circuit.getGates()[k].input2]*/)
-            {
-                gateShareArr[k] = gateShareArr[circuit.getGates()[k].input1] + gateShareArr[circuit.getGates()[k].input2];
-                //gateDoneArr[k] = true;
-                count++;
-            }
-            else if(circuit.getGates()[k].gateType == SUB /* && gateDoneArr[circuit.getGates()[k].input2]*/)//sub gate
-            {
-                gateShareArr[k] = gateShareArr[circuit.getGates()[k].input1] - gateShareArr[circuit.getGates()[k].input2];
-                //gateDoneArr[k] = true;
-                count++;
-            }
-            else if(circuit.getGates()[k].gateType == SCALAR)
-            {
-                // scalar = circuit.getGates()[k].input2
-                long scalar(circuit.getGates()[k].input2);
-                FieldType e = field->GetElement(scalar);
-                gateShareArr[k] = gateShareArr[circuit.getGates()[k].input1] * e;
-                //gateDoneArr[k] = true;
-                count++;
-            }
-        //}
 
-    }
-    return count;
-
-}
-
-/**
- * the function process all subtraction gates which are ready.
- * @param circuit
- * @param gateDoneArr
- * @param gateShareArr
- * @return the number of processed gates.
- */
-/*template <class FieldType>
-int Protocol<FieldType>::processSubtractions()
-{
-    int count =0;
-
-    for(int k=(numOfInputGates-1); k < (M - numOfOutputGates); k++)
-    {
-        // its an addition which not yet processed and ready
-        if(circuit.getGates()[k].gateType == SUB && !gateDoneArr[k]
-           && gateDoneArr[circuit.getGates()[k].input1]
-           && gateDoneArr[circuit.getGates()[k].input2])
+        // add gate
+        if(circuit.getGates()[k].gateType == ADD)
         {
-            gateShareArr[k] = gateShareArr[circuit.getGates()[k].input1] - gateShareArr[circuit.getGates()[k].input2];
-            gateDoneArr[k] = true;
+            gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] + gateShareArr[circuit.getGates()[k].input2];
             count++;
         }
-
-    }
-
-    return count;
-}
-*/
-
-/*
-template <class FieldType>
-int Protocol<FieldType>::processSmul()
-{
-    int count =0;
-
-    for(int k=(numOfInputGates - 1); k < (M - numOfOutputGates); k++)
-    {
-        // its an addition which not yet processed and ready
-        if(circuit.getGates()[k].gateType == SCALAR && !gateDoneArr[k]
-           && gateDoneArr[circuit.getGates()[k].input1])
+        else if(circuit.getGates()[k].gateType == SUB)//sub gate
         {
-            // scalar = circuit.getGates()[k].input2
+            gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] - gateShareArr[circuit.getGates()[k].input2];
+            count++;
+        }
+        else if(circuit.getGates()[k].gateType == SCALAR)
+        {
             long scalar(circuit.getGates()[k].input2);
             FieldType e = field->GetElement(scalar);
-            gateShareArr[k] = gateShareArr[circuit.getGates()[k].input1] * e;
-            gateDoneArr[k] = true;
+            gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] * e;
+
             count++;
         }
 
     }
-
     return count;
+
 }
-*/
+
 /**
  * the Function process all multiplications which are ready.
- * @param circuit
- * @param gateDoneArr
- * @param gateShareArr
- * @param sharingBuf
- * @param alpha
  * @return the number of processed gates.
  */
 template <class FieldType>
@@ -1521,17 +1402,15 @@ int Protocol<FieldType>::processMultiplications(HIM<FieldType> &m)
     int index = 0;
     FieldType p2, d2;
     FieldType r1, r2;
-    vector<FieldType> valBuf(M); // Buffers for differences
+    vector<FieldType> valBuf(circuit.getLayers()[currentCirciutLayer+1]- circuit.getLayers()[currentCirciutLayer]); // Buffers for differences
     FieldType d;
     int indexForValBuf = 0;
-    vector<FieldType> ReconsBuf(M);
+    vector<FieldType> ReconsBuf(circuit.getLayers()[currentCirciutLayer+1]- circuit.getLayers()[currentCirciutLayer]);
 
     for(int k = circuit.getLayers()[currentCirciutLayer]; k < circuit.getLayers()[currentCirciutLayer+1] ; k++)//go over only the logit gates
     {
         // its a multiplication which not yet processed and ready
-        if(circuit.getGates()[k].gateType == MULT /*&& !gateDoneArr[k]
-           && gateDoneArr[circuit.getGates()[k].input1]
-           && gateDoneArr[circuit.getGates()[k].input2]*/)
+        if(circuit.getGates()[k].gateType == MULT )
         {
 
             r1 = sharingBufTElements[shareIndex]; // t-share of random r
@@ -1545,7 +1424,7 @@ int Protocol<FieldType>::processMultiplications(HIM<FieldType> &m)
             ReconsBuf[index] = d2; // reconstruct difference (later)
             index++;
             // for now gateShareArr[k] is random sharing, needs to be adjusted (later)
-            gateShareArr[k] = r1;
+            gateShareArr[circuit.getGates()[k].output] = r1;
         }
 
     }
@@ -1564,16 +1443,13 @@ int Protocol<FieldType>::processMultiplications(HIM<FieldType> &m)
     for(int k=circuit.getLayers()[currentCirciutLayer+1]-1 ; k >= circuit.getLayers()[currentCirciutLayer]; k--)
     {
         // its a multiplication which not yet processed and ready
-        if(circuit.getGates()[k].gateType == MULT /*&& !gateDoneArr[k]
-           && gateDoneArr[circuit.getGates()[k].input1]
-           && gateDoneArr[circuit.getGates()[k].input2]*/)
+        if(circuit.getGates()[k].gateType == MULT)
         {
             if(flag_print) {
                 cout << "indexForValBuf " << indexForValBuf << endl;}
             d = valBuf[indexForValBuf];  // the difference
             indexForValBuf--;
-            gateShareArr[k] = gateShareArr[k] + d; // the adjustment
-           // gateDoneArr[k] = true; // the multiplication is done
+            gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].output] + d; // the adjustment
             count++;
         }
     }
@@ -1583,11 +1459,6 @@ int Protocol<FieldType>::processMultiplications(HIM<FieldType> &m)
 
 /**
  * the Function process all multiplications which are ready.
- * @param circuit
- * @param gateDoneArr
- * @param gateShareArr
- * @param sharingBuf
- * @param alpha
  * @return the number of processed gates.
  */
 template <class FieldType>
@@ -1603,7 +1474,7 @@ void Protocol<FieldType>::processRandoms()
             r1 = sharingBufTElements[shareIndex];
             shareIndex++;
 
-            gateShareArr[k] = r1;
+            gateShareArr[circuit.getGates()[k].output] = r1;
         }
     }
 }
