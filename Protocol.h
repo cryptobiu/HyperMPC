@@ -1021,6 +1021,7 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
      *  first degree t.
      *  subsequent: degree 2t with same secret.
      */
+    high_resolution_clock::time_point t1 = high_resolution_clock::now();
     for(int k=0; k < no_buckets; k++)
     {
         // generate random degree-T polynomial
@@ -1052,7 +1053,11 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
         }
 
 
-    }
+    }//end print one
+    high_resolution_clock::time_point t2 = high_resolution_clock::now();
+    auto duration = duration_cast<milliseconds>( t2 - t1 ).count();
+    cout << "generate random degree-T polynomial took : " <<duration<<" ms"<<endl;
+
     if(flag_print) {
         cout << "sendBufs" << endl;
         cout << "N" << N << endl;
@@ -1061,7 +1066,7 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
 
 
     }
-
+//
     int fieldByteSize = field->getElementSizeInBytes();
     for(int i=0; i < N; i++)
     {
@@ -1071,8 +1076,11 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
     }
 
 
-
+    high_resolution_clock::time_point t3 = high_resolution_clock::now();
     comm->roundfunctionI(sendBufsBytes, recBufsBytes,4);
+    high_resolution_clock::time_point t4 = high_resolution_clock::now();
+    auto duration2 = duration_cast<milliseconds>( t4 - t3 ).count();
+    cout << "roundfunctionI took : " <<duration2<<" ms"<<endl;
     if(flag_print) {
         //for (int i=0; i < recBufs.size();i++)
        // {
@@ -1372,6 +1380,8 @@ int Protocol<FieldType>::processNotMult(){
             gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] + gateShareArr[circuit.getGates()[k].input2];
             count++;
         }
+        /*
+        /*
         else if(circuit.getGates()[k].gateType == SUB)//sub gate
         {
             gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] - gateShareArr[circuit.getGates()[k].input2];
@@ -1385,6 +1395,7 @@ int Protocol<FieldType>::processNotMult(){
 
             count++;
         }
+         */
 
     }
     return count;
