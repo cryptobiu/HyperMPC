@@ -37,11 +37,12 @@ using namespace NTL;
  * @param argv[4] = path of output file
  * @param argv[5] = path of circuit file
  * @param argv[6] = address
+ * @param argv[7] = fieldType
  * @return
  */
 int main(int argc, char* argv[])
 {
-    if(argc != 7)
+    if(argc != 8)
     {
         cout << "error";
         return 0;
@@ -51,34 +52,51 @@ int main(int argc, char* argv[])
     string outputTimerFileName = string(argv[5]) + "Times" + string(argv[1]) + ".csv";
     ProtocolTimer p(times, outputTimerFileName);
 
-    TemplateField<GF2E> * field = new TemplateField<GF2E>(8);
+    string fieldType(argv[7]);
 
-    Protocol<GF2E> protocol(atoi(argv[2]), atoi(argv[1]),field, argv[3], argv[4], argv[5], argv[6], &p);
+    if(fieldType.compare("GF2m") == 0)
+    {
+        TemplateField<GF2E> *field = new TemplateField<GF2E>(8);
 
-//    TemplateField<ZZ_p> * field = new TemplateField<ZZ_p>(1202057);
-//
-//    Protocol<ZZ_p> protocol(atoi(argv[2]), atoi(argv[1]),field, argv[3], argv[4], argv[5], argv[6], &p);
+        Protocol<GF2E> protocol(atoi(argv[2]), atoi(argv[1]), field, argv[3], argv[4], argv[5], argv[6], &p);
+        auto t1 = high_resolution_clock::now();
+        for(int i=0; i<times; i++) {
+            protocol.run(i);
+        }
+        auto t2 = high_resolution_clock::now();
 
+        auto duration = duration_cast<milliseconds>(t2-t1).count();
+        cout << "time in milliseconds for " << times << " runs: " << duration << endl;
 
+        delete field;
 
+        p.writeToFile();
 
-    //protocol.run();
-
-    auto t1 = high_resolution_clock::now();
-    for(int i=0; i<times; i++) {
-        protocol.run(i);
+        cout << "end main" << '\n';
     }
-    auto t2 = high_resolution_clock::now();
 
-    auto duration = duration_cast<milliseconds>(t2-t1).count();
-    cout << "time in milliseconds for " << times << " runs: " << duration << endl;
+    if(fieldType.compare("Zp") == 0)
+    {
+        TemplateField<ZZ_p> * field = new TemplateField<ZZ_p>(1202057);
 
-    delete field;
+        Protocol<ZZ_p> protocol(atoi(argv[2]), atoi(argv[1]),field, argv[3], argv[4], argv[5], argv[6], &p);
 
-    p.writeToFile();
+        auto t1 = high_resolution_clock::now();
+        for(int i=0; i<times; i++) {
+            protocol.run(i);
+        }
+        auto t2 = high_resolution_clock::now();
 
-    cout << "end main" << '\n';
+        auto duration = duration_cast<milliseconds>(t2-t1).count();
+        cout << "time in milliseconds for " << times << " runs: " << duration << endl;
 
+        delete field;
+
+        p.writeToFile();
+
+        cout << "end main" << '\n';
+
+    }
 
     return 0;
 }
