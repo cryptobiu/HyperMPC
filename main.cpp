@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    int times = 1;
+    int times = 5;
     string outputTimerFileName = string(argv[5]) + "Times" + string(argv[1]) + ".csv";
     ProtocolTimer p(times, outputTimerFileName);
 
