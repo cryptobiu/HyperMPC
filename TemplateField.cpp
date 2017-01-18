@@ -11,7 +11,7 @@ template <>
 TemplateField<ZZ_p>::TemplateField(long fieldParam) {
 
     this->fieldParam = fieldParam;
-    this->elementSizeInBytes = (fieldParam + 255)/256;//round up to the next byte
+    this->elementSizeInBytes = NumBytes(fieldParam);//round up to the next byte
 
     ZZ_p::init(ZZ(fieldParam));
 
