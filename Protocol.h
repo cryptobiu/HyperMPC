@@ -624,9 +624,9 @@ void Protocol<FieldType>::computationPhase(HIM<FieldType> &m) {
 
         currentCirciutLayer = i;
         count = processNotMult();
-        cout<<"count mot mult: " << count << "for layer: " << currentCirciutLayer <<"\n";
+//        cout<<"count mot mult: " << count << "for layer: " << currentCirciutLayer <<"\n";
         count += processMultiplications(m);
-        cout<<"count mult" << count << "for layer: " << currentCirciutLayer<<"\n";
+//        cout<<"count mult" << count << "for layer: " << currentCirciutLayer<<"\n";
 
 
     }
@@ -996,6 +996,7 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
 
     // the number of random double sharings we need altogether
     int no_random = circuit.getNrOfMultiplicationGates() + circuit.getNrOfInputGates();
+    cout << "number of randoms : " << no_random << endl;
     vector<FieldType> x1(N),x2(N),y1(N),y2(N);
 
     vector<vector<FieldType>> sendBufsElements(N);
@@ -1004,6 +1005,7 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
     // the number of buckets (each bucket requires one double-sharing
     // from each party and gives N-2T random double-sharings)
     int no_buckets = (no_random / (N-2*T))+1;
+    cout << "number of buckets : " << no_buckets << endl;
 
     sharingBufTElements.resize(no_buckets*(N-2*T)); // my shares of the double-sharings
     sharingBuf2TElements.resize(no_buckets*(N-2*T)); // my shares of the double-sharings
