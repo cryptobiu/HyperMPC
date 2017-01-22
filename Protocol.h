@@ -1148,7 +1148,12 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
 
     if(flag_print) {
         cout << "before round" << endl;}
+
+    high_resolution_clock::time_point t5 = high_resolution_clock::now();
     comm->roundfunctionI(sendBufs1Bytes, recBufs1Bytes,5);
+    high_resolution_clock::time_point t6 = high_resolution_clock::now();
+    auto duration3 = duration_cast<milliseconds>( t6 - t5 ).count();
+    cout << "roundfunction5 took : " << duration3 <<" ms"<<endl;
     if(flag_print) {
         cout << "after round" << endl;}
     int count = no_buckets * (2*T) / N; // nr of sharings *I* have to check
