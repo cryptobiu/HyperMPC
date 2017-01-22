@@ -24,12 +24,17 @@ private:
     vector<TGate> gates;
     int nrOfMultiplicationGates = 0;
     int nrOfAdditionGates = 0;
+    int nrOfSubtractionGates = 0;
+    int nrOfRandomGates = 0;
+    int nrOfScalarMultGates = 0;
     int nrOfInputGates = 0;
     int nrOfOutputGates = 0;
 
+    bool isCircuitArranged = false;
+    vector<int> layersIndices;
+
 public:
 
-    ArithmeticCircuit(int i);
     ArithmeticCircuit();
     ~ArithmeticCircuit();
 
@@ -43,13 +48,31 @@ public:
     //get functions
     int getNrOfMultiplicationGates() { return nrOfMultiplicationGates; }
     int getNrOfAdditionGates() { return nrOfAdditionGates; }
+    int getNrSubtractionGates() {return nrOfSubtractionGates; }
+    int getNrOfRandomGates() {return nrOfRandomGates; }
+    int getNrOfScalarMultGates() {return nrOfScalarMultGates;}
     int getNrOfInputGates() { return nrOfInputGates; }
     int getNrOfOutputGates() { return nrOfOutputGates; }
-    int getNrOfGates() { return (nrOfMultiplicationGates + nrOfAdditionGates + nrOfInputGates + nrOfOutputGates); }
+    int getNrOfGates() { return (nrOfMultiplicationGates +
+                                 nrOfSubtractionGates +
+                                 nrOfRandomGates +
+                                 nrOfScalarMultGates +
+                                 nrOfAdditionGates +
+                                 nrOfInputGates +
+                                 nrOfOutputGates); }
+
+
+    /**
+    * This method rearranges the gates to be ordered by depth.
+    * After the new order is calculated, it is copied to the vector of gates and replaces
+    * the gates that were read from the file.
+    *
+    */
+    void reArrangeCircuit();
 
     vector<TGate> const & getGates() const {	return gates;};
+    vector<int> const & getLayers() const {	return layersIndices;};
 
-    void add();
 };
 
 #endif /* CIRCUIT_H_ */

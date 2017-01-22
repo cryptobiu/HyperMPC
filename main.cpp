@@ -1,8 +1,15 @@
 
-#include "stdlib.h"
-#include "../../workspace/paho/src/MQTTClient.h"#include <thread>
+#include <stdlib.h>
+#include <MQTTClient.h>
 #include "Protocol.h"
+
+
+#include "NTL/ZZ_p.h"
+#include "NTL/ZZ.h"
+
+
 using namespace std;
+using namespace NTL;
 
 /**
  * The main structure of our protocol is as follows:
@@ -30,19 +37,66 @@ using namespace std;
  * @param argv[4] = path of output file
  * @param argv[5] = path of circuit file
  * @param argv[6] = address
+ * @param argv[7] = fieldType
  * @return
  */
 int main(int argc, char* argv[])
 {
-    if(argc != 7)
+    if(argc != 8)
     {
         cout << "error";
         return 0;
     }
 
-    Protocol protocol(atoi(argv[2]), atoi(argv[1]), argv[3], argv[4], argv[5], argv[6]);
-    protocol.run();
+    int times = 1;
+    string outputTimerFileName = string(argv[5]) + "Times" + string(argv[1]) + ".csv";
+    ProtocolTimer p(times, outputTimerFileName);
 
-    cout << "end main" << '\n';
+    string fieldType(argv[7]);
+
+    if(fieldType.compare("GF2m") == 0)
+    {
+        TemplateField<GF2E> *field = new TemplateField<GF2E>(8);
+
+        Protocol<GF2E> protocol(atoi(argv[2]), atoi(argv[1]), field, argv[3], argv[4], argv[5], argv[6], &p);
+        auto t1 = high_resolution_clock::now();
+        for(int i=0; i<times; i++) {
+            protocol.run(i);
+        }
+        auto t2 = high_resolution_clock::now();
+
+        auto duration = duration_cast<milliseconds>(t2-t1).count();
+        cout << "time in milliseconds for " << times << " runs: " << duration << endl;
+
+        delete field;
+
+        p.writeToFile();
+
+        cout << "end main" << '\n';
+    }
+
+    if(fieldType.compare("Zp") == 0)
+    {
+        TemplateField<ZZ_p> * field = new TemplateField<ZZ_p>(1202057);
+
+        Protocol<ZZ_p> protocol(atoi(argv[2]), atoi(argv[1]),field, argv[3], argv[4], argv[5], argv[6], &p);
+
+        auto t1 = high_resolution_clock::now();
+        for(int i=0; i<times; i++) {
+            protocol.run(i);
+        }
+        auto t2 = high_resolution_clock::now();
+
+        auto duration = duration_cast<milliseconds>(t2-t1).count();
+        cout << "time in milliseconds for " << times << " runs: " << duration << endl;
+
+        delete field;
+
+        p.writeToFile();
+
+        cout << "end main" << '\n';
+
+    }
+
     return 0;
 }
