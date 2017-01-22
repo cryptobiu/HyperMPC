@@ -894,8 +894,13 @@ void Protocol<FieldType>::publicReconstruction(vector<FieldType> &myShares, int 
     }
 
 
-    //   cout << "before roundfunction1" << '\n';
+    //   cout << "before roundfunction1" << '\n';////////////////////////////
+    high_resolution_clock::time_point t1 = high_resolution_clock::now();
     comm->roundfunctionI(sendBufsBytes, recBufsBytes,1);
+    high_resolution_clock::time_point t2 = high_resolution_clock::now();
+    auto duration = duration_cast<milliseconds>( t2 - t1 ).count();
+    cout << "round function 1 took : " << duration <<" ms"<<endl;
+
     if(flag_print) {
         cout << "recBufs[i]" << endl;
         for(int i = 0; i < N; i++)
@@ -950,7 +955,12 @@ void Protocol<FieldType>::publicReconstruction(vector<FieldType> &myShares, int 
         {
             //cout << sendBufs2[i] << endl;
         } }
+    high_resolution_clock::time_point t3 = high_resolution_clock::now();
     comm->roundfunctionI(sendBufs2Bytes, recBufs2Bytes,8);
+    high_resolution_clock::time_point t4 = high_resolution_clock::now();
+    auto duration2 = duration_cast<milliseconds>( t4 - t3 ).count();
+    cout << "round function 8 took : " << duration2 <<" ms"<<endl;
+
     if(flag_print) {
         cout << "recBufs2[i]" << endl;
         for(int i = 0; i < N; i++)
