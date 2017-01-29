@@ -76,7 +76,7 @@ void VDM<FieldType>::Print()
     {
         for(int j = 0; j < m_n; j++)
         {
-            cout << (m_matrix[i][j]).getElement() << " ";
+            cout << (m_matrix[i][j]) << " ";
 
         }
         cout << " " << '\n';
