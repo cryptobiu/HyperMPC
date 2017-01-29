@@ -48,18 +48,18 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/liork/Secret-Sharing
+CMAKE_SOURCE_DIR = /home/meital/ClionProjects/Secret-Sharing
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/liork/Secret-Sharing
+CMAKE_BINARY_DIR = /home/meital/ClionProjects/Secret-Sharing
 
 #=============================================================================
 # Targets provided globally by CMake.
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/usr/bin/cmake-gui -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -80,9 +80,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/liork/Secret-Sharing/CMakeFiles /home/liork/Secret-Sharing/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/meital/ClionProjects/Secret-Sharing/CMakeFiles /home/meital/ClionProjects/Secret-Sharing/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/liork/Secret-Sharing/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/meital/ClionProjects/Secret-Sharing/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -230,6 +230,33 @@ HIM.s: HIM.cpp.s
 HIM.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/HIM.cpp.s
 .PHONY : HIM.cpp.s
+
+MPCCommunication.o: MPCCommunication.cpp.o
+
+.PHONY : MPCCommunication.o
+
+# target to build an object file
+MPCCommunication.cpp.o:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/MPCCommunication.cpp.o
+.PHONY : MPCCommunication.cpp.o
+
+MPCCommunication.i: MPCCommunication.cpp.i
+
+.PHONY : MPCCommunication.i
+
+# target to preprocess a source file
+MPCCommunication.cpp.i:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/MPCCommunication.cpp.i
+.PHONY : MPCCommunication.cpp.i
+
+MPCCommunication.s: MPCCommunication.cpp.s
+
+.PHONY : MPCCommunication.s
+
+# target to generate assembly for a file
+MPCCommunication.cpp.s:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/MPCCommunication.cpp.s
+.PHONY : MPCCommunication.cpp.s
 
 Protocol.o: Protocol.cpp.o
 
@@ -387,6 +414,9 @@ help:
 	@echo "... HIM.o"
 	@echo "... HIM.i"
 	@echo "... HIM.s"
+	@echo "... MPCCommunication.o"
+	@echo "... MPCCommunication.i"
+	@echo "... MPCCommunication.s"
 	@echo "... Protocol.o"
 	@echo "... Protocol.i"
 	@echo "... Protocol.s"

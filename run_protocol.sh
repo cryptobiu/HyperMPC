@@ -1,7 +1,6 @@
 #! /bin/bash
-for i in `seq $1 1 $2`;
-do
-        ./Secret_Sharing $i $3 inputs4000.txt output.txt $4 tcp://192.168.0.12:1883 $5 &
-        echo "Running $i..."
+for i in `seq 1 1 $1`;
+do	
+	./Secret_Sharing $i $1 $2 "/home/hila/ClionProjects/Secret-Sharing/output.txt" $3 "tcp://localhost:1883" "Zp" &
+	echo "Running $i..."
 done
-
