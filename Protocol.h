@@ -7,7 +7,7 @@
 #include "HIM.h"
 #include "TGate.h"
 #include "ArithmeticCircuit.h"
-#include "Communication.h"
+//#include "Communication.h"
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -19,7 +19,8 @@
 #include "../../include/infra/Common.hpp"
 #include <thread>
 
-#define flag_print_timings true
+#define flag_print false
+#define flag_print_timings false
 #define flag_print_output true
 
 
@@ -49,7 +50,7 @@ private:
     VDM<FieldType> matrix_vand;
     HIM<FieldType> m;
 
-    Communication* comm;
+    //Communication* comm;
     vector<shared_ptr<ProtocolPartyData>>  parties;
     boost::asio::io_service io_service;
     ArithmeticCircuit circuit;
@@ -74,6 +75,10 @@ public:
 
     void roundFunctionSync(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int round);
     void exchangeData(vector<vector<byte>> &sendBufs,vector<vector<byte>> &recBufs, int first, int last);
+    void roundFunctionSyncBroadcast(vector<byte> &message, vector<vector<byte>> &recBufs);
+    void recData(vector<byte> &message, vector<vector<byte>> &recBufs, int first, int last);
+
+
 
     /**
      * This method runs the protocol:
@@ -259,7 +264,7 @@ Protocol<FieldType>::Protocol(int n, int id, TemplateField<FieldType> *field, st
     this->protocolTimer = protocolTimer;
     this->field = field;
     ADDRESS = address;
-    comm = Communication::getInstance(n, id, address);
+    //comm = Communication::getInstance(n, id, address);
     N = n;
     T = n/3 - 1;
     this->inputsFile = inputsFile;
@@ -279,14 +284,14 @@ Protocol<FieldType>::Protocol(int n, int id, TemplateField<FieldType> *field, st
     shareIndex = numOfInputGates;
 
 
-    comm->ConnectionToServer(s);
+    //comm->ConnectionToServer(s);
 
     //boost::asio::io_service io_service;
 
     parties = MPCCommunication::setCommunication(io_service, m_partyId-1, N, "/home/meital/ClionProjects/Secret-Sharing/Parties.txt");
 
     string tmp = "init times";
-    cout<<"before sending any data"<<endl;
+    //cout<<"before sending any data"<<endl;
     byte tmpBytes[20];
     for (int i=0; i<parties.size(); i++){
         if (parties[i]->getID() < id){
@@ -298,12 +303,12 @@ Protocol<FieldType>::Protocol(int n, int id, TemplateField<FieldType> *field, st
         }
     }
 
-    cout<<"after sending any data"<<endl;
+    //cout<<"after sending any data"<<endl;
 
 
     readMyInputs();
 
-    cout<<"after read my inputs"<<endl;
+    //cout<<"after read my inputs"<<endl;
 
     auto t1 = high_resolution_clock::now();
     initializationPhase(/*matrix_him, matrix_vand, m*/);
@@ -361,7 +366,8 @@ bool Protocol<FieldType>::broadcast(int party_id, vector<byte> myMessage, vector
 
 
     // Ps sends his values to all parties and received there values.
-    comm->roundfunction2(myMessage, recBufsdiffBytes); // Values are in recBufsdiff
+    //comm->roundfunction2(myMessage, recBufsdiffBytes); // Values are in recBufsdiff
+    roundFunctionSyncBroadcast(myMessage, recBufsdiffBytes);
 
     //turn the recbuf into recbuf of elements
     int fieldByteSize = field->getElementSizeInBytes();
@@ -377,7 +383,7 @@ bool Protocol<FieldType>::broadcast(int party_id, vector<byte> myMessage, vector
     if(flag_print) {
         cout << "recBufsdiff" << endl;
         for (int i = 0; i < N; i++) {
-           // cout << i << "  " << recBufsdiff[i] << endl;
+            //cout << i << "  " << recBufsdiff[i] << endl;
         }
     }
 
@@ -539,7 +545,7 @@ template <class FieldType>
 void Protocol<FieldType>::readMyInputs()
 {
 
-    cout<<"inputs file" << inputsFile<<endl;
+    //cout<<"inputs file" << inputsFile<<endl;
     ifstream myfile;
     int input;
     int i =0;
@@ -550,7 +556,7 @@ void Protocol<FieldType>::readMyInputs()
         i++;
     } while(!(myfile.eof()));
     myfile.close();
-    cout<<"after read inputs" <<endl;
+    //cout<<"after read inputs" <<endl;
 
 }
 
@@ -681,6 +687,8 @@ void Protocol<FieldType>::computationPhase(HIM<FieldType> &m) {
 template <class FieldType>
 void Protocol<FieldType>::inputAdjustment(string &diff)
 {
+
+    //cout<<"in input adjustment"<<endl;
     int input;
     int index = 0;
 
@@ -688,32 +696,39 @@ void Protocol<FieldType>::inputAdjustment(string &diff)
     vector<byte> sendBufBytes;
 
     // read the inputs of the party
+
+    vector<int> sizes(N);
     for (int k = 0; k < numOfInputGates; k++)
     {
-        if(circuit.getGates()[k].gateType == INPUT && circuit.getGates()[k].party == m_partyId)
-        {
-            input = myInputs[index];
-            index++;
-            if(flag_print) {
-                cout << "input  " << input << endl;}
-            // the value is gateValue[k], but should be input.
-            FieldType myinput = field->GetElement(input);
-            if(flag_print) {
-                cout << "gateValueArr "<<k<< "   " << field->elementToString(gateValueArr[k]) << endl;}
+        if(circuit.getGates()[k].gateType == INPUT) {
+            sizes[circuit.getGates()[k].party - 1]++;
 
-            FieldType different = myinput - gateValueArr[k];
+            if (circuit.getGates()[k].party == m_partyId) {
+                input = myInputs[index];
+                index++;
+                if (flag_print) {
+                    cout << "input  " << input << endl;
+                }
+                // the value is gateValue[k], but should be input.
+                FieldType myinput = field->GetElement(input);
+                if (flag_print) {
+                    cout << "gateValueArr " << k << "   " << field->elementToString(gateValueArr[k]) << endl;
+                }
 
-            diffElements.push_back(different);
+                FieldType different = myinput - gateValueArr[k];
+
+                diffElements.push_back(different);
 
 
+            }
         }
     }
 
     int fieldByteSize = field->getElementSizeInBytes();
 
-    sendBufBytes.resize(diffElements.size()*fieldByteSize + 4);
+    sendBufBytes.resize(diffElements.size()*fieldByteSize);
     for(int j=0; j<diffElements.size();j++) {
-        field->elementToBytes(sendBufBytes.data() + (4 + j * fieldByteSize), diffElements[j]);
+        field->elementToBytes(sendBufBytes.data() + (j * fieldByteSize), diffElements[j]);
     }
 
     if(flag_print) {
@@ -722,6 +737,13 @@ void Protocol<FieldType>::inputAdjustment(string &diff)
 
     vector<vector<byte>> recBufsdiffBytes(N);
     vector<vector<FieldType>> recBufsdiffElements(N);
+
+    //adjust the size of the difference we need to recieve
+    for(int i=0; i<N; i++){
+
+        //cout<< "the size of diff for " << i << " = " <<sizes[i]<<endl;
+        recBufsdiffBytes[i].resize(sizes[i]*fieldByteSize);
+    }
 
     // Broadcast the difference between GateValue[k] to x.
     if(broadcast(m_partyId, sendBufBytes, recBufsdiffBytes, matrix_him) == false) {
@@ -935,11 +957,11 @@ void Protocol<FieldType>::publicReconstruction(vector<FieldType> &myShares, int 
     }
 
 
-    cout<<"before round function 1"<<endl;
+    //cout<<"before round function 1"<<endl;
     //comm->roundfunctionI(sendBufsBytes, recBufsBytes,1);
     roundFunctionSync(sendBufsBytes, recBufsBytes,1);
 
-    cout<<"after round function 1"<<endl;
+    //cout<<"after round function 1"<<endl;
     if(flag_print) {
         cout << "recBufs[i]" << endl;
         for(int i = 0; i < N; i++)
@@ -980,9 +1002,10 @@ void Protocol<FieldType>::publicReconstruction(vector<FieldType> &myShares, int 
 
     for(int i=0; i < N; i++)
     {
-        sendBufs2Bytes[i].resize(no_buckets*fieldByteSize + 4);
+        sendBufs2Bytes[i].resize(no_buckets*fieldByteSize );
+        recBufs2Bytes[i].resize(no_buckets*fieldByteSize );
         for(int j=0; j<no_buckets;j++) {
-            field->elementToBytes(sendBufs2Bytes[i].data() + (4 + j * fieldByteSize), sendBufsElements2[i][j]);
+            field->elementToBytes(sendBufs2Bytes[i].data() + (j * fieldByteSize), sendBufsElements2[i][j]);
         }
     }
 
@@ -994,7 +1017,8 @@ void Protocol<FieldType>::publicReconstruction(vector<FieldType> &myShares, int 
         {
             //cout << sendBufs2[i] << endl;
         } }
-    comm->roundfunctionI(sendBufs2Bytes, recBufs2Bytes,8);
+    //comm->roundfunctionI(sendBufs2Bytes, recBufs2Bytes,8);
+    roundFunctionSync(sendBufs2Bytes, recBufs2Bytes,8);
     if(flag_print) {
         cout << "recBufs2[i]" << endl;
         for(int i = 0; i < N; i++)
@@ -1156,7 +1180,7 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
         }
     }
 
-    cout << endl;
+    //cout << endl;
 
     if(flag_print) {
         for (int i = 0; i < N; i++) {
@@ -1217,7 +1241,7 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
     for(int i=0; i < N; i++)
     {
         sendBufs1Bytes[i].resize(sendBufs1Elements[i].size()*fieldByteSize);
-        cout<< "size of sendBufs1Elements["<<i<<" ].size() is " << sendBufs1Elements[i].size() <<"myID =" <<  m_partyId<<endl;
+        //cout<< "size of sendBufs1Elements["<<i<<" ].size() is " << sendBufs1Elements[i].size() <<"myID =" <<  m_partyId<<endl;
         recBufs1Bytes[i].resize(sendBufs1Elements[m_partyId-1].size()*fieldByteSize);
         for(int j=0; j<sendBufs1Elements[i].size();j++) {
             field->elementToBytes(sendBufs1Bytes[i].data() + (j * fieldByteSize), sendBufs1Elements[i][j]);
@@ -1228,9 +1252,18 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
     if(flag_print) {
         cout << "before round" << endl;}
     //comm->roundfunctionI(sendBufs1Bytes, recBufs1Bytes,5);
-    roundFunctionSync(sendBufs1Bytes, recBufs1Bytes,5);
 
-    cout<<"after round function 5"<<endl;
+
+    t3 = high_resolution_clock::now();
+    //comm->roundfunctionI(sendBufsBytes, recBufsBytes,4);
+    roundFunctionSync(sendBufs1Bytes, recBufs1Bytes,5);
+    t4 = high_resolution_clock::now();
+    duration2 = duration_cast<milliseconds>( t4 - t3 ).count();
+    cout << "roundfunction 5 took : " <<duration2<<" ms"<<endl;
+
+
+
+    //cout<<"after round function 5"<<endl;
     if(flag_print) {
         cout << "after round" << endl;}
     int count = no_buckets * (2*T) / N; // nr of sharings *I* have to check
@@ -1319,7 +1352,7 @@ bool Protocol<FieldType>::inputPreparation()
         }
     }
 
-    cout<<"size of sendbuf" << sendBufsBytes[m_partyId-1].size()<< endl;
+    //cout<<"size of sendbuf" << sendBufsBytes[m_partyId-1].size()<< endl;
 
     for(int i=0; i<N; i++){
         recBufsBytes[i].resize(sendBufsBytes[m_partyId-1].size());
@@ -1328,7 +1361,7 @@ bool Protocol<FieldType>::inputPreparation()
 
     roundFunctionSync(sendBufsBytes, recBufsBytes,6);
 
-    cout<<"after round function 6";
+    //cout<<"after round function 6";
     //comm->roundfunctionI(sendBufsBytes, recBufsBytes,6);
 
     //turn the recbuf into recbuf of elements
@@ -1347,7 +1380,7 @@ bool Protocol<FieldType>::inputPreparation()
             //cout << "roundfunction6 recBufs" << k << " " << recBufsElements[0][k] << endl;
         } }
 
-    cout << endl;
+    //cout << endl;
 
     if(flag_print) {
         for(int k = 0; k < sendBufsElements[0].size(); k++) {
@@ -1626,13 +1659,16 @@ void Protocol<FieldType>::outputPhase()
     int fieldByteSize = field->getElementSizeInBytes();
     for(int i=0; i < N; i++)
     {
-        sendBufsBytes[i].resize(sendBufsElements[i].size()*fieldByteSize + 4);
+        sendBufsBytes[i].resize(sendBufsElements[i].size()*fieldByteSize);
+        recBufBytes[i].resize(sendBufsElements[m_partyId - 1].size()*fieldByteSize);
         for(int j=0; j<sendBufsElements[i].size();j++) {
-            field->elementToBytes(sendBufsBytes[i].data() + (4 + j * fieldByteSize), sendBufsElements[i][j]);
+            field->elementToBytes(sendBufsBytes[i].data() + (j * fieldByteSize), sendBufsElements[i][j]);
         }
     }
 
-    comm->roundfunctionI(sendBufsBytes, recBufBytes,7);
+    //comm->roundfunctionI(sendBufsBytes, recBufBytes,7);
+    roundFunctionSync(sendBufsBytes, recBufBytes,7);
+
 
 
     int counter = 0;
@@ -1671,11 +1707,9 @@ void Protocol<FieldType>::outputPhase()
 template <class FieldType>
 void Protocol<FieldType>::roundFunctionSync(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int round) {
 
-    cout<<"in roundFunctionSync "<< round<< endl;
+    //cout<<"in roundFunctionSync "<< round<< endl;
 
-    cout<<"num of channels : " <<parties.size()<<endl;
-
-    int numThreads = parties.size();
+    int numThreads = 10;//parties.size();
     int numPartiesForEachThread;
 
     if (parties.size() <= numThreads){
@@ -1708,7 +1742,7 @@ template <class FieldType>
 void Protocol<FieldType>::exchangeData(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int first, int last){
 
 
-    cout<<"in exchangeData";
+    //cout<<"in exchangeData";
     for (int i=first; i < last; i++) {
 
         if ((m_partyId-1) < parties[i]->getID()) {
@@ -1716,25 +1750,25 @@ void Protocol<FieldType>::exchangeData(vector<vector<byte>> &sendBufs, vector<ve
 
             //send shares to my input bits
             parties[i]->getChannel()->write(sendBufs[parties[i]->getID()].data(), sendBufs[parties[i]->getID()].size());
-            cout<<"write the data:: my Id = " << m_partyId - 1<< "other ID = "<< parties[i]->getID() <<endl;
+            //cout<<"write the data:: my Id = " << m_partyId - 1<< "other ID = "<< parties[i]->getID() <<endl;
 
 
             //receive shares from the other party and set them in the shares array
             parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
-            cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
+            //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
 
         } else{
 
 
             //receive shares from the other party and set them in the shares array
             parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
-            cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
+            //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
 
 
 
             //send shares to my input bits
             parties[i]->getChannel()->write(sendBufs[parties[i]->getID()].data(), sendBufs[parties[i]->getID()].size());
-            cout<<"write the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID() <<endl;
+            //cout<<"write the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID() <<endl;
 
 
         }
@@ -1744,10 +1778,100 @@ void Protocol<FieldType>::exchangeData(vector<vector<byte>> &sendBufs, vector<ve
 
 }
 
+
+
+
+
+template <class FieldType>
+void Protocol<FieldType>::roundFunctionSyncBroadcast(vector<byte> &message, vector<vector<byte>> &recBufs) {
+
+    //cout<<"in roundFunctionSyncBroadcast "<< endl;
+
+    int numThreads = 10;//parties.size();
+    int numPartiesForEachThread;
+
+    if (parties.size() <= numThreads){
+        numThreads = parties.size();
+        numPartiesForEachThread = 1;
+    } else{
+        numPartiesForEachThread = (parties.size() + numThreads - 1)/ numThreads;
+    }
+
+
+    recBufs[m_partyId-1] = message;
+    //recieve the data using threads
+    vector<thread> threads(numThreads);
+    for (int t=0; t<numThreads; t++) {
+        if ((t + 1) * numPartiesForEachThread <= parties.size()) {
+            threads[t] = thread(&Protocol::recData, this, ref(message), ref(recBufs),
+                                t * numPartiesForEachThread, (t + 1) * numPartiesForEachThread);
+        } else {
+            threads[t] = thread(&Protocol::recData, this, ref(message),  ref(recBufs), t * numPartiesForEachThread, parties.size());
+        }
+    }
+    for (int t=0; t<numThreads; t++){
+        threads[t].join();
+    }
+
+}
+
+
+template <class FieldType>
+void Protocol<FieldType>::recData(vector<byte> &message, vector<vector<byte>> &recBufs, int first, int last){
+
+
+    //cout<<"in exchangeData";
+    for (int i=first; i < last; i++) {
+
+        if ((m_partyId-1) < parties[i]->getID()) {
+
+
+            //send shares to my input bits
+            parties[i]->getChannel()->write(message.data(), message.size());
+            //cout<<"write the data:: my Id = " << m_partyId - 1<< "other ID = "<< parties[i]->getID() <<endl;
+
+
+            //receive shares from the other party and set them in the shares array
+            parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
+            //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
+
+        } else{
+
+
+            //receive shares from the other party and set them in the shares array
+            parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
+            //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
+
+
+
+            //send shares to my input bits
+            parties[i]->getChannel()->write(message.data(), message.size());
+            //cout<<"write the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID() <<endl;
+
+
+        }
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 template <class FieldType>
 Protocol<FieldType>::~Protocol()
 {
-    delete comm;
+    //delete comm;
 }
 
 
