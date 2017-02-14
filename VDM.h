@@ -90,7 +90,7 @@ void VDM<FieldType>::MatrixMult(std::vector<FieldType> &vector, std::vector<Fiel
     for(int i = 0; i < m_m; i++)
     {
         // answer[i] = 0
-        answer[i] = FieldType(FieldType::zero());
+        answer[i] = *(field->GetZero());
 
         for(int j=0; j < m_n; j++)
         {

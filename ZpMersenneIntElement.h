@@ -19,7 +19,7 @@ class ZpMersenneIntElement {
 //private:
 public: //TODO return to private after tesing
 
-    unsigned int p;
+    static const unsigned int p = 2147483647;
     unsigned int elem;
 
     unsigned int numberOfTrailingZero(unsigned int number);
@@ -28,18 +28,26 @@ public: //TODO return to private after tesing
 
 public:
 
-    ZpMersenneIntElement(int p): p(p){};
-    ZpMersenneIntElement(int p, int elem);
+    ZpMersenneIntElement(){elem = 0;};
+    ZpMersenneIntElement(int elem);
 
-    ZpMersenneIntElement operator+(ZpMersenneIntElement& f2);
-    ZpMersenneIntElement operator-(ZpMersenneIntElement& f2);
-    ZpMersenneIntElement operator/(ZpMersenneIntElement& f2);
-    ZpMersenneIntElement operator*(ZpMersenneIntElement& f2);
+    ZpMersenneIntElement& operator=(const ZpMersenneIntElement& other);
+    inline bool operator!=(const ZpMersenneIntElement& other){ return !(other.elem == elem); };
 
-    void operator+=(ZpMersenneIntElement& f2);
-    void operator*=(ZpMersenneIntElement& f2);
+    ZpMersenneIntElement operator+(const ZpMersenneIntElement& f2);
+    ZpMersenneIntElement operator-(const ZpMersenneIntElement& f2);
+    ZpMersenneIntElement operator/(const ZpMersenneIntElement& f2);
+    ZpMersenneIntElement operator*(const ZpMersenneIntElement& f2);
+
+    inline ZpMersenneIntElement& operator+=(const ZpMersenneIntElement& f2){ elem = (f2.elem + elem) %p; return *this;};
+    ZpMersenneIntElement& operator*=(const ZpMersenneIntElement& f2);
+
+
+
+
 
 };
 
+inline ::ostream& operator<<(::ostream& s, const ZpMersenneIntElement& a){ return s << a.elem; };
 
 #endif //SECRET_SHARING_ZPMERSENNEINTELEMENT_H

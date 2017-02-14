@@ -366,6 +366,60 @@ VDM.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/VDM.cpp.s
 .PHONY : VDM.cpp.s
 
+ZpGMPElement.o: ZpGMPElement.cpp.o
+
+.PHONY : ZpGMPElement.o
+
+# target to build an object file
+ZpGMPElement.cpp.o:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/ZpGMPElement.cpp.o
+.PHONY : ZpGMPElement.cpp.o
+
+ZpGMPElement.i: ZpGMPElement.cpp.i
+
+.PHONY : ZpGMPElement.i
+
+# target to preprocess a source file
+ZpGMPElement.cpp.i:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/ZpGMPElement.cpp.i
+.PHONY : ZpGMPElement.cpp.i
+
+ZpGMPElement.s: ZpGMPElement.cpp.s
+
+.PHONY : ZpGMPElement.s
+
+# target to generate assembly for a file
+ZpGMPElement.cpp.s:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/ZpGMPElement.cpp.s
+.PHONY : ZpGMPElement.cpp.s
+
+ZpMersenneIntElement.o: ZpMersenneIntElement.cpp.o
+
+.PHONY : ZpMersenneIntElement.o
+
+# target to build an object file
+ZpMersenneIntElement.cpp.o:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/ZpMersenneIntElement.cpp.o
+.PHONY : ZpMersenneIntElement.cpp.o
+
+ZpMersenneIntElement.i: ZpMersenneIntElement.cpp.i
+
+.PHONY : ZpMersenneIntElement.i
+
+# target to preprocess a source file
+ZpMersenneIntElement.cpp.i:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/ZpMersenneIntElement.cpp.i
+.PHONY : ZpMersenneIntElement.cpp.i
+
+ZpMersenneIntElement.s: ZpMersenneIntElement.cpp.s
+
+.PHONY : ZpMersenneIntElement.s
+
+# target to generate assembly for a file
+ZpMersenneIntElement.cpp.s:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/ZpMersenneIntElement.cpp.s
+.PHONY : ZpMersenneIntElement.cpp.s
+
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -429,6 +483,12 @@ help:
 	@echo "... VDM.o"
 	@echo "... VDM.i"
 	@echo "... VDM.s"
+	@echo "... ZpGMPElement.o"
+	@echo "... ZpGMPElement.i"
+	@echo "... ZpGMPElement.s"
+	@echo "... ZpMersenneIntElement.o"
+	@echo "... ZpMersenneIntElement.i"
+	@echo "... ZpMersenneIntElement.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

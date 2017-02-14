@@ -8,6 +8,12 @@
 
 class ZpGMPElement {
 
+
+    ZpGMPElement operator+(ZpGMPElement& f2);
+    ZpGMPElement operator-(ZpGMPElement& f2);
+    ZpGMPElement operator/(ZpGMPElement& f2);
+    ZpGMPElement operator*(ZpGMPElement& f2);
+
 };
 
 

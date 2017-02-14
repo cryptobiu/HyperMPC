@@ -20,7 +20,7 @@
 #include <thread>
 
 #define flag_print false
-#define flag_print_timings false
+#define flag_print_timings true
 #define flag_print_output true
 
 
@@ -288,7 +288,7 @@ Protocol<FieldType>::Protocol(int n, int id, TemplateField<FieldType> *field, st
 
     //boost::asio::io_service io_service;
 
-    parties = MPCCommunication::setCommunication(io_service, m_partyId-1, N, "Parties.txt");
+    parties = MPCCommunication::setCommunication(io_service, m_partyId-1, N, "/home/meital/ClionProjects/Secret-Sharing/Parties.txt");
 
     string tmp = "init times";
     //cout<<"before sending any data"<<endl;
@@ -864,6 +864,17 @@ void Protocol<FieldType>::initializationPhase()
     matrix_for_2t.InitHIMVectorAndsizes(alpha, 2*T + 1, N-(2*T +1));
 
 
+
+    if(flag_print){
+        cout<< "matrix_for_t : " <<endl;
+        matrix_for_t.Print();
+
+        cout<< "matrix_for_2t : " <<endl;
+        matrix_for_2t.Print();
+
+    }
+
+
 }
 
 /**
@@ -1132,14 +1143,14 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
         for (int i = 0; i < N; i++) {
             for (int k = 0; k < sendBufsElements[0].size(); k++) {
 
-                cout << "before roundfunction4 send to " <<i <<" element: "<< k << " " << sendBufsElements[i][k] << endl;
+               // cout << "before roundfunction4 send to " <<i <<" element: "<< k << " " << sendBufsElements[i][k] << endl;
             }
         }
     }
 
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>( t2 - t1 ).count();
-    cout << "generate random degree-T polynomial took : " <<duration<<" ms"<<endl;
+    //cout << "generate random degree-T polynomial took : " <<duration<<" ms"<<endl;
 
     if(flag_print) {
         cout << "sendBufs" << endl;
@@ -1164,7 +1175,7 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
     roundFunctionSync(sendBufsBytes, recBufsBytes,4);
     high_resolution_clock::time_point t4 = high_resolution_clock::now();
     auto duration2 = duration_cast<milliseconds>( t4 - t3 ).count();
-    cout << "roundfunctionI took : " <<duration2<<" ms"<<endl;
+    //cout << "roundfunctionI took : " <<duration2<<" ms"<<endl;
 
 
 
@@ -1173,7 +1184,7 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
 
     if(flag_print) {
         for (int i = 0; i < N; i++) {
-            for (int k = 0; k < sendBufsElements[0].size(); k++) {
+            for (int k = 0; k < sendBufsBytes[0].size(); k++) {
 
                 cout << "roundfunction4 send to " <<i <<" element: "<< k << " " << (int)sendBufsBytes[i][k] << endl;
             }
@@ -1259,7 +1270,7 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
     roundFunctionSync(sendBufs1Bytes, recBufs1Bytes,5);
     t4 = high_resolution_clock::now();
     duration2 = duration_cast<milliseconds>( t4 - t3 ).count();
-    cout << "roundfunction 5 took : " <<duration2<<" ms"<<endl;
+    //cout << "roundfunction 5 took : " <<duration2<<" ms"<<endl;
 
 
 

@@ -25,22 +25,50 @@ using namespace std;
 using namespace NTL;
 
 
+ZpMersenneIntElement& ZpMersenneIntElement::operator=(const ZpMersenneIntElement& other) // copy assignment
+{
+    if (this != &other) { // self-assignment check expected
+        elem = other.elem;
+    }
+    return *this;
+}
 
-ZpMersenneIntElement::ZpMersenneIntElement(int p, int elem) : p(p){
 
-    this->elem = elem & shiftNum;
+ZpMersenneIntElement::ZpMersenneIntElement(int elem) {
+
+    elem = elem %p;
+
+    if(elem<0){
+        this->elem = elem + p;
+    }
+    else{
+        this->elem = elem;
+    }
+
+
+    //this->elem = (elem & shiftNum)%p;
+
 
 }
-ZpMersenneIntElement ZpMersenneIntElement::operator-(ZpMersenneIntElement& f2)
+ZpMersenneIntElement ZpMersenneIntElement::operator-(const ZpMersenneIntElement& f2)
 {
     ZpMersenneIntElement answer(p);
 
-    answer.elem = (unsigned int)(((int)elem - (int)f2.elem) %p);
+    int temp =  (int)elem - (int)f2.elem;
+
+    if(temp<0){
+        answer.elem = temp + p;
+    }
+    else{
+        answer.elem = temp;
+    }
+
+
 
     return answer;
 }
 
-ZpMersenneIntElement ZpMersenneIntElement::operator+(ZpMersenneIntElement& f2)
+ZpMersenneIntElement ZpMersenneIntElement::operator+(const ZpMersenneIntElement& f2)
 {
     ZpMersenneIntElement answer(p);
 
@@ -49,7 +77,7 @@ ZpMersenneIntElement ZpMersenneIntElement::operator+(ZpMersenneIntElement& f2)
     return answer;
 }
 
-ZpMersenneIntElement ZpMersenneIntElement::operator*(ZpMersenneIntElement& f2)
+ZpMersenneIntElement ZpMersenneIntElement::operator*(const ZpMersenneIntElement& f2)
 {
 
 
@@ -69,31 +97,48 @@ ZpMersenneIntElement ZpMersenneIntElement::operator*(ZpMersenneIntElement& f2)
     //answer.elem = ((long)elem * (long) f2.elem) %p;
 
 
-    return ZpMersenneIntElement(p, (bottom + top) %p);
+    return ZpMersenneIntElement((bottom + top) %p);
 
 }
 
-ZpMersenneIntElement ZpMersenneIntElement::operator/(ZpMersenneIntElement& f2)
+ZpMersenneIntElement& ZpMersenneIntElement::operator*=(const ZpMersenneIntElement& f2){
+
+    long multLong = (long)elem * (long) f2.elem;
+
+    //get the bottom 31 bit
+    unsigned int bottom = multLong & shiftNum;
+
+    //get the top 31 bits
+    unsigned int top = (multLong>>31) & shiftNum;
+
+    elem = (bottom + top) %p;
+    //elem = multLong%p;
+
+    return *this;
+
+}
+
+ZpMersenneIntElement ZpMersenneIntElement::operator/(const ZpMersenneIntElement& f2)
 {
 
 
 
-    /*ZZ_p x(elem);
+   /* ZZ_p x(elem);
     ZZ_p y(f2.elem);
-    //ZZ_p divZ;
+    ZZ_p divZ;
 
-    //divZ = x/y ;
+    divZ = x/y ;
 
-    //ZpMersenneIntElement answer(p);
+    ZpMersenneIntElement answer;
 
-    //answer.elem = to_uint(rep(x/y));
+    answer.elem = to_uint(rep(x/y));
 
-    return ZpMersenneIntElement(p, to_uint(rep(x/y)));*/
+    return ZpMersenneIntElement(to_uint(rep(x/y)));
+*/
 
-    /*
     //find the inverse
 
-    unsigned int a = 1;
+    /*unsigned int a = 1;
     unsigned int b = 0;
     unsigned int y = f2.elem;
     unsigned int z = p;
@@ -140,19 +185,21 @@ ZpMersenneIntElement ZpMersenneIntElement::operator/(ZpMersenneIntElement& f2)
 
     ZpMersenneIntElement answer(p);
     answer = inverse* (*this);
-
-    return answer;*/
+*/
+    //return answer;
 
     //long d,  s,  t,  a,  b;
 
-    unsigned int a = f2.elem;
-    unsigned int b = p;
-    unsigned int s;
 
-    unsigned int  u, v, q, r;
-    unsigned long u0, v0, u1, v1, u2, v2;
+    //code taken from NTL for the function XGCD
+    int a = f2.elem;
+    int b = p;
+    long s;
 
-    unsigned int aneg = 0, bneg = 0;
+    int  u, v, q, r;
+    long u0, v0, u1, v1, u2, v2;
+
+    int aneg = 0, bneg = 0;
 
     if (a < 0) {
         if (a < -NTL_MAX_LONG) Error("XGCD: integer overflow");
@@ -189,18 +236,14 @@ ZpMersenneIntElement ZpMersenneIntElement::operator/(ZpMersenneIntElement& f2)
 
     s = u1;
 
+    if (s < 0)
+        s =  s + p;
 
-
-    ZpMersenneIntElement inverse(p,s);
+    ZpMersenneIntElement inverse(s);
     //ZpMersenneIntElement answer(p);
     //answer = inverse* (*this);
 
     return inverse* (*this);
-
-
-
-
-
 
 
 }

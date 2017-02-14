@@ -212,7 +212,7 @@ void HIM<FieldType>::Print()
 {
 	for (int i = 0; i < m_m; i++) {
 		for (int j = 0; j < m_n; j++) {
-			cout << (m_matrix[i][j]).getElement() << " ";
+			cout << (m_matrix[i][j]) << " ";
 		}
 
 		cout << " " << '\n';
@@ -227,7 +227,7 @@ void HIM<FieldType>::MatrixMult(std::vector<FieldType> &vector, std::vector<Fiel
 	for(int i = 0; i < m_m; i++)
 	{
 		// answer[i] = 0
-		answer[i] = FieldType(FieldType::zero());
+		answer[i] = *(field->GetZero());
 
 		for(int j=0; j < m_n; j++)
 		{

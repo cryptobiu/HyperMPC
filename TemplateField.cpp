@@ -18,6 +18,19 @@ TemplateField<ZZ_p>::TemplateField(long fieldParam) {
     m_ZERO = new ZZ_p(0);
     m_ONE = new ZZ_p(1);
 }
+
+template <>
+TemplateField<ZpMersenneIntElement>::TemplateField(long fieldParam) {
+
+    this->fieldParam = 2147483647;
+    this->elementSizeInBytes = 4;//round up to the next byte
+
+
+    m_ZERO = new ZpMersenneIntElement(0);
+    m_ONE = new ZpMersenneIntElement(1);
+}
+
+
 /*
  * The i-th field element. The ordering is arbitrary, *except* that
  * the 0-th field element must be the neutral w.r.t. addition, and the
@@ -46,9 +59,9 @@ GF2E TemplateField<GF2E>::GetElement(long b) {
 
 
 template <>
-ZZ_p TemplateField<ZZ_p>::GetElement(long b) {
+ZpMersenneIntElement TemplateField<ZpMersenneIntElement>::GetElement(long b) {
 
-    ZZ_p element(b);
+
     if(b == 1)
     {
         return *m_ONE;
@@ -58,9 +71,30 @@ ZZ_p TemplateField<ZZ_p>::GetElement(long b) {
         return *m_ZERO;
     }
     else{
+        ZpMersenneIntElement element(b);
         return element;
     }
 }
+
+
+template <>
+ZZ_p TemplateField<ZZ_p>::GetElement(long b) {
+
+
+    if(b == 1)
+    {
+        return *m_ONE;
+    }
+    if(b == 0)
+    {
+        return *m_ZERO;
+    }
+    else{
+        ZZ_p element(b);
+        return element;
+    }
+}
+
 
 
 /**
@@ -80,11 +114,26 @@ TemplateField<GF2E>::TemplateField(long fieldParam) {
     m_ONE = new GF2E(1);
 }
 
+
 template <>
 void TemplateField<GF2E>::elementToBytes(unsigned char* elemenetInBytes, GF2E& element){
 
     BytesFromGF2X(elemenetInBytes,rep(element),fieldParam/8);
 }
+
+template <>
+void TemplateField<ZpMersenneIntElement>::elementToBytes(unsigned char* elemenetInBytes, ZpMersenneIntElement& element){
+
+    memcpy(elemenetInBytes, (byte*)(&element.elem), 4);
+}
+
+
+template <>
+ZpMersenneIntElement TemplateField<ZpMersenneIntElement>::bytesToElement(unsigned char* elemenetInBytes){
+
+    return ZpMersenneIntElement((unsigned int)(*(unsigned int *)elemenetInBytes));
+}
+
 
 
 template <>
