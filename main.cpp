@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
 
     cout<<"zzp: a - b = " << (x-y) <<endl;
 
-    //return 0;
+    return 0;
 */
     if(argc != 8)
     {

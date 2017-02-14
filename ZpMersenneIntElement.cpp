@@ -36,23 +36,16 @@ ZpMersenneIntElement& ZpMersenneIntElement::operator=(const ZpMersenneIntElement
 
 ZpMersenneIntElement::ZpMersenneIntElement(int elem) {
 
-    elem = elem %p;
+    this->elem = elem %p;
 
-    if(elem<0){
+    if(this->elem<0){
         this->elem = elem + p;
     }
-    else{
-        this->elem = elem;
-    }
-
-
-    //this->elem = (elem & shiftNum)%p;
-
 
 }
 ZpMersenneIntElement ZpMersenneIntElement::operator-(const ZpMersenneIntElement& f2)
 {
-    ZpMersenneIntElement answer(p);
+    ZpMersenneIntElement answer;
 
     int temp =  (int)elem - (int)f2.elem;
 
@@ -70,9 +63,12 @@ ZpMersenneIntElement ZpMersenneIntElement::operator-(const ZpMersenneIntElement&
 
 ZpMersenneIntElement ZpMersenneIntElement::operator+(const ZpMersenneIntElement& f2)
 {
-    ZpMersenneIntElement answer(p);
+    ZpMersenneIntElement answer;
 
-    answer.elem = (elem + f2.elem) %p;
+    answer.elem = (elem + f2.elem);
+
+    if(answer.elem>p)
+        answer.elem-=p;
 
     return answer;
 }
@@ -81,23 +77,29 @@ ZpMersenneIntElement ZpMersenneIntElement::operator*(const ZpMersenneIntElement&
 {
 
 
-    //ZpMersenneIntElement answer(p);
+    ZpMersenneIntElement answer(p);
 
 
     long multLong = (long)elem * (long) f2.elem;
 
     //get the bottom 31 bit
-    unsigned int bottom = multLong & shiftNum;
+    unsigned int bottom = multLong & p;
 
     //get the top 31 bits
-    unsigned int top = (multLong>>31) & shiftNum;
+    unsigned int top = (multLong>>31);
 
-    //answer.elem = (bottom + top) %p;
+    answer.elem = bottom + top;
+
+    //maximim the value of 2p-2
+    if(answer.elem>p)
+        answer.elem-=p;
 
     //answer.elem = ((long)elem * (long) f2.elem) %p;
 
 
-    return ZpMersenneIntElement((bottom + top) %p);
+
+    //return ZpMersenneIntElement((bottom + top) %p);
+    return answer;
 
 }
 
@@ -106,13 +108,16 @@ ZpMersenneIntElement& ZpMersenneIntElement::operator*=(const ZpMersenneIntElemen
     long multLong = (long)elem * (long) f2.elem;
 
     //get the bottom 31 bit
-    unsigned int bottom = multLong & shiftNum;
+    unsigned int bottom = multLong & p;
 
     //get the top 31 bits
-    unsigned int top = (multLong>>31) & shiftNum;
+    unsigned int top = (multLong>>31) ;
 
-    elem = (bottom + top) %p;
-    //elem = multLong%p;
+    elem = bottom + top;
+
+    //maximim the value of 2p-2
+    if(elem>p)
+        elem-=p;
 
     return *this;
 
