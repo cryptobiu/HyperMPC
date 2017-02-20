@@ -288,7 +288,7 @@ Protocol<FieldType>::Protocol(int n, int id, TemplateField<FieldType> *field, st
 
     //boost::asio::io_service io_service;
 
-    parties = MPCCommunication::setCommunication(io_service, m_partyId-1, N, "/home/meital/ClionProjects/Secret-Sharing/Parties.txt");
+    parties = MPCCommunication::setCommunication(io_service, m_partyId-1, N, "Parties.txt");
 
     string tmp = "init times";
     //cout<<"before sending any data"<<endl;
