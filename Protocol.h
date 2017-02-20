@@ -1070,7 +1070,7 @@ template <class FieldType>
 bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<FieldType> &matrix_him*/)
 {
     vector<vector<byte>> recBufsBytes(N);
-    vector<vector<byte>> recBufs1Bytes(N);
+    //vector<vector<byte>> recBufs1Bytes(N);
     int robin = 0;
 
     // the number of random double sharings we need altogether
@@ -1210,8 +1210,13 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
      */
 
 
-    vector<vector<FieldType>> sendBufs1Elements(N);
-    vector<vector<byte>> sendBufs1Bytes(N);
+    //vector<vector<FieldType>> sendBufs1Elements(N);
+    //vector<vector<byte>> sendBufs1Bytes(N);
+
+    for(int i=0; i<N; i++){
+        sendBufsElements[i].clear();
+
+    }
 
     int fieldBytesSize = field->getElementSizeInBytes();
 
@@ -1228,8 +1233,8 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
         matrix_him.MatrixMult(x2, y2);
         // these shall be checked
         for (int i = 0; i < 2 * T; i++) {
-              sendBufs1Elements[robin].push_back(y1[i]);
-            sendBufs1Elements[robin].push_back(y2[i]);
+              sendBufsElements[robin].push_back(y1[i]);
+            sendBufsElements[robin].push_back(y2[i]);
             robin = (robin+1) % N; // next robin
 
         }
@@ -1251,23 +1256,23 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
 
     for(int i=0; i < N; i++)
     {
-        sendBufs1Bytes[i].resize(sendBufs1Elements[i].size()*fieldByteSize);
+        sendBufsBytes[i].resize(sendBufsElements[i].size()*fieldByteSize);
         //cout<< "size of sendBufs1Elements["<<i<<" ].size() is " << sendBufs1Elements[i].size() <<"myID =" <<  m_partyId<<endl;
-        recBufs1Bytes[i].resize(sendBufs1Elements[m_partyId-1].size()*fieldByteSize);
-        for(int j=0; j<sendBufs1Elements[i].size();j++) {
-            field->elementToBytes(sendBufs1Bytes[i].data() + (j * fieldByteSize), sendBufs1Elements[i][j]);
+        recBufsBytes[i].resize(sendBufsElements[m_partyId-1].size()*fieldByteSize);
+        for(int j=0; j<sendBufsElements[i].size();j++) {
+            field->elementToBytes(sendBufsBytes[i].data() + (j * fieldByteSize), sendBufsElements[i][j]);
         }
     }
 
 
     if(flag_print) {
         cout << "before round" << endl;}
-    //comm->roundfunctionI(sendBufs1Bytes, recBufs1Bytes,5);
+    //comm->roundfunctionI(sendBufs1Bytes, recBufsBytes,5);
 
 
     t3 = high_resolution_clock::now();
     //comm->roundfunctionI(sendBufsBytes, recBufsBytes,4);
-    roundFunctionSync(sendBufs1Bytes, recBufs1Bytes,5);
+    roundFunctionSync(sendBufsBytes, recBufsBytes,5);
     t4 = high_resolution_clock::now();
     duration2 = duration_cast<milliseconds>( t4 - t3 ).count();
     //cout << "roundfunction 5 took : " <<duration2<<" ms"<<endl;
@@ -1287,8 +1292,8 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
     for(int k=0; k < count; k++) {
         for (int i = 0; i < N; i++) {
 
-            x1[i] = field->bytesToElement(recBufs1Bytes[i].data() + (2*k*fieldBytesSize));
-            x2[i] = field->bytesToElement(recBufs1Bytes[i].data() + ((2*k +1)*fieldBytesSize));
+            x1[i] = field->bytesToElement(recBufsBytes[i].data() + (2*k*fieldBytesSize));
+            x2[i] = field->bytesToElement(recBufsBytes[i].data() + ((2*k +1)*fieldBytesSize));
         }
 
 
