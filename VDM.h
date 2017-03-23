@@ -99,6 +99,8 @@ void VDM<FieldType>::MatrixMult(std::vector<FieldType> &vector, std::vector<Fiel
     }
 
 }
+
+
 //
 template<typename FieldType>
 VDM<FieldType>::~VDM() {

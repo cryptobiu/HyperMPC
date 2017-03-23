@@ -60,6 +60,7 @@ private:
 
     vector<FieldType> sharingBufTElements; // prepared T-sharings (my shares)
     vector<FieldType> sharingBuf2TElements; // prepared 2T-sharings (my shares)
+    vector<FieldType> sharingBufInputsTElements; // prepared T-sharings (my shares)
     int shareIndex;
 
 
@@ -137,7 +138,8 @@ public:
      * We use this algorithm, but extend it to capture an arbitrary number of double-sharings.
      * This is, as usual, achieved by processing multiple buckets in parallel.
      */
-    bool preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<FieldType> &matrix_him*/);
+    bool preparationPhase();
+    bool RandomSharingForInputs();
 
     /**
      * We do not need robust broadcast (which we require an involved and expensive sub-protocol).
@@ -281,7 +283,7 @@ Protocol<FieldType>::Protocol(int n, int id, TemplateField<FieldType> *field, st
     numOfInputGates = circuit.getNrOfInputGates();
     numOfOutputGates = circuit.getNrOfOutputGates();
     myInputs.resize(numOfInputGates);
-    shareIndex = numOfInputGates;
+    shareIndex = 0;//numOfInputGates;
 
 
     //comm->ConnectionToServer(s);
@@ -563,11 +565,11 @@ void Protocol<FieldType>::readMyInputs()
 template <class FieldType>
 void Protocol<FieldType>::run(int iteration) {
 
-    shareIndex = numOfInputGates;
+    shareIndex = 0;//numOfInputGates;
 
     auto t1start = high_resolution_clock::now();
     auto t1 = high_resolution_clock::now();
-    if(preparationPhase(/*matrix_vand, matrix_him*/) == false) {
+   if(RandomSharingForInputs() == false) {
         if(flag_print) {
             cout << "cheating!!!" << '\n';}
         return;
@@ -578,7 +580,18 @@ void Protocol<FieldType>::run(int iteration) {
     }
 
     auto t2 = high_resolution_clock::now();
+    t1 = high_resolution_clock::now();
+    if(preparationPhase() == false) {
+        if(flag_print) {
+            cout << "cheating!!!" << '\n';}
+        return;
+    }
+    else {
+        if(flag_print) {
+            cout << "no cheating!!!" << '\n' << "finish Preparation Phase" << '\n';}
+    }
 
+    t2 = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(t2-t1).count();
     if(flag_print_timings) {
         cout << "time in milliseconds preparationPhase: " << duration << endl;
@@ -1074,7 +1087,7 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
     int robin = 0;
 
     // the number of random double sharings we need altogether
-    int no_random = circuit.getNrOfMultiplicationGates() + circuit.getNrOfInputGates();
+    int no_random = circuit.getNrOfMultiplicationGates();
     vector<FieldType> x1(N),x2(N),y1(N),y2(N);
 
     vector<vector<FieldType>> sendBufsElements(N);
@@ -1324,6 +1337,247 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
     return true;
 }
 
+template <class FieldType>
+bool Protocol<FieldType>::RandomSharingForInputs()
+{
+    vector<vector<byte>> recBufsBytes(N);
+    //vector<vector<byte>> recBufs1Bytes(N);
+    int robin = 0;
+
+    // the number of random double sharings we need altogether
+    int no_random = circuit.getNrOfInputGates();
+    vector<FieldType> x1(N),y1(N);
+
+    vector<vector<FieldType>> sendBufsElements(N);
+    vector<vector<byte>> sendBufsBytes(N);
+
+    // the number of buckets (each bucket requires one double-sharing
+    // from each party and gives N-2T random double-sharings)
+    int no_buckets = (no_random / (N-2*T))+1;
+
+   // sharingBufTElements.resize(no_buckets*(N-2*T)); // my shares of the double-sharings
+    //sharingBuf2TElements.resize(no_buckets*(N-2*T)); // my shares of the double-sharings
+    sharingBufInputsTElements.resize(no_buckets*(N-2*T)); // my shares of the double-sharings
+
+    for(int i=0; i < N; i++)
+    {
+        //sendBufs[i] = "";
+
+        sendBufsElements[i].resize(no_buckets);
+        sendBufsBytes[i].resize(no_buckets*field->getElementSizeInBytes());
+        recBufsBytes[i].resize(no_buckets*field->getElementSizeInBytes());
+    }
+
+    /**
+     *  generate double sharings.
+     *  first degree t.
+     *  subsequent: degree 2t with same secret.
+     */
+    high_resolution_clock::time_point t1 = high_resolution_clock::now();
+    for(int k=0; k < no_buckets; k++)
+    {
+        // generate random degree-T polynomial
+        for(int i = 0; i < T+1; i++)
+        {
+            // A random field element, uniform distribution
+            x1[i] = field->Random();
+
+        }
+
+        matrix_vand.MatrixMult(x1, y1); // eval poly at alpha-positions
+
+
+        // prepare shares to be sent
+        for(int i=0; i < N; i++)
+        {
+            //cout << "y1[ " <<i<< "]" <<y1[i] << endl;
+            sendBufsElements[i][k] = y1[i];
+
+        }
+
+
+
+
+    }//end print one
+
+
+
+    if(flag_print) {
+        for (int i = 0; i < N; i++) {
+            for (int k = 0; k < sendBufsElements[0].size(); k++) {
+
+                // cout << "before roundfunction4 send to " <<i <<" element: "<< k << " " << sendBufsElements[i][k] << endl;
+            }
+        }
+    }
+
+    high_resolution_clock::time_point t2 = high_resolution_clock::now();
+    auto duration = duration_cast<milliseconds>( t2 - t1 ).count();
+    //cout << "generate random degree-T polynomial took : " <<duration<<" ms"<<endl;
+
+    if(flag_print) {
+        cout << "sendBufs" << endl;
+        cout << "N" << N << endl;
+        cout << "T" << T << endl;
+
+
+
+    }
+//
+    int fieldByteSize = field->getElementSizeInBytes();
+    for(int i=0; i < N; i++)
+    {
+        for(int j=0; j<sendBufsElements[i].size();j++) {
+            field->elementToBytes(sendBufsBytes[i].data() + (j * fieldByteSize), sendBufsElements[i][j]);
+        }
+    }
+
+
+    high_resolution_clock::time_point t3 = high_resolution_clock::now();
+    //comm->roundfunctionI(sendBufsBytes, recBufsBytes,4);
+    roundFunctionSync(sendBufsBytes, recBufsBytes,4);
+    high_resolution_clock::time_point t4 = high_resolution_clock::now();
+    auto duration2 = duration_cast<milliseconds>( t4 - t3 ).count();
+    //cout << "roundfunctionI took : " <<duration2<<" ms"<<endl;
+
+
+
+
+
+
+    if(flag_print) {
+        for (int i = 0; i < N; i++) {
+            for (int k = 0; k < sendBufsBytes[0].size(); k++) {
+
+                cout << "roundfunction4 send to " <<i <<" element: "<< k << " " << (int)sendBufsBytes[i][k] << endl;
+            }
+        }
+    }
+
+    //cout << endl;
+
+    if(flag_print) {
+        for (int i = 0; i < N; i++) {
+            for (int k = 0; k < recBufsBytes[0].size(); k++) {
+                cout << "roundfunction4 receive from " <<i <<" element: "<< k << " " << (int) recBufsBytes[i][k] << endl;
+            }
+        }
+    }
+
+
+    /**
+     * Apply hyper-invertible matrix on each bucket.
+     * From the resulting sharings, 2T are being reconstructed towards some party,
+     * the remaining N-2T are kept as prepared sharings.
+     * For balancing, we do round-robin the party how shall reconstruct and check!
+     */
+
+
+    //vector<vector<FieldType>> sendBufs1Elements(N);
+    //vector<vector<byte>> sendBufs1Bytes(N);
+
+    for(int i=0; i<N; i++){
+        sendBufsElements[i].clear();
+
+    }
+
+    int fieldBytesSize = field->getElementSizeInBytes();
+
+    // x1 : used for the N degree-t sharings
+    for(int k=0; k < no_buckets; k++) {
+        // generate random degree-T polynomial
+        for (int i = 0; i < N; i++) {
+            x1[i] = field->bytesToElement(recBufsBytes[i].data() + (k*fieldBytesSize));
+
+        }
+        matrix_him.MatrixMult(x1, y1);
+        // these shall be checked
+        for (int i = 0; i < 2 * T; i++) {
+            sendBufsElements[robin].push_back(y1[i]);
+            robin = (robin+1) % N; // next robin
+
+        }
+        // Y1 : the degree-t shares of my poly
+        // Y2 : the degree 2t shares of my poly
+        for (int i = 2 * T; i < N; i++) {
+
+            sharingBufInputsTElements[k*(N-2*T) + i - 2*T] = y1[i];
+
+        }
+
+
+
+        x1[0] = *(field->GetZero());
+
+    }
+
+    for(int i=0; i < N; i++)
+    {
+        sendBufsBytes[i].resize(sendBufsElements[i].size()*fieldByteSize);
+        //cout<< "size of sendBufs1Elements["<<i<<" ].size() is " << sendBufs1Elements[i].size() <<"myID =" <<  m_partyId<<endl;
+        recBufsBytes[i].resize(sendBufsElements[m_partyId-1].size()*fieldByteSize);
+        for(int j=0; j<sendBufsElements[i].size();j++) {
+            field->elementToBytes(sendBufsBytes[i].data() + (j * fieldByteSize), sendBufsElements[i][j]);
+        }
+    }
+
+
+    if(flag_print) {
+        cout << "before round" << endl;}
+    //comm->roundfunctionI(sendBufs1Bytes, recBufsBytes,5);
+
+
+    t3 = high_resolution_clock::now();
+    //comm->roundfunctionI(sendBufsBytes, recBufsBytes,4);
+    roundFunctionSync(sendBufsBytes, recBufsBytes,5);
+    t4 = high_resolution_clock::now();
+    duration2 = duration_cast<milliseconds>( t4 - t3 ).count();
+    //cout << "roundfunction 5 took : " <<duration2<<" ms"<<endl;
+
+
+
+    //cout<<"after round function 5"<<endl;
+    if(flag_print) {
+        cout << "after round" << endl;}
+    int count = no_buckets * (2*T) / N; // nr of sharings *I* have to check
+    // got one in the last round
+    if(no_buckets * (2*T)%N > m_partyId) { // maybe -1
+        count++;
+    }
+
+
+    for(int k=0; k < count; k++) {
+        for (int i = 0; i < N; i++) {
+
+            x1[i] = field->bytesToElement(recBufsBytes[i].data() + (2*fieldBytesSize));
+
+        }
+
+
+        vector<FieldType> x_until_d(N);
+        for(int i=0; i<T; i++)
+        {
+            x_until_d[i] = x1[i];
+        }
+        for(int i=T; i<N; i++)
+        {
+            x_until_d[i] = *(field->GetZero());
+        }
+        if(flag_print) {
+
+            //  cout <<"k "<<k<< "tinterpolate(x1).toString()  " << tinterpolate(x_until_d).toString() << endl;
+            cout << "k " << k << "interpolate(x1).toString()  " << field->elementToString(interpolate(x1)) << endl;
+        }
+        // Check that x1 is t-consistent and x2 is 2t-consistent and secret is the same
+        if(!checkConsistency(x1,T))  {
+            // cheating detected, abort
+            if(flag_print) {
+                cout << "k" << k<< endl;}
+            return false;
+        }
+    }
+    return true;
+}
 /**
  * the function implements the first step of Input Phase:
  * for each input gate, a prepared t-sharings is reconstructed
@@ -1345,7 +1599,7 @@ bool Protocol<FieldType>::inputPreparation()
 
     for(int k = 0; k < numOfInputGates; k++)//these are only input gates
     {
-        gateShareArr[circuit.getGates()[k].output] = sharingBufTElements[k];
+        gateShareArr[circuit.getGates()[k].output] = sharingBufInputsTElements[k];
         i = (circuit.getGates())[k].party; // the number of party which has the input
         // reconstruct sharing towards input party
        sendBufsElements[i-1].push_back(gateShareArr[circuit.getGates()[k].output]);
@@ -1533,8 +1787,7 @@ int Protocol<FieldType>::processNotMult(){
             gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] + gateShareArr[circuit.getGates()[k].input2];
             count++;
         }
-        /*
-        /*
+
         else if(circuit.getGates()[k].gateType == SUB)//sub gate
         {
             gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] - gateShareArr[circuit.getGates()[k].input2];
@@ -1548,7 +1801,7 @@ int Protocol<FieldType>::processNotMult(){
 
             count++;
         }
-         */
+
 
     }
     return count;
