@@ -1134,8 +1134,8 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
             x2[i] = field->Random();
         }
 
-        matrix_vand.MatrixMult(x1, y1); // eval poly at alpha-positions
-        matrix_vand.MatrixMult(x2, y2); // eval poly at alpha-positions
+        matrix_vand.MatrixMult(x1, y1, 2*T+1); // eval poly at alpha-positions
+        matrix_vand.MatrixMult(x2, y2, 2*T+1); // eval poly at alpha-positions
 
         // prepare shares to be sent
         for(int i=0; i < N; i++)
@@ -1260,11 +1260,10 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
         }
 
 
-        for (int i=0; i < sendBufsElements.size();i++)
-        {
-            x2[0] = *(field->GetZero());
-            x1[0] = *(field->GetZero());
-        }
+
+        x2[0] = *(field->GetZero());
+        x1[0] = *(field->GetZero());
+
     }
 
     for(int i=0; i < N; i++)
@@ -1384,7 +1383,7 @@ bool Protocol<FieldType>::RandomSharingForInputs()
 
         }
 
-        matrix_vand.MatrixMult(x1, y1); // eval poly at alpha-positions
+        matrix_vand.MatrixMult(x1, y1, T+1); // eval poly at alpha-positions
 
 
         // prepare shares to be sent

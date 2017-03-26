@@ -20,7 +20,7 @@ public:
     ~VDM();
     void InitVDM();
     void Print();
-    void MatrixMult(std::vector<FieldType> &vector, std::vector<FieldType> &answer);
+    void MatrixMult(std::vector<FieldType> &vector, std::vector<FieldType> &answer, int length);
 
     void allocate(int n, int m, TemplateField<FieldType> *field);
 };
@@ -85,14 +85,14 @@ void VDM<FieldType>::Print()
 }
 
 template<typename FieldType>
-void VDM<FieldType>::MatrixMult(std::vector<FieldType> &vector, std::vector<FieldType> &answer)
+void VDM<FieldType>::MatrixMult(std::vector<FieldType> &vector, std::vector<FieldType> &answer, int length)
 {
     for(int i = 0; i < m_m; i++)
     {
         // answer[i] = 0
         answer[i] = *(field->GetZero());
 
-        for(int j=0; j < m_n; j++)
+        for(int j=0; j < length; j++)
         {
             answer[i] += (m_matrix[i][j] * vector[j]);
         }
