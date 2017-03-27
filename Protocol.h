@@ -1354,9 +1354,9 @@ bool Protocol<FieldType>::RandomSharingForInputs()
     // from each party and gives N-2T random double-sharings)
     int no_buckets = (no_random / (N-2*T))+1;
 
-   // sharingBufTElements.resize(no_buckets*(N-2*T)); // my shares of the double-sharings
+    //sharingBufTElements.resize(no_buckets*(N-2*T)); // my shares of the double-sharings
     //sharingBuf2TElements.resize(no_buckets*(N-2*T)); // my shares of the double-sharings
-    sharingBufInputsTElements.resize(no_buckets*(N-2*T)); // my shares of the double-sharings
+    sharingBufInputsTElements.resize(no_buckets*(N-2*T));
 
     for(int i=0; i < N; i++)
     {
@@ -1383,7 +1383,7 @@ bool Protocol<FieldType>::RandomSharingForInputs()
 
         }
 
-        matrix_vand.MatrixMult(x1, y1, T+1); // eval poly at alpha-positions
+        matrix_vand.MatrixMult(x1, y1, 2*T+1); // eval poly at alpha-positions
 
 
         // prepare shares to be sent
@@ -1483,6 +1483,7 @@ bool Protocol<FieldType>::RandomSharingForInputs()
     int fieldBytesSize = field->getElementSizeInBytes();
 
     // x1 : used for the N degree-t sharings
+    // x2 : used for the N degree-2t sharings
     for(int k=0; k < no_buckets; k++) {
         // generate random degree-T polynomial
         for (int i = 0; i < N; i++) {
@@ -1501,12 +1502,9 @@ bool Protocol<FieldType>::RandomSharingForInputs()
         for (int i = 2 * T; i < N; i++) {
 
             sharingBufInputsTElements[k*(N-2*T) + i - 2*T] = y1[i];
-
+            //sharingBufTElements[k*(N-2*T) + i - 2*T] = y1[i];
+            //sharingBuf2TElements[k*(N-2*T) + i - 2*T] =  y2[i];
         }
-
-
-
-        x1[0] = *(field->GetZero());
 
     }
 
@@ -1548,8 +1546,7 @@ bool Protocol<FieldType>::RandomSharingForInputs()
     for(int k=0; k < count; k++) {
         for (int i = 0; i < N; i++) {
 
-            x1[i] = field->bytesToElement(recBufsBytes[i].data() + (2*fieldBytesSize));
-
+            x1[i] = field->bytesToElement(recBufsBytes[i].data() + (k*fieldBytesSize));
         }
 
 
@@ -1568,7 +1565,7 @@ bool Protocol<FieldType>::RandomSharingForInputs()
             cout << "k " << k << "interpolate(x1).toString()  " << field->elementToString(interpolate(x1)) << endl;
         }
         // Check that x1 is t-consistent and x2 is 2t-consistent and secret is the same
-        if(!checkConsistency(x1,T))  {
+        if(!checkConsistency(x1,T) )  {
             // cheating detected, abort
             if(flag_print) {
                 cout << "k" << k<< endl;}
