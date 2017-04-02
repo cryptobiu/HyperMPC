@@ -11,10 +11,11 @@ void ProtocolTimer::writeToFile() {
     myfile.open (fileName);
     myfile << "-------------Timings-----------.\n";
     //columns header
-    myfile << "preparationPhaseArr,inputPreparationArr,inputAdjustmentArr,computationPhaseArr,outputPhaseArr, totalTimeArr,\n";
+    myfile << "preparationPhaseArr,preparationForInputsPhaseArr,inputPreparationArr,inputAdjustmentArr,computationPhaseArr,outputPhaseArr, totalTimeArr,\n";
 
     for(int i=0; i<times; i++) {
         myfile << preparationPhaseArr[i] << ","
+        <<preparationForInputsPhaseArr[i] <<","
         << inputPreparationArr[i] << ","
         << inputAdjustmentArr[i] << ","
         << computationPhaseArr[i] << ","
@@ -22,6 +23,7 @@ void ProtocolTimer::writeToFile() {
         << totalTimeArr[i] << ",\n";
 
         cout<< "Times" <<preparationPhaseArr[i] << ","
+        << preparationForInputsPhaseArr[i] << ","
         << inputPreparationArr[i] << ","
         << inputAdjustmentArr[i] << ","
         << computationPhaseArr[i] << ","
@@ -37,6 +39,7 @@ ProtocolTimer::ProtocolTimer(int times, string fileName) : fileName(fileName), t
 
 
     preparationPhaseArr = new int[times];
+    preparationForInputsPhaseArr = new int[times];
     inputPreparationArr = new int[times];
     inputAdjustmentArr= new int[times];
     computationPhaseArr= new int[times];

@@ -580,6 +580,11 @@ void Protocol<FieldType>::run(int iteration) {
     }
 
     auto t2 = high_resolution_clock::now();
+    auto duration = duration_cast<milliseconds>(t2-t1).count();
+    if(flag_print_timings) {
+        cout << "time in milliseconds preparationForInputsPhase: " << duration << endl;
+    }
+    protocolTimer->preparationForInputsPhaseArr[iteration] =duration;
     t1 = high_resolution_clock::now();
     if(preparationPhase() == false) {
         if(flag_print) {
@@ -592,7 +597,7 @@ void Protocol<FieldType>::run(int iteration) {
     }
 
     t2 = high_resolution_clock::now();
-    auto duration = duration_cast<milliseconds>(t2-t1).count();
+    duration = duration_cast<milliseconds>(t2-t1).count();
     if(flag_print_timings) {
         cout << "time in milliseconds preparationPhase: " << duration << endl;
     }

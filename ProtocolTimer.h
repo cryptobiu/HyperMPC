@@ -17,6 +17,7 @@ class ProtocolTimer {
 public:
 
     int *preparationPhaseArr;
+    int *preparationForInputsPhaseArr;
     int* inputPreparationArr;
     int* inputAdjustmentArr;
     int* computationPhaseArr;
@@ -29,6 +30,7 @@ public:
     ProtocolTimer(int times, string fileName);
 
     ~ProtocolTimer(){ delete[] preparationPhaseArr;
+                      delete[] preparationForInputsPhaseArr;
                       delete[] inputPreparationArr;
                       delete[] inputAdjustmentArr;
                       delete[] computationPhaseArr;
