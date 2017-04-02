@@ -37,6 +37,11 @@ ZpMersenneIntElement& ZpMersenneIntElement::operator=(const ZpMersenneIntElement
 ZpMersenneIntElement::ZpMersenneIntElement(int elem) {
 
     //this->elem = elem %p;
+    /*this->elem = elem %p;
+
+    if(this->elem<0) {
+        this->elem = elem + p;
+    }*/
 
     this->elem = elem;
 
@@ -56,7 +61,7 @@ ZpMersenneIntElement ZpMersenneIntElement::operator-(const ZpMersenneIntElement&
 {
     ZpMersenneIntElement answer;
 
-    unsigned int temp = elem - f2.elem;
+    int temp =  (int)elem - (int)f2.elem;
 
     if(temp<0){
         answer.elem = temp + p;

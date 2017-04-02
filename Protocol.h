@@ -576,7 +576,7 @@ void Protocol<FieldType>::run(int iteration) {
     }
     else {
         if(flag_print) {
-            cout << "no cheating!!!" << '\n' << "finish Preparation Phase" << '\n';}
+            cout << "no cheating!!!" << '\n' << "finish preparationForInputs Phase" << '\n';}
     }
 
     auto t2 = high_resolution_clock::now();
