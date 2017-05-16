@@ -3,6 +3,7 @@
 #include <MQTTClient.h>
 #include "Protocol.h"
 #include "ZpMersenneIntElement.h"
+#include "ZpMersenneLongElement.h"
 
 
 
@@ -216,8 +217,29 @@ int main(int argc, char* argv[])
         cout << "end main" << '\n';
     }
 
+    else if(fieldType.compare("ZpMensenne61") == 0)
+    {
+        TemplateField<ZpMersenneLongElement> *field = new TemplateField<ZpMersenneLongElement>(0);
 
-    if(fieldType.compare("GF2m") == 0)
+
+        Protocol<ZpMersenneLongElement> protocol(atoi(argv[2]), atoi(argv[1]), field, argv[3], argv[4], argv[5], argv[6], &p);
+        auto t1 = high_resolution_clock::now();
+        for(int i=0; i<times; i++) {
+            protocol.run(i);
+        }
+        auto t2 = high_resolution_clock::now();
+
+        auto duration = duration_cast<milliseconds>(t2-t1).count();
+        cout << "time in milliseconds for " << times << " runs: " << duration << endl;
+
+        delete field;
+
+        p.writeToFile();
+
+        cout << "end main" << '\n';
+    }
+
+    else if(fieldType.compare("GF2m") == 0)
     {
         TemplateField<GF2E> *field = new TemplateField<GF2E>(8);
 
@@ -238,7 +260,7 @@ int main(int argc, char* argv[])
         cout << "end main" << '\n';
     }
 
-    if(fieldType.compare("Zp") == 0)
+    else if(fieldType.compare("Zp") == 0)
     {
         TemplateField<ZZ_p> * field = new TemplateField<ZZ_p>(2147483647);
 

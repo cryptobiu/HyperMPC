@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(Secret_Sharing)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++11 -maes -mpclmul" )
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++11 -maes -mpclmul -mbmi2" )
 
 SET (BOOST_ROOT $ENV{HOME}/boost_1_60_0/)
 SET (BOOST_INCLUDEDIR $ENV{HOME}/boost_1_60_0/)
@@ -12,7 +12,7 @@ INCLUDE_DIRECTORIES($ENV{HOME}/paho.mqtt.c/src $ENV{HOME}/ntl-9.10.0/include $EN
         $ENV{HOME}/libscapi/lib/OTExtensionBristol $ENV{HOME}/libscapi/lib/)
 
 set(SOURCE_FILES AES_PRG.cpp HIM.cpp main.cpp VDM.cpp MPCCommunication.cpp MPCCommunication.h
-        TGate.h ArithmeticCircuit.cpp Communication.cpp Communication.h Protocol.cpp Protocol.h TemplateField.h TemplateField.cpp ProtocolTimer.cpp ProtocolTimer.h ZpGMPElement.cpp ZpGMPElement.h ZpMersenneIntElement.cpp ZpMersenneIntElement.h)
+        TGate.h ArithmeticCircuit.cpp Communication.cpp Communication.h Protocol.cpp Protocol.h TemplateField.h TemplateField.cpp ProtocolTimer.cpp ProtocolTimer.h ZpGMPElement.cpp ZpGMPElement.h ZpMersenneIntElement.cpp ZpMersenneIntElement.h ZpMersenneLongElement.cpp ZpMersenneLongElement.h)
 
 
 link_directories(/usr/ssl/lib/ $ENV{HOME}/libscapi/install/lib ${BOOST_LIBRARYDIR})
