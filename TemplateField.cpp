@@ -5,6 +5,7 @@
 #include "TemplateField.h"
 #include "ZpMersenneLongElement.h"
 #include "ZpMersenneIntElement.h"
+#include "GF2_8LookupTable.h"
 
 
 using namespace NTL;
@@ -86,6 +87,21 @@ ZpMersenneIntElement TemplateField<ZpMersenneIntElement>::GetElement(long b) {
 }
 
 template <>
+TemplateField<GF2_8LookupTable>::TemplateField(long fieldParam) {
+
+    elementSizeInBytes = 1;//round up to the next byte
+    elementSizeInBits = 8;
+
+    auto randomKey = prg.generateKey(128);
+    prg.setKey(randomKey);
+
+    m_ZERO = new GF2_8LookupTable(0);
+    m_ONE = new GF2_8LookupTable(1);
+
+    GF2_8LookupTable::initTable();
+}
+
+template <>
 TemplateField<ZpMersenneLongElement>::TemplateField(long fieldParam) {
 
     elementSizeInBytes = 8;//round up to the next byte
@@ -98,6 +114,14 @@ TemplateField<ZpMersenneLongElement>::TemplateField(long fieldParam) {
     m_ONE = new ZpMersenneLongElement(1);
 }
 
+
+template <>
+void TemplateField<GF2_8LookupTable>::elementToBytes(unsigned char* elemenetInBytes, GF2_8LookupTable& element){
+
+    memcpy(elemenetInBytes, (byte*)(&element.elem), 1);
+}
+
+
 template <>
 void TemplateField<ZpMersenneLongElement>::elementToBytes(unsigned char* elemenetInBytes, ZpMersenneLongElement& element){
 
@@ -109,6 +133,15 @@ ZpMersenneLongElement TemplateField<ZpMersenneLongElement>::bytesToElement(unsig
 
     return ZpMersenneLongElement((unsigned long)(*(unsigned long *)elemenetInBytes));
 }
+
+
+template <>
+GF2_8LookupTable TemplateField<GF2_8LookupTable>::bytesToElement(unsigned char* elemenetInBytes){
+
+    return GF2_8LookupTable((unsigned int)(*(byte*)elemenetInBytes));
+}
+
+
 template <>
 ZpMersenneLongElement TemplateField<ZpMersenneLongElement>::GetElement(long b) {
 
@@ -126,6 +159,27 @@ ZpMersenneLongElement TemplateField<ZpMersenneLongElement>::GetElement(long b) {
         return element;
     }
 }
+
+
+template <>
+GF2_8LookupTable TemplateField<GF2_8LookupTable>::GetElement(long b) {
+
+
+    if(b == 1)
+    {
+        return *m_ONE;
+    }
+    if(b == 0)
+    {
+        return *m_ZERO;
+    }
+    else{
+        GF2_8LookupTable element((unsigned int)b);
+        return element;
+    }
+}
+
+
 template <>
 ZZ_p TemplateField<ZZ_p>::GetElement(long b) {
 

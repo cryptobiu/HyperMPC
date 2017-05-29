@@ -204,6 +204,33 @@ Communication.cpp.s:
 	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/Communication.cpp.s
 .PHONY : Communication.cpp.s
 
+GF2_8LookupTable.o: GF2_8LookupTable.cpp.o
+
+.PHONY : GF2_8LookupTable.o
+
+# target to build an object file
+GF2_8LookupTable.cpp.o:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/GF2_8LookupTable.cpp.o
+.PHONY : GF2_8LookupTable.cpp.o
+
+GF2_8LookupTable.i: GF2_8LookupTable.cpp.i
+
+.PHONY : GF2_8LookupTable.i
+
+# target to preprocess a source file
+GF2_8LookupTable.cpp.i:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/GF2_8LookupTable.cpp.i
+.PHONY : GF2_8LookupTable.cpp.i
+
+GF2_8LookupTable.s: GF2_8LookupTable.cpp.s
+
+.PHONY : GF2_8LookupTable.s
+
+# target to generate assembly for a file
+GF2_8LookupTable.cpp.s:
+	$(MAKE) -f CMakeFiles/Secret_Sharing.dir/build.make CMakeFiles/Secret_Sharing.dir/GF2_8LookupTable.cpp.s
+.PHONY : GF2_8LookupTable.cpp.s
+
 HIM.o: HIM.cpp.o
 
 .PHONY : HIM.o
@@ -492,6 +519,9 @@ help:
 	@echo "... Communication.o"
 	@echo "... Communication.i"
 	@echo "... Communication.s"
+	@echo "... GF2_8LookupTable.o"
+	@echo "... GF2_8LookupTable.i"
+	@echo "... GF2_8LookupTable.s"
 	@echo "... HIM.o"
 	@echo "... HIM.i"
 	@echo "... HIM.s"

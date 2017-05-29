@@ -69,7 +69,7 @@ private:
 
 public:
     Protocol(int n, int id,TemplateField<FieldType> *field, string inputsFile, string outputFile, string circuitFile, string address,
-             ProtocolTimer* protocolTimer);
+             ProtocolTimer* protocolTimer, int groupID);
     void split(const string &s, char delim, vector<string> &elems);
     vector<string> split(const string &s, char delim);
 
@@ -261,7 +261,7 @@ public:
 
 template <class FieldType>
 Protocol<FieldType>::Protocol(int n, int id, TemplateField<FieldType> *field, string inputsFile, string outputFile, string circuitFile, string address,
-                              ProtocolTimer* protocolTimer)
+                              ProtocolTimer* protocolTimer, int groupID)
 {
     this->protocolTimer = protocolTimer;
     this->field = field;
@@ -290,7 +290,7 @@ Protocol<FieldType>::Protocol(int n, int id, TemplateField<FieldType> *field, st
 
     //boost::asio::io_service io_service;
 
-    parties = MPCCommunication::setCommunication(io_service, m_partyId-1, N, "Parties.txt");
+    parties = MPCCommunication::setCommunication(io_service, m_partyId-1, N, "Parties.txt", groupID);
 
     string tmp = "init times";
     //cout<<"before sending any data"<<endl;

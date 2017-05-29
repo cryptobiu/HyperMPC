@@ -5,7 +5,7 @@
 #include "MPCCommunication.h"
 
 
-vector<shared_ptr<ProtocolPartyData>> MPCCommunication::setCommunication(boost::asio::io_service & io_service, int id, int numParties, string configFile) {
+vector<shared_ptr<ProtocolPartyData>> MPCCommunication::setCommunication(boost::asio::io_service & io_service, int id, int numParties, string configFile, int groupID) {
 cout<<"in communication"<<endl;
 
 cout<<"num parties = "<<numParties<<endl;
@@ -27,6 +27,14 @@ cout<<"num parties = "<<numParties<<endl;
         //get partys IPs and ports data
         ports[i] = stoi(cf.Value("", portString));
         ips[i] = cf.Value("", ipString);
+    }
+
+    int delta = ports[numParties] - ports[0] + 100;
+
+    //adjust to the new group id
+    for (int i = 0; i < numParties; i++) {
+        ports[i] +=delta*groupID;
+
     }
 
     SocketPartyData me, other;
