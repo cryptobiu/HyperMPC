@@ -2,12 +2,10 @@
 #define PROTOCOL_H_
 
 #include <stdlib.h>
-#include <MQTTClient.h>
 #include "VDM.h"
 #include "HIM.h"
 #include "TGate.h"
 #include "ArithmeticCircuit.h"
-//#include "Communication.h"
 #include <vector>
 #include <iostream>
 #include <fstream>
