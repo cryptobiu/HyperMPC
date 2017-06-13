@@ -1979,7 +1979,7 @@ void Protocol<FieldType>::roundFunctionSync(vector<vector<byte>> &sendBufs, vect
 
     //cout<<"in roundFunctionSync "<< round<< endl;
 
-    int numThreads = 10;//parties.size();
+    int numThreads = parties.size();
     int numPartiesForEachThread;
 
     if (parties.size() <= numThreads){
@@ -2057,7 +2057,7 @@ void Protocol<FieldType>::roundFunctionSyncBroadcast(vector<byte> &message, vect
 
     //cout<<"in roundFunctionSyncBroadcast "<< endl;
 
-    int numThreads = 10;//parties.size();
+    int numThreads = parties.size();
     int numPartiesForEachThread;
 
     if (parties.size() <= numThreads){
