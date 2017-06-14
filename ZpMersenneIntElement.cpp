@@ -24,13 +24,13 @@ using namespace std;
 using namespace NTL;
 
 
-ZpMersenneIntElement& ZpMersenneIntElement::operator=(const ZpMersenneIntElement& other) // copy assignment
+/*ZpMersenneIntElement& ZpMersenneIntElement::operator=(const ZpMersenneIntElement& other) // copy assignment
 {
     if (this != &other) { // self-assignment check expected
         elem = other.elem;
     }
     return *this;
-}
+}*/
 
 
 ZpMersenneIntElement::ZpMersenneIntElement(int elem) {

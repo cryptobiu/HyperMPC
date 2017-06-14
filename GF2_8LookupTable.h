@@ -29,21 +29,22 @@ public:
     GF2_8LookupTable(){elem = 0;};
     GF2_8LookupTable(unsigned int elem): elem(elem){};
 
-    GF2_8LookupTable& operator=(const GF2_8LookupTable& other);
+    inline GF2_8LookupTable& operator=(const GF2_8LookupTable& other){elem = other.elem; return *this;};
     inline bool operator!=(const GF2_8LookupTable& other){ return !(other.elem == elem); };
 
     inline GF2_8LookupTable operator+(const GF2_8LookupTable& f2){return GF2_8LookupTable(f2.elem ^ elem);};
-    GF2_8LookupTable operator-(const GF2_8LookupTable& f2){return GF2_8LookupTable(f2.elem ^ elem);};
+    inline GF2_8LookupTable operator-(const GF2_8LookupTable& f2){return GF2_8LookupTable(f2.elem ^ elem);};
     GF2_8LookupTable operator/(const GF2_8LookupTable& f2);
-    GF2_8LookupTable operator*(const GF2_8LookupTable& f2);
+    inline GF2_8LookupTable operator*(const GF2_8LookupTable& f2){return GF2_8LookupTable( multTable[elem][f2.elem]);};
+    inline GF2_8LookupTable& operator*=(const GF2_8LookupTable& f2){ elem = multTable[elem][f2.elem] ; return *this;};
 
     inline GF2_8LookupTable& operator+=(const GF2_8LookupTable& f2){ elem = (f2.elem ^ elem) ; return *this;};
-    GF2_8LookupTable& operator*=(const GF2_8LookupTable& f2);
+
 
 
 
 };
 
-inline ::ostream& operator<<(::ostream& s, const GF2_8LookupTable& a){ return s << a.elem; };
+inline ::ostream& operator<<(::ostream& s, const GF2_8LookupTable& a){ return s << (unsigned int)a.elem; };
 
 #endif //SECRET_SHARING_GF2_8LOOKUPTABLE_H

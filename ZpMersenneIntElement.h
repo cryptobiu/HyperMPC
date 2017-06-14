@@ -31,7 +31,7 @@ public:
     ZpMersenneIntElement(){elem = 0;};
     ZpMersenneIntElement(int elem);
 
-    ZpMersenneIntElement& operator=(const ZpMersenneIntElement& other);
+    inline ZpMersenneIntElement& operator=(const ZpMersenneIntElement& other){elem = other.elem; return *this;};
     inline bool operator!=(const ZpMersenneIntElement& other){ return !(other.elem == elem); };
 
     ZpMersenneIntElement operator+(const ZpMersenneIntElement& f2);

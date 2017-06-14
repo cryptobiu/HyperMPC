@@ -53,49 +53,53 @@ void GF2_8LookupTable::initTable(){
 }
 
 
-GF2_8LookupTable& GF2_8LookupTable::operator=(const GF2_8LookupTable& other) // copy assignment
+/*GF2_8LookupTable& GF2_8LookupTable::operator=(const GF2_8LookupTable& other) // copy assignment
 {
     if (this != &other) { // self-assignment check expected
         elem = other.elem;
     }
     return *this;
-}
+}*/
 
 
 
 
-GF2_8LookupTable GF2_8LookupTable::operator*(const GF2_8LookupTable& f2)
+/*GF2_8LookupTable GF2_8LookupTable::operator*(const GF2_8LookupTable& f2)
 {
 
     GF2_8LookupTable answer;
 
-    auto elemleft = (unsigned int)f2.elem;
-    auto elemright = (unsigned int)elem;
+//    auto elemleft = (unsigned int)f2.elem;
+//    auto elemright = (unsigned int)elem;
+//
+//    if(elemleft>255 || elemright>255) {
+//        cout << "wrong values: elemleft = " << elemleft << "elemright = " << elemright;
+//        exit(0);
+//    }
+//
+//    answer.elem = multTable[elemleft][elemright];
 
-    if(elemleft>255 || elemright>255) {
-        cout << "wrong values: elemleft = " << elemleft << "elemright = " << elemright;
-        exit(0);
-    }
-
-    answer.elem = multTable[elemleft][elemright];
+    answer.elem = multTable[elem][f2.elem];
 
     return answer;
 
-}
+}*/
 
-GF2_8LookupTable& GF2_8LookupTable::operator*=(const GF2_8LookupTable& f2){
+/*GF2_8LookupTable& GF2_8LookupTable::operator*=(const GF2_8LookupTable& f2){
 
-    auto elemleft = (unsigned int)f2.elem;
-    auto elemright = (unsigned int)elem;
+//    auto elemleft = (unsigned int)f2.elem;
+//    auto elemright = (unsigned int)elem;
+//
+//    if(elemleft>255 || elemright>255) {
+//        cout << "wrong values: elemleft = " << elemleft << "elemright = " << elemright;
+//        exit(0);
+//    }
+//
+//    elem = multTable[elemleft][elemright];
 
-    if(elemleft>255 || elemright>255) {
-        cout << "wrong values: elemleft = " << elemleft << "elemright = " << elemright;
-        exit(0);
-    }
+    elem = multTable[elem][f2.elem];
 
-    elem = multTable[elemleft][elemright];
-
-}
+}*/
 
 GF2_8LookupTable GF2_8LookupTable::operator/(const GF2_8LookupTable& f2) {
 
@@ -110,12 +114,12 @@ GF2_8LookupTable GF2_8LookupTable::operator/(const GF2_8LookupTable& f2) {
     GF2X polynomialElement1, polynomialElement2;
 
 
-    elem1[0] = (byte) f2.elem;
+    elem1[0] = (byte) elem;
     //translate the bytes into a GF2X element
     GF2XFromBytes(polynomialElement1, elem1, 1);
 
 
-    elem2[0] = (byte) elem;
+    elem2[0] = (byte) f2.elem;
     GF2XFromBytes(polynomialElement2, elem2, 1);
 
 

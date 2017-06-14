@@ -1537,7 +1537,7 @@ bool Protocol<FieldType>::RandomSharingForInputs()
     //cout << "roundfunction 5 took : " <<duration2<<" ms"<<endl;
 
 
-
+    cout << "after roundfunction 5 " << endl;
     //cout<<"after round function 5"<<endl;
     if(flag_print) {
         cout << "after round" << endl;}
@@ -1990,7 +1990,7 @@ void Protocol<FieldType>::roundFunctionSync(vector<vector<byte>> &sendBufs, vect
     }
 
 
-    recBufs[m_partyId-1] = move(sendBufs[m_partyId-1]);
+    recBufs[m_partyId-1] = sendBufs[m_partyId-1];//move(sendBufs[m_partyId-1]);
     //recieve the data using threads
     vector<thread> threads(numThreads);
     for (int t=0; t<numThreads; t++) {
