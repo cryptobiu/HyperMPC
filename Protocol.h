@@ -2,12 +2,10 @@
 #define PROTOCOL_H_
 
 #include <stdlib.h>
-#include <MQTTClient.h>
 #include "VDM.h"
 #include "HIM.h"
 #include "TGate.h"
 #include "ArithmeticCircuit.h"
-//#include "Communication.h"
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -1979,7 +1977,7 @@ void Protocol<FieldType>::roundFunctionSync(vector<vector<byte>> &sendBufs, vect
 
     //cout<<"in roundFunctionSync "<< round<< endl;
 
-    int numThreads = 10;//parties.size();
+    int numThreads = parties.size();
     int numPartiesForEachThread;
 
     if (parties.size() <= numThreads){
@@ -2057,7 +2055,7 @@ void Protocol<FieldType>::roundFunctionSyncBroadcast(vector<byte> &message, vect
 
     //cout<<"in roundFunctionSyncBroadcast "<< endl;
 
-    int numThreads = 10;//parties.size();
+    int numThreads = parties.size();
     int numPartiesForEachThread;
 
     if (parties.size() <= numThreads){
