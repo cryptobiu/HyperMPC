@@ -31,15 +31,15 @@ public:
     ZpMersenneIntElement(){elem = 0;};
     ZpMersenneIntElement(int elem);
 
-    inline ZpMersenneIntElement& operator=(const ZpMersenneIntElement& other){elem = other.elem; return *this;};
-    inline bool operator!=(const ZpMersenneIntElement& other){ return !(other.elem == elem); };
+    ZpMersenneIntElement& operator=(const ZpMersenneIntElement& other){elem = other.elem; return *this;};
+    bool operator!=(const ZpMersenneIntElement& other){ return !(other.elem == elem); };
 
     ZpMersenneIntElement operator+(const ZpMersenneIntElement& f2);
     ZpMersenneIntElement operator-(const ZpMersenneIntElement& f2);
     ZpMersenneIntElement operator/(const ZpMersenneIntElement& f2);
     ZpMersenneIntElement operator*(const ZpMersenneIntElement& f2);
 
-    inline ZpMersenneIntElement& operator+=(const ZpMersenneIntElement& f2){ elem = (f2.elem + elem) %p; return *this;};
+    ZpMersenneIntElement& operator+=(const ZpMersenneIntElement& f2){ elem = (f2.elem + elem) %p; return *this;};
     ZpMersenneIntElement& operator*=(const ZpMersenneIntElement& f2);
 
 

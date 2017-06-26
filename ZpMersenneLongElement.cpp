@@ -13,13 +13,13 @@
 using namespace std;
 
 
-ZpMersenneLongElement& ZpMersenneLongElement::operator=(const ZpMersenneLongElement& other) // copy assignment
-{
-    if (this != &other) { // self-assignment check expected
-        elem = other.elem;
-    }
-    return *this;
-}
+//ZpMersenneLongElement& ZpMersenneLongElement::operator=(const ZpMersenneLongElement& other) // copy assignment
+//{
+//    if (this != &other) { // self-assignment check expected
+//        elem = other.elem;
+//    }
+//    return *this;
+//}
 
 
 ZpMersenneLongElement::ZpMersenneLongElement(unsigned long elem) {

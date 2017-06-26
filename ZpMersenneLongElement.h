@@ -24,7 +24,7 @@ public:
     ZpMersenneLongElement(){elem = 0;};
     ZpMersenneLongElement(unsigned long elem);
 
-    ZpMersenneLongElement& operator=(const ZpMersenneLongElement& other);
+    inline ZpMersenneLongElement& operator=(const ZpMersenneLongElement& other){elem = other.elem; return *this;};
     inline bool operator!=(const ZpMersenneLongElement& other){ return !(other.elem == elem); };
 
     ZpMersenneLongElement operator+(const ZpMersenneLongElement& f2);
