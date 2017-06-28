@@ -2,7 +2,7 @@
 
 #include <fstream>      // std::ifstream
 
-
+#include <iostream>
 
 
 ArithmeticCircuit::ArithmeticCircuit()
@@ -121,7 +121,7 @@ void ArithmeticCircuit::readCircuit(const char* fileName)
             gates[i].gateType = type;
             gates[i].party = -1;//irrelevant
 
-            if (type == 1) {
+            if (type == 1|| type==7) {
                 nrOfAdditionGates++;
             }
             else if (type == 2) {
@@ -177,15 +177,13 @@ void ArithmeticCircuit::reArrangeCircuit() {
     int numOfGates = getNrOfGates();
     vector<TGate> arrangedGates(getNrOfGates());
     vector<long> newOrderedIndices(getNrOfGates());
-    vector<bool> gateDoneArr(getNrOfGates());
+    vector<bool> gateDoneArr(getNrOfGates(),false);
+    vector<bool> isWireReady(getNrOfGates(), false);
 
-    for(int i=0; i<gateDoneArr.size(); i++)
-    {
-        gateDoneArr[i] = false;
-    }
 
     for(int i=0; i<nrOfInputGates; i++){
         gateDoneArr[i] = true;
+        isWireReady[i] = true;
         newOrderedIndices[i] = i;
     }
 
@@ -205,22 +203,28 @@ void ArithmeticCircuit::reArrangeCircuit() {
         loopCount=count;
         for(int k=(nrOfInputGates); k < (numOfGates - nrOfOutputGates); k++)
         {
-            if(gates[k].gateType==5){
-                if(!gateDoneArr[k] && gateDoneArr[gates[k].input1])
+
+            if(gates[k].input1>isWireReady.size()) {
+                std::cout << "out of range" "input is: " <<gates[k].input1 << "size is:" <<isWireReady.size() << endl;
+            }
+            if(gates[k].gateType==5 || gates[k].gateType==7){
+                if(!gateDoneArr[k] && isWireReady[gates[k].input1])
                 {
                     //gateDoneArr[k] = true;
 
                     newOrderedIndices[count] = k;
+
                     count++;
                 }
             }
 
-            else if(!gateDoneArr[k] && gateDoneArr[gates[k].input1]
-               && gateDoneArr[gates[k].input2])
+            else if(!gateDoneArr[k] && isWireReady[gates[k].input1]
+               && isWireReady[gates[k].input2])
             {
                 //gateDoneArr[k] = true;
 
                 newOrderedIndices[count] = k;
+
                 count++;
             }
 
@@ -228,6 +232,7 @@ void ArithmeticCircuit::reArrangeCircuit() {
 
         for(int i=loopCount; i<count; i++){
             gateDoneArr[newOrderedIndices[i]] = true;
+            isWireReady[gates[newOrderedIndices[i]].output] = true;
 
         }
 

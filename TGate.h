@@ -20,6 +20,7 @@
 #define RANDOM 4
 #define SCALAR 5
 #define SUB 6
+#define SCALAR_ADD 7
 
 struct TGate
 {

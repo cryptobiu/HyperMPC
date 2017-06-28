@@ -49,8 +49,9 @@ private:
     HIM<FieldType> m;
 
     //Communication* comm;
-    vector<shared_ptr<ProtocolPartyData>>  parties;
     boost::asio::io_service io_service;
+    vector<shared_ptr<ProtocolPartyData>>  parties;
+
     ArithmeticCircuit circuit;
     vector<FieldType> gateValueArr; // the value of the gate (for my input and output gates)
     vector<FieldType> gateShareArr; // my share of the gate (for all gates)
@@ -1781,7 +1782,12 @@ int Protocol<FieldType>::processNotMult(){
 
 
         // add gate
-        if(circuit.getGates()[k].gateType == ADD)
+        if(circuit.getGates()[k].gateType == MULT)
+        {
+            ;//do nothing
+        }
+        // add gate
+        else if(circuit.getGates()[k].gateType == ADD)
         {
             gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] + gateShareArr[circuit.getGates()[k].input2];
             count++;
@@ -1797,6 +1803,14 @@ int Protocol<FieldType>::processNotMult(){
             long scalar(circuit.getGates()[k].input2);
             FieldType e = field->GetElement(scalar);
             gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] * e;
+
+            count++;
+        }
+        else if(circuit.getGates()[k].gateType == SCALAR_ADD)
+        {
+            long scalar(circuit.getGates()[k].input2);
+            FieldType e = field->GetElement(scalar);
+            gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] + e;
 
             count++;
         }
@@ -1847,7 +1861,7 @@ int Protocol<FieldType>::processMultiplications(HIM<FieldType> &m)
 
     if(index == 0)
     {
-        return 0;
+        return count;
     }
     if(flag_print) {
         cout <<"index for publicReconstruction " << index << '\n'; }
@@ -2139,7 +2153,7 @@ void Protocol<FieldType>::recData(vector<byte> &message, vector<vector<byte>> &r
 template <class FieldType>
 Protocol<FieldType>::~Protocol()
 {
-    //delete comm;
+    io_service.stop();
 }
 
 
