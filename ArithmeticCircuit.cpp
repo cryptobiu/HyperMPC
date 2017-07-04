@@ -204,29 +204,26 @@ void ArithmeticCircuit::reArrangeCircuit() {
         for(int k=(nrOfInputGates); k < (numOfGates - nrOfOutputGates); k++)
         {
 
-            if(gates[k].input1>isWireReady.size()) {
-                std::cout << "out of range" "input is: " <<gates[k].input1 << "size is:" <<isWireReady.size() << endl;
-            }
             if(gates[k].gateType==5 || gates[k].gateType==7){
                 if(!gateDoneArr[k] && isWireReady[gates[k].input1])
                 {
-                    //gateDoneArr[k] = true;
-
                     newOrderedIndices[count] = k;
-
                     count++;
+                    isWireReady[gates[k].output] = true;
                 }
             }
 
             else if(!gateDoneArr[k] && isWireReady[gates[k].input1]
                && isWireReady[gates[k].input2])
             {
-                //gateDoneArr[k] = true;
-
                 newOrderedIndices[count] = k;
-
                 count++;
+                if(gates[k].gateType!=2) {//not a mult gate
+                    isWireReady[gates[k].output] = true;
+                }
             }
+
+
 
         }
 

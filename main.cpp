@@ -261,7 +261,7 @@ int main(int argc, char* argv[])
         Protocol<GF2_8LookupTable> protocol(atoi(argv[2]), atoi(argv[1]), field, argv[3], argv[4], argv[5], argv[6], &p, atoi(argv[8]));
         auto t1 = high_resolution_clock::now();
         totalTime<< "Start Time in Milliseconds = " << chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count()<< endl;;
-        for(int i=0; i<1; i++) {
+        for(int i=0; i<times; i++) {
 
             protocol.run(i);
             cout<<"lookup table"<<endl;
