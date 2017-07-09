@@ -29,7 +29,7 @@ cout<<"num parties = "<<numParties<<endl;
         ips[i] = cf.Value("", ipString);
     }
 
-    int delta = ports[numParties] - ports[0] + 100;
+    int delta = ports[numParties-1] - ports[0] + 200;
 
     //adjust to the new group id
     for (int i = 0; i < numParties; i++) {
