@@ -28,7 +28,7 @@ cout<<"num parties = "<<numParties<<endl;
         ports[i] = stoi(cf.Value("", portString));
         ips[i] = cf.Value("", ipString);
     }
-
+/*
     int delta = ports[numParties-1] - ports[0] + 200;
 
     //adjust to the new group id
@@ -36,6 +36,7 @@ cout<<"num parties = "<<numParties<<endl;
         ports[i] +=delta*groupID;
 
     }
+*/
 
     SocketPartyData me, other;
 
