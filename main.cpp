@@ -135,14 +135,15 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    int times = 5;
-    string outputTimerFileName = string(argv[5]) + "Times" + string(argv[1]) + "ForGroup" + argv[8] + ".csv";
-    ProtocolTimer p(times, outputTimerFileName);
-
     string fieldType(argv[7]);
 
+    int times = 5;
+    string outputTimerFileName = string(argv[5]) + "Times" + string(argv[1]) + "ForGroup" + argv[8] + fieldType + ".csv";
+    ProtocolTimer p(times, outputTimerFileName);
+
+
     ofstream totalTime;
-    string outputTotalTime = string(argv[5]) + "Times" + string(argv[1]) + "ForGroup" + argv[8]+ ".txt";
+    string outputTotalTime = string(argv[5]) + "Times" + string(argv[1]) + "ForGroup" + argv[8] + fieldType + ".txt";
     totalTime.open (outputTotalTime);
 
 
