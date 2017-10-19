@@ -40,14 +40,12 @@ int main(int argc, char* argv[])
     CmdParser parser;
     auto parameters = parser.parseArguments("", argc, argv);
     int times = stoi(parameters["internalIterationsNumber"]);
-
     string fieldType = parameters["fieldType"];
 
     ofstream totalTime;
-    string outputTotalTime = string(argv[5]) + "Times" + string(argv[1]) + "ForGroup" + argv[8]+ ".txt";
+    string outputTotalTime = string(argv[5]) + "Times" + string(argv[1]) + "ForGroup" + argv[8] + fieldType + ".txt";
     totalTime.open (outputTotalTime);
-
-
+    
     if(fieldType.compare("ZpMersenne") == 0)
     {
         ProtocolParty<ZpMersenneIntElement> protocol(argc, argv);
