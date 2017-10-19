@@ -1,7 +1,0 @@
-#ifndef SECRET_SHARING_DEF_H
-#define SECRET_SHARING_DEF_H
-
-
-
-
-#endif //SECRET_SHARING_DEF_H

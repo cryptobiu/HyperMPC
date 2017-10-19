@@ -2,20 +2,18 @@
 #define PROTOCOL_H_
 
 #include <stdlib.h>
-#include "VDM.h"
-#include "HIM.h"
-#include "TGate.h"
-#include "ArithmeticCircuit.h"
+#include <libscapi/include/primitives/Matrix.hpp>
+#include <libscapi/include/circuits/arithmeticCircuit/ArithmeticCircuit.hpp>
 #include <vector>
 #include <iostream>
 #include <fstream>
 #include <chrono>
-#include "Def.h"
 #include "TemplateField.h"
 #include "ProtocolTimer.h"
-#include "MPCCommunication.h"
-#include "../../include/infra/Common.hpp"
+#include <libscapi/include/comm/MPCCommunication.hpp>
+#include <libscapi/include/infra/Common.hpp>
 #include <thread>
+#include <libscapi/include/CryptoInfra/Protocol.hpp>
 
 #define flag_print false
 #define flag_print_timings true
@@ -26,7 +24,7 @@ using namespace std;
 using namespace std::chrono;
 
 template <class FieldType>
-class Protocol {
+class ProtocolParty : public Protocol, public HonestMajority, public MultiParty {
 private:
     /**
      * N - number of parties
@@ -35,9 +33,11 @@ private:
      */
     ProtocolTimer* protocolTimer;
     int currentCirciutLayer = 0;
+    int times; //number of times to run the run function
+    int iteration; //number of the current iteration
     int N, M, T, m_partyId;
     int numOfInputGates, numOfOutputGates;
-    string inputsFile, outputFile, ADDRESS;
+    string inputsFile, outputFile;
     vector<FieldType> beta;
     HIM<FieldType> matrix_for_interpolate;
     HIM<FieldType> matrix_for_t;
@@ -67,8 +67,7 @@ private:
     string s;
 
 public:
-    Protocol(int n, int id,TemplateField<FieldType> *field, string inputsFile, string outputFile, string circuitFile, string address,
-             ProtocolTimer* protocolTimer, int groupID);
+    ProtocolParty(int argc, char* argv []);
     void split(const string &s, char delim, vector<string> &elems);
     vector<string> split(const string &s, char delim);
 
@@ -82,13 +81,36 @@ public:
 
     /**
      * This method runs the protocol:
-     * 1. Initialization Phase
-     * 2. Preparation Phase
-     * 3. Input Phase
-     * 4. Computation Phase
-     * 5. Output Phase
+     * Preparation Phase
+     * Input Phase
+     * Computation Phase
+     * Output Phase
      */
-    void run(int iteration);
+    void run() override;
+
+    bool hasOffline() {
+        return true;
+    }
+
+
+    bool hasOnline() override {
+        return true;
+    }
+
+    /**
+     * This method runs the protocol:
+     * Preparation Phase
+     */
+    void runOffline() override;
+
+    /**
+     * This method runs the protocol:
+     * Input Phase
+     * Computation Phase
+     * Verification Phase
+     * Output Phase
+     */
+    void runOnline() override;
 
     /**
      * This method reads text file and inits a vector of Inputs according to the file.
@@ -254,27 +276,45 @@ public:
      */
     void outputPhase();
 
-    ~Protocol();
+    ~ProtocolParty();
 };
 
 
 template <class FieldType>
-Protocol<FieldType>::Protocol(int n, int id, TemplateField<FieldType> *field, string inputsFile, string outputFile, string circuitFile, string address,
-                              ProtocolTimer* protocolTimer, int groupID)
+ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("PerfectSecureMPC", argc, argv)/*int n, int id, TemplateField<FieldType> *field, string inputsFile, string outputFile, string circuitFile, string address,
+                              ProtocolTimer* protocolTimer, int groupID)*/
 {
-    this->protocolTimer = protocolTimer;
-    this->field = field;
-    ADDRESS = address;
-    //comm = Communication::getInstance(n, id, address);
+
+    string circuitFile = arguments["circuitFile"];
+    this->times = stoi(arguments["internalIterationsNumber"]);
+    string fieldType = arguments["fieldType"];
+    m_partyId = stoi(arguments["partyID"]);
+    int n = stoi(arguments["partiesNumber"]);
+    string outputTimerFileName = circuitFile + "Times" + to_string(m_partyId) + fieldType + ".csv";
+    ProtocolTimer p(times, outputTimerFileName);
+    this->protocolTimer = new ProtocolTimer(times, outputTimerFileName);
+
+    if(fieldType.compare("ZpMersenne") == 0) {
+        field = new TemplateField<FieldType>(2147483647);
+    } else if(fieldType.compare("ZpMersenne61") == 0) {
+        field = new TemplateField<FieldType>(0);
+    } else if(fieldType.compare("GF2_8LookupTable") == 0) {
+        field = new TemplateField<FieldType>(0);
+    } else if(fieldType.compare("GF2E") == 0) {
+        field = new TemplateField<FieldType>(8);
+    } else if(fieldType.compare("Zp") == 0) {
+        field = new TemplateField<FieldType>(2147483647);
+    }
+
     N = n;
     T = n/3 - 1;
-    this->inputsFile = inputsFile;
-    this->outputFile = outputFile;
+    this->inputsFile = arguments["inputFile"];
+    this->outputFile = arguments["outputFile"];
     if(n%3 > 0)
     {
         T++;
     }
-    m_partyId = id;
+
     s = to_string(m_partyId);
     circuit.readCircuit(circuitFile.c_str());
     circuit.reArrangeCircuit();
@@ -284,18 +324,13 @@ Protocol<FieldType>::Protocol(int n, int id, TemplateField<FieldType> *field, st
     myInputs.resize(numOfInputGates);
     shareIndex = 0;//numOfInputGates;
 
-
-    //comm->ConnectionToServer(s);
-
-    //boost::asio::io_service io_service;
-
-    parties = MPCCommunication::setCommunication(io_service, m_partyId-1, N, "Parties.txt", groupID);
+    parties = MPCCommunication::setCommunication(io_service, m_partyId-1, N, "Parties.txt");
 
     string tmp = "init times";
     //cout<<"before sending any data"<<endl;
     byte tmpBytes[20];
     for (int i=0; i<parties.size(); i++){
-        if (parties[i]->getID() < id){
+        if (parties[i]->getID() < m_partyId){
             parties[i]->getChannel()->write(tmp);
             parties[i]->getChannel()->read(tmpBytes, tmp.size());
         } else {
@@ -304,12 +339,10 @@ Protocol<FieldType>::Protocol(int n, int id, TemplateField<FieldType> *field, st
         }
     }
 
-    //cout<<"after sending any data"<<endl;
+    cout<<"after sending any data"<<endl;
 
 
     readMyInputs();
-
-    //cout<<"after read my inputs"<<endl;
 
     auto t1 = high_resolution_clock::now();
     initializationPhase(/*matrix_him, matrix_vand, m*/);
@@ -323,7 +356,7 @@ Protocol<FieldType>::Protocol(int n, int id, TemplateField<FieldType> *field, st
 }
 
 template <class FieldType>
-void Protocol<FieldType>::split(const string &s, char delim, vector<string> &elems) {
+void ProtocolParty<FieldType>::split(const string &s, char delim, vector<string> &elems) {
     stringstream ss;
     ss.str(s);
     string item;
@@ -333,7 +366,7 @@ void Protocol<FieldType>::split(const string &s, char delim, vector<string> &ele
 }
 
 template <class FieldType>
-vector<string> Protocol<FieldType>::split(const string &s, char delim) {
+vector<string> ProtocolParty<FieldType>::split(const string &s, char delim) {
     vector<string> elems;
     split(s, delim, elems);
     return elems;
@@ -355,7 +388,7 @@ vector<string> Protocol<FieldType>::split(const string &s, char delim) {
  *  @param recBufsdiff = the values which received from the protocol.
  */
 template <class FieldType>
-bool Protocol<FieldType>::broadcast(int party_id, vector<byte> myMessage, vector<vector<byte>> &recBufsdiffBytes, HIM<FieldType> &mat)
+bool ProtocolParty<FieldType>::broadcast(int party_id, vector<byte> myMessage, vector<vector<byte>> &recBufsdiffBytes, HIM<FieldType> &mat)
 {
     int no_buckets;
     vector<vector<byte>> sendBufsBytes(N);
@@ -543,7 +576,7 @@ bool Protocol<FieldType>::broadcast(int party_id, vector<byte> myMessage, vector
 }
 
 template <class FieldType>
-void Protocol<FieldType>::readMyInputs()
+void ProtocolParty<FieldType>::readMyInputs()
 {
 
     //cout<<"inputs file" << inputsFile<<endl;
@@ -562,13 +595,32 @@ void Protocol<FieldType>::readMyInputs()
 }
 
 template <class FieldType>
-void Protocol<FieldType>::run(int iteration) {
+void ProtocolParty<FieldType>::run() {
+    for (int i=0; i<times; i++){
+        auto t1start = high_resolution_clock::now();
 
+        iteration = i;
+        runOffline();
+        runOnline();
+
+        auto t2end = high_resolution_clock::now();
+        auto duration = duration_cast<milliseconds>(t2end-t1start).count();
+        protocolTimer->totalTimeArr[iteration] = duration;
+
+        cout << "time in milliseconds for protocol: " << duration << endl;
+    }
+}
+
+/**
+ * This method runs the protocol:
+ * Preparation Phase
+ */
+template <class FieldType>
+void ProtocolParty<FieldType>::runOffline() {
     shareIndex = 0;//numOfInputGates;
 
-    auto t1start = high_resolution_clock::now();
     auto t1 = high_resolution_clock::now();
-   if(RandomSharingForInputs() == false) {
+    if(RandomSharingForInputs() == false) {
         if(flag_print) {
             cout << "cheating!!!" << '\n';}
         return;
@@ -620,17 +672,26 @@ void Protocol<FieldType>::run(int iteration) {
     if(flag_print_timings) {
         cout << "time in milliseconds inputPreparation: " << duration << endl;
     }
+}
 
-
+/**
+ * This method runs the protocol:
+ * Input Phase
+ * Computation Phase
+ * Verification Phase
+ * Output Phase
+ */
+template <class FieldType>
+void ProtocolParty<FieldType>::runOnline() {
     string sss = "";
 
-    t1 = high_resolution_clock::now();
+    auto t1 = high_resolution_clock::now();
 
     inputAdjustment(sss/*, matrix_him*/);
 
-    t2 = high_resolution_clock::now();
+    auto t2 = high_resolution_clock::now();
 
-    duration = duration_cast<milliseconds>(t2-t1).count();
+    auto duration = duration_cast<milliseconds>(t2-t1).count();
     protocolTimer->inputAdjustmentArr[iteration] = duration;
 
     if(flag_print_timings) {
@@ -639,7 +700,7 @@ void Protocol<FieldType>::run(int iteration) {
     if(flag_print) {
         cout << "after Input Adjustment " << '\n'; }
 
-     t1 = high_resolution_clock::now();
+    t1 = high_resolution_clock::now();
 
     computationPhase(m);
 
@@ -664,17 +725,10 @@ void Protocol<FieldType>::run(int iteration) {
     if(flag_print_timings) {
         cout << "time in milliseconds outputPhase: " << duration << endl;
     }
-    auto t2end = high_resolution_clock::now();
-
-    duration = duration_cast<milliseconds>(t2end-t1start).count();
-    protocolTimer->totalTimeArr[iteration] = duration;
-
-    cout << "time in milliseconds for protocol: " << duration << endl;
-
 }
 
 template <class FieldType>
-void Protocol<FieldType>::computationPhase(HIM<FieldType> &m) {
+void ProtocolParty<FieldType>::computationPhase(HIM<FieldType> &m) {
     int count = 0;
     //processRandoms();
 
@@ -702,7 +756,7 @@ void Protocol<FieldType>::computationPhase(HIM<FieldType> &m) {
  * @param diff
  */
 template <class FieldType>
-void Protocol<FieldType>::inputAdjustment(string &diff)
+void ProtocolParty<FieldType>::inputAdjustment(string &diff)
 {
 
     //cout<<"in input adjustment"<<endl;
@@ -822,7 +876,7 @@ void Protocol<FieldType>::inputAdjustment(string &diff)
  * @param alpha
  */
 template <class FieldType>
-void Protocol<FieldType>::initializationPhase()
+void ProtocolParty<FieldType>::initializationPhase()
 {
     beta.resize(1);
     gateValueArr.resize(M);  // the value of the gate (for my input and output gates)
@@ -904,7 +958,7 @@ void Protocol<FieldType>::initializationPhase()
  * @param valBuf
  */
 template <class FieldType>
-void Protocol<FieldType>::publicReconstruction(vector<FieldType> &myShares, int &count, int d, vector<FieldType> &valBuf, HIM<FieldType> &m)
+void ProtocolParty<FieldType>::publicReconstruction(vector<FieldType> &myShares, int &count, int d, vector<FieldType> &valBuf, HIM<FieldType> &m)
 {
     int no_buckets = count / (N-T) + 1;
     if(flag_print) {
@@ -1084,7 +1138,7 @@ void Protocol<FieldType>::publicReconstruction(vector<FieldType> &myShares, int 
 }
 
 template <class FieldType>
-bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<FieldType> &matrix_him*/)
+bool ProtocolParty<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<FieldType> &matrix_him*/)
 {
     vector<vector<byte>> recBufsBytes(N);
     //vector<vector<byte>> recBufs1Bytes(N);
@@ -1341,7 +1395,7 @@ bool Protocol<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<Fi
 }
 
 template <class FieldType>
-bool Protocol<FieldType>::RandomSharingForInputs()
+bool ProtocolParty<FieldType>::RandomSharingForInputs()
 {
     vector<vector<byte>> recBufsBytes(N);
     //vector<vector<byte>> recBufs1Bytes(N);
@@ -1584,7 +1638,7 @@ bool Protocol<FieldType>::RandomSharingForInputs()
  * towards the party giving input
  */
 template <class FieldType>
-bool Protocol<FieldType>::inputPreparation()
+bool ProtocolParty<FieldType>::inputPreparation()
 {
     vector<vector<FieldType>> sendBufsElements(N); // upper bound
     vector<vector<byte>> sendBufsBytes(N);
@@ -1691,7 +1745,7 @@ bool Protocol<FieldType>::inputPreparation()
  * the first d + 1 positions of α and check the remaining positions.
  */
 template <class FieldType>
-bool Protocol<FieldType>::checkConsistency(vector<FieldType>& x, int d)
+bool ProtocolParty<FieldType>::checkConsistency(vector<FieldType>& x, int d)
 {
     if(d == T)
     {
@@ -1767,7 +1821,7 @@ bool Protocol<FieldType>::checkConsistency(vector<FieldType>& x, int d)
 
 // Interpolate polynomial at position Zero
 template <class FieldType>
-FieldType Protocol<FieldType>::interpolate(vector<FieldType> x)
+FieldType ProtocolParty<FieldType>::interpolate(vector<FieldType> x)
 {
     vector<FieldType> y(N); // result of interpolate
     matrix_for_interpolate.MatrixMult(x, y);
@@ -1775,7 +1829,7 @@ FieldType Protocol<FieldType>::interpolate(vector<FieldType> x)
 }
 
 template <class FieldType>
-int Protocol<FieldType>::processNotMult(){
+int ProtocolParty<FieldType>::processNotMult(){
     int count=0;
     for(int k=circuit.getLayers()[currentCirciutLayer]; k < circuit.getLayers()[currentCirciutLayer+1]; k++)
     {
@@ -1826,7 +1880,7 @@ int Protocol<FieldType>::processNotMult(){
  * @return the number of processed gates.
  */
 template <class FieldType>
-int Protocol<FieldType>::processMultiplications(HIM<FieldType> &m)
+int ProtocolParty<FieldType>::processMultiplications(HIM<FieldType> &m)
 {
     int count =0;
     int index = 0;
@@ -1892,7 +1946,7 @@ int Protocol<FieldType>::processMultiplications(HIM<FieldType> &m)
  * @return the number of processed gates.
  */
 template <class FieldType>
-void Protocol<FieldType>::processRandoms()
+void ProtocolParty<FieldType>::processRandoms()
 {
     FieldType r1;
     //vector<string> arr = {};
@@ -1916,7 +1970,7 @@ void Protocol<FieldType>::processRandoms()
  * @param alpha
  */
 template <class FieldType>
-void Protocol<FieldType>::outputPhase()
+void ProtocolParty<FieldType>::outputPhase()
 {
     int count=0;
     vector<FieldType> x1(N); // vector for the shares of my outputs
@@ -1987,7 +2041,7 @@ void Protocol<FieldType>::outputPhase()
 
 
 template <class FieldType>
-void Protocol<FieldType>::roundFunctionSync(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int round) {
+void ProtocolParty<FieldType>::roundFunctionSync(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int round) {
 
     //cout<<"in roundFunctionSync "<< round<< endl;
 
@@ -2007,10 +2061,10 @@ void Protocol<FieldType>::roundFunctionSync(vector<vector<byte>> &sendBufs, vect
     vector<thread> threads(numThreads);
     for (int t=0; t<numThreads; t++) {
         if ((t + 1) * numPartiesForEachThread <= parties.size()) {
-            threads[t] = thread(&Protocol::exchangeData, this, ref(sendBufs), ref(recBufs),
+            threads[t] = thread(&ProtocolParty::exchangeData, this, ref(sendBufs), ref(recBufs),
                                 t * numPartiesForEachThread, (t + 1) * numPartiesForEachThread);
         } else {
-            threads[t] = thread(&Protocol::exchangeData, this, ref(sendBufs), ref(recBufs), t * numPartiesForEachThread, parties.size());
+            threads[t] = thread(&ProtocolParty::exchangeData, this, ref(sendBufs), ref(recBufs), t * numPartiesForEachThread, parties.size());
         }
     }
     for (int t=0; t<numThreads; t++){
@@ -2021,7 +2075,7 @@ void Protocol<FieldType>::roundFunctionSync(vector<vector<byte>> &sendBufs, vect
 
 
 template <class FieldType>
-void Protocol<FieldType>::exchangeData(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int first, int last){
+void ProtocolParty<FieldType>::exchangeData(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int first, int last){
 
 
     //cout<<"in exchangeData";
@@ -2065,7 +2119,7 @@ void Protocol<FieldType>::exchangeData(vector<vector<byte>> &sendBufs, vector<ve
 
 
 template <class FieldType>
-void Protocol<FieldType>::roundFunctionSyncBroadcast(vector<byte> &message, vector<vector<byte>> &recBufs) {
+void ProtocolParty<FieldType>::roundFunctionSyncBroadcast(vector<byte> &message, vector<vector<byte>> &recBufs) {
 
     //cout<<"in roundFunctionSyncBroadcast "<< endl;
 
@@ -2085,10 +2139,10 @@ void Protocol<FieldType>::roundFunctionSyncBroadcast(vector<byte> &message, vect
     vector<thread> threads(numThreads);
     for (int t=0; t<numThreads; t++) {
         if ((t + 1) * numPartiesForEachThread <= parties.size()) {
-            threads[t] = thread(&Protocol::recData, this, ref(message), ref(recBufs),
+            threads[t] = thread(&ProtocolParty::recData, this, ref(message), ref(recBufs),
                                 t * numPartiesForEachThread, (t + 1) * numPartiesForEachThread);
         } else {
-            threads[t] = thread(&Protocol::recData, this, ref(message),  ref(recBufs), t * numPartiesForEachThread, parties.size());
+            threads[t] = thread(&ProtocolParty::recData, this, ref(message),  ref(recBufs), t * numPartiesForEachThread, parties.size());
         }
     }
     for (int t=0; t<numThreads; t++){
@@ -2099,7 +2153,7 @@ void Protocol<FieldType>::roundFunctionSyncBroadcast(vector<byte> &message, vect
 
 
 template <class FieldType>
-void Protocol<FieldType>::recData(vector<byte> &message, vector<vector<byte>> &recBufs, int first, int last){
+void ProtocolParty<FieldType>::recData(vector<byte> &message, vector<vector<byte>> &recBufs, int first, int last){
 
 
     //cout<<"in exchangeData";
@@ -2151,8 +2205,13 @@ void Protocol<FieldType>::recData(vector<byte> &message, vector<vector<byte>> &r
 
 
 template <class FieldType>
-Protocol<FieldType>::~Protocol()
+ProtocolParty<FieldType>::~ProtocolParty()
 {
+    delete field;
+
+    protocolTimer->writeToFile();
+    delete protocolTimer;
+
     io_service.stop();
 }
 

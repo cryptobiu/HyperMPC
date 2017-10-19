@@ -3,8 +3,6 @@
 //
 
 #include "TemplateField.h"
-#include "ZpMersenneLongElement.h"
-#include "ZpMersenneIntElement.h"
 #include "GF2_8LookupTable.h"
 
 
@@ -24,20 +22,6 @@ TemplateField<ZZ_p>::TemplateField(long fieldParam) {
 
     m_ZERO = new ZZ_p(0);
     m_ONE = new ZZ_p(1);
-}
-
-template <>
-TemplateField<ZpMersenneIntElement>::TemplateField(long fieldParam) {
-
-    this->fieldParam = 2147483647;
-    elementSizeInBytes = 4;//round up to the next byte
-    elementSizeInBits = 31;
-
-    auto randomKey = prg.generateKey(128);
-    prg.setKey(randomKey);
-
-    m_ZERO = new ZpMersenneIntElement(0);
-    m_ONE = new ZpMersenneIntElement(1);
 }
 
 
@@ -69,24 +53,6 @@ GF2E TemplateField<GF2E>::GetElement(long b) {
 
 
 template <>
-ZpMersenneIntElement TemplateField<ZpMersenneIntElement>::GetElement(long b) {
-
-
-    if(b == 1)
-    {
-        return *m_ONE;
-    }
-    if(b == 0)
-    {
-        return *m_ZERO;
-    }
-    else{
-        ZpMersenneIntElement element(b);
-        return element;
-    }
-}
-
-template <>
 TemplateField<GF2_8LookupTable>::TemplateField(long fieldParam) {
 
     elementSizeInBytes = 1;//round up to the next byte
@@ -102,62 +68,15 @@ TemplateField<GF2_8LookupTable>::TemplateField(long fieldParam) {
 }
 
 template <>
-TemplateField<ZpMersenneLongElement>::TemplateField(long fieldParam) {
-
-    elementSizeInBytes = 8;//round up to the next byte
-    elementSizeInBits = 61;
-
-    auto randomKey = prg.generateKey(128);
-    prg.setKey(randomKey);
-
-    m_ZERO = new ZpMersenneLongElement(0);
-    m_ONE = new ZpMersenneLongElement(1);
-}
-
-
-template <>
 void TemplateField<GF2_8LookupTable>::elementToBytes(unsigned char* elemenetInBytes, GF2_8LookupTable& element){
 
     memcpy(elemenetInBytes, (byte*)(&element.elem), 1);
 }
 
-
-template <>
-void TemplateField<ZpMersenneLongElement>::elementToBytes(unsigned char* elemenetInBytes, ZpMersenneLongElement& element){
-
-    memcpy(elemenetInBytes, (byte*)(&element.elem), 8);
-}
-
-template <>
-ZpMersenneLongElement TemplateField<ZpMersenneLongElement>::bytesToElement(unsigned char* elemenetInBytes){
-
-    return ZpMersenneLongElement((unsigned long)(*(unsigned long *)elemenetInBytes));
-}
-
-
 template <>
 GF2_8LookupTable TemplateField<GF2_8LookupTable>::bytesToElement(unsigned char* elemenetInBytes){
 
     return GF2_8LookupTable((unsigned int)(*(byte*)elemenetInBytes));
-}
-
-
-template <>
-ZpMersenneLongElement TemplateField<ZpMersenneLongElement>::GetElement(long b) {
-
-
-    if(b == 1)
-    {
-        return *m_ONE;
-    }
-    if(b == 0)
-    {
-        return *m_ZERO;
-    }
-    else{
-        ZpMersenneLongElement element(b);
-        return element;
-    }
 }
 
 
@@ -226,20 +145,6 @@ void TemplateField<GF2E>::elementToBytes(unsigned char* elemenetInBytes, GF2E& e
 
     BytesFromGF2X(elemenetInBytes,rep(element),fieldParam/8);
 }
-
-template <>
-void TemplateField<ZpMersenneIntElement>::elementToBytes(unsigned char* elemenetInBytes, ZpMersenneIntElement& element){
-
-    memcpy(elemenetInBytes, (byte*)(&element.elem), 4);
-}
-
-
-template <>
-ZpMersenneIntElement TemplateField<ZpMersenneIntElement>::bytesToElement(unsigned char* elemenetInBytes){
-
-    return ZpMersenneIntElement((unsigned int)(*(unsigned int *)elemenetInBytes));
-}
-
 
 
 template <>
