@@ -290,6 +290,7 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
     string fieldType = arguments["fieldType"];
     m_partyId = stoi(arguments["partyID"]);
     int n = stoi(arguments["partiesNumber"]);
+    string partiesFileName = arguments["partiesFile"];
     string outputTimerFileName = circuitFile + "Times" + to_string(m_partyId) + fieldType + ".csv";
     ProtocolTimer p(times, outputTimerFileName);
     this->protocolTimer = new ProtocolTimer(times, outputTimerFileName);
@@ -324,7 +325,7 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
     myInputs.resize(numOfInputGates);
     shareIndex = 0;//numOfInputGates;
 
-    parties = MPCCommunication::setCommunication(io_service, m_partyId-1, N, "Parties.txt");
+    parties = MPCCommunication::setCommunication(io_service, m_partyId-1, N, partiesFileName);
 
     string tmp = "init times";
     //cout<<"before sending any data"<<endl;
