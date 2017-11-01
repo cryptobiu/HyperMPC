@@ -325,7 +325,7 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
     myInputs.resize(numOfInputGates);
     shareIndex = 0;//numOfInputGates;
 
-    parties = MPCCommunication::setCommunication(io_service, m_partyId-1, N, partiesFileName);
+    parties = MPCCommunication::setCommunication(io_service, m_partyId, N, partiesFileName);
 
     string tmp = "init times";
     //cout<<"before sending any data"<<endl;
