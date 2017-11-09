@@ -12,8 +12,9 @@
 #include "ProtocolTimer.h"
 #include <libscapi/include/comm/MPCCommunication.hpp>
 #include <libscapi/include/infra/Common.hpp>
+#include <libscapi/include/infra/Measurement.hpp>
 #include <thread>
-#include <libscapi/include/CryptoInfra/Protocol.hpp>
+#include <libscapi/include/cryptoInfra/Protocol.hpp>
 
 #define flag_print false
 #define flag_print_timings true
@@ -35,6 +36,8 @@ private:
     int currentCirciutLayer = 0;
     int times; //number of times to run the run function
     int iteration; //number of the current iteration
+
+    Measurement* timer;
     int N, M, T, m_partyId;
     int numOfInputGates, numOfOutputGates;
     string inputsFile, outputFile;
@@ -315,6 +318,9 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
     {
         T++;
     }
+
+    vector<string> subTaskNames{"Offline", "PreparationForInputPhase", "PreparationPhase", "inputPreparation", "Online", "InputAdjustment", "ComputationPhase", "OutputPhase"};
+    timer = new Measurement("SecretSharing", m_partyId, N, times, subTaskNames);
 
     s = to_string(m_partyId);
     circuit.readCircuit(circuitFile.c_str());
@@ -597,13 +603,14 @@ void ProtocolParty<FieldType>::readMyInputs()
 
 template <class FieldType>
 void ProtocolParty<FieldType>::run() {
-    for (int i=0; i<times; i++){
+    for (iteration=0; iteration<times; iteration++){
         auto t1start = high_resolution_clock::now();
-
-        iteration = i;
+        timer->startSubTask();
         runOffline();
+        timer->endSubTask(0, iteration);
+        timer->startSubTask();
         runOnline();
-
+        timer->endSubTask(4, iteration);
         auto t2end = high_resolution_clock::now();
         auto duration = duration_cast<milliseconds>(t2end-t1start).count();
         protocolTimer->totalTimeArr[iteration] = duration;
@@ -621,6 +628,7 @@ void ProtocolParty<FieldType>::runOffline() {
     shareIndex = 0;//numOfInputGates;
 
     auto t1 = high_resolution_clock::now();
+    timer->startSubTask();
     if(RandomSharingForInputs() == false) {
         if(flag_print) {
             cout << "cheating!!!" << '\n';}
@@ -631,6 +639,7 @@ void ProtocolParty<FieldType>::runOffline() {
             cout << "no cheating!!!" << '\n' << "finish preparationForInputs Phase" << '\n';}
     }
 
+    timer->endSubTask(1, iteration);
     auto t2 = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(t2-t1).count();
     if(flag_print_timings) {
@@ -638,6 +647,7 @@ void ProtocolParty<FieldType>::runOffline() {
     }
     protocolTimer->preparationForInputsPhaseArr[iteration] =duration;
     t1 = high_resolution_clock::now();
+    timer->startSubTask();
     if(preparationPhase() == false) {
         if(flag_print) {
             cout << "cheating!!!" << '\n';}
@@ -647,7 +657,7 @@ void ProtocolParty<FieldType>::runOffline() {
         if(flag_print) {
             cout << "no cheating!!!" << '\n' << "finish Preparation Phase" << '\n';}
     }
-
+    timer->endSubTask(2, iteration);
     t2 = high_resolution_clock::now();
     duration = duration_cast<milliseconds>(t2-t1).count();
     if(flag_print_timings) {
@@ -656,6 +666,7 @@ void ProtocolParty<FieldType>::runOffline() {
     protocolTimer->preparationPhaseArr[iteration] =duration;
 
     t1 = high_resolution_clock::now();
+    timer->startSubTask();
     if(inputPreparation() == false) {
         cout << "cheating!!!" << '\n';
         if(flag_print) {
@@ -666,7 +677,7 @@ void ProtocolParty<FieldType>::runOffline() {
         if(flag_print) {
             cout << "no cheating!!!" << '\n' << "finish Input Preparation" << '\n';}
     }
-
+    timer->endSubTask(3, iteration);
     t2 = high_resolution_clock::now();
     duration = duration_cast<milliseconds>(t2-t1).count();
     protocolTimer->inputPreparationArr[iteration] = duration;
@@ -687,9 +698,9 @@ void ProtocolParty<FieldType>::runOnline() {
     string sss = "";
 
     auto t1 = high_resolution_clock::now();
-
+    timer->startSubTask();
     inputAdjustment(sss/*, matrix_him*/);
-
+    timer->endSubTask(5, iteration);
     auto t2 = high_resolution_clock::now();
 
     auto duration = duration_cast<milliseconds>(t2-t1).count();
@@ -702,9 +713,9 @@ void ProtocolParty<FieldType>::runOnline() {
         cout << "after Input Adjustment " << '\n'; }
 
     t1 = high_resolution_clock::now();
-
+    timer->startSubTask();
     computationPhase(m);
-
+    timer->endSubTask(6, iteration);
     t2 = high_resolution_clock::now();
 
     duration = duration_cast<milliseconds>(t2-t1).count();
@@ -715,9 +726,9 @@ void ProtocolParty<FieldType>::runOnline() {
     }
 
     t1 = high_resolution_clock::now();
-
+    timer->startSubTask();
     outputPhase();
-
+    timer->endSubTask(7, iteration);
     t2 = high_resolution_clock::now();
 
     duration = duration_cast<milliseconds>(t2-t1).count();
@@ -2214,6 +2225,8 @@ ProtocolParty<FieldType>::~ProtocolParty()
     delete protocolTimer;
 
     io_service.stop();
+
+    delete timer;
 }
 
 

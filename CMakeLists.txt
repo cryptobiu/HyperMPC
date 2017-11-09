@@ -23,4 +23,5 @@ TARGET_LINK_LIBRARIES(Secret_Sharing $ENV{HOME}/ntl-9.10.0/src/ntl.a
         $ENV{HOME}/libscapi/libscapi.a gmp
         OTExtensionBristol
         $ENV{HOME}/libscapi/install/lib/libsimpleot.a
-        boost_system boost_thread pthread crypto dl ssl z)
+        $ENV{HOME}/libscapi/install/lib/libjsoncpp.a
+        boost_system boost_thread pthread crypto dl ssl z stdc++fs)
