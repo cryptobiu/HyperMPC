@@ -42,24 +42,17 @@ int main(int argc, char* argv[])
     int times = stoi(parameters["internalIterationsNumber"]);
     string fieldType = parameters["fieldType"];
 
-    ofstream totalTime;
-    string outputTotalTime = string(argv[5]) + "Times" + string(argv[1]) + "ForGroup" + argv[8] + fieldType + ".txt";
-    totalTime.open (outputTotalTime);
     
     if(fieldType.compare("ZpMersenne") == 0)
     {
         ProtocolParty<ZpMersenneIntElement> protocol(argc, argv);
 
         auto t1 = high_resolution_clock::now();
-
-        totalTime<< "Start Time in Milliseconds = " << chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count()<< endl;;
         protocol.run();
 
         auto t2 = high_resolution_clock::now();
 
         auto duration = duration_cast<milliseconds>(t2-t1).count();
-        totalTime<< "End Time in Milliseconds =" << chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count()<< endl;;
-        totalTime <<"Duration : "<<duration<<endl;
         cout << "time in milliseconds for " << times << " runs: " << duration << endl;
 
         cout << "end main" << '\n';
@@ -70,13 +63,10 @@ int main(int argc, char* argv[])
 
         ProtocolParty<ZpMersenneLongElement> protocol(argc, argv);
         auto t1 = high_resolution_clock::now();
-        totalTime<< "Start Time in Milliseconds = " << chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count()<< endl;;
         protocol.run();
 
         auto t2 = high_resolution_clock::now();
         auto duration = duration_cast<milliseconds>(t2-t1).count();
-        totalTime<< "End Time in Milliseconds =" << chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count()<< endl;;
-        totalTime <<"Duration : "<<duration<<endl;
 
         cout << "time in milliseconds for " << times << " runs: " << duration << endl;
 
@@ -89,15 +79,13 @@ int main(int argc, char* argv[])
 
         ProtocolParty<GF2_8LookupTable> protocol(argc, argv);
         auto t1 = high_resolution_clock::now();
-        totalTime<< "Start Time in Milliseconds = " << chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count()<< endl;;
 
         protocol.run();
 
         auto t2 = high_resolution_clock::now();
 
         auto duration = duration_cast<milliseconds>(t2-t1).count();
-        totalTime<< "End Time in Milliseconds =" << chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count()<< endl;;
-        totalTime <<"Duration : "<<duration<<endl;
+
         cout << "time in milliseconds for " << times << " runs: " << duration << endl;
 
         cout << "end main" << '\n';
@@ -108,15 +96,13 @@ int main(int argc, char* argv[])
     {
         ProtocolParty<GF2E> protocol(argc, argv);
         auto t1 = high_resolution_clock::now();
-        totalTime<< "Start Time in Milliseconds = " << chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count()<< endl;;
 
         protocol.run();
 
         auto t2 = high_resolution_clock::now();
 
         auto duration = duration_cast<milliseconds>(t2-t1).count();
-        totalTime<< "End Time in Milliseconds =" << chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count()<< endl;;
-        totalTime <<"Duration : "<<duration<<endl;
+
         cout << "time in milliseconds for " << times << " runs: " << duration << endl;
 
         cout << "end main" << '\n';
@@ -127,21 +113,28 @@ int main(int argc, char* argv[])
         ProtocolParty<ZZ_p> protocol(argc, argv);
 
         auto t1 = high_resolution_clock::now();
-        totalTime<< "Start Time in Milliseconds = " << chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count()<< endl;;
 
         protocol.run();
 
         auto t2 = high_resolution_clock::now();
 
         auto duration = duration_cast<milliseconds>(t2-t1).count();
-        totalTime<< "End Time in Milliseconds =" << chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count()<< endl;;
-        totalTime <<"Duration : "<<duration<<endl;
+
         cout << "time in milliseconds for " << times << " runs: " << duration << endl;
 
         cout << "end main" << '\n';
 
     }
+    else
+    {
+        cout << "Wrong field type. The options are:\n"
+                "1. ZpMersenne\n"
+                "2. ZpMersenne61\n"
+                "3. GF2_8LookupTable\n"
+                "4. GF2E\n"
+                "5. Zp\n";
+        exit(-1);
+    }
 
-    totalTime.close();
     return 0;
 }

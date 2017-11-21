@@ -9,7 +9,6 @@
 #include <fstream>
 #include <chrono>
 #include "TemplateField.h"
-#include "ProtocolTimer.h"
 #include <libscapi/include/comm/MPCCommunication.hpp>
 #include <libscapi/include/infra/Common.hpp>
 #include <libscapi/include/infra/Measurement.hpp>
@@ -18,7 +17,7 @@
 
 #define flag_print false
 #define flag_print_timings true
-#define flag_print_output true
+#define flag_print_output false
 
 
 using namespace std;
@@ -32,7 +31,6 @@ private:
      * M - number of gates
      * T - number of malicious
      */
-    ProtocolTimer* protocolTimer;
     int currentCirciutLayer = 0;
     int times; //number of times to run the run function
     int iteration; //number of the current iteration
@@ -284,8 +282,7 @@ public:
 
 
 template <class FieldType>
-ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("PerfectSecureMPC", argc, argv)/*int n, int id, TemplateField<FieldType> *field, string inputsFile, string outputFile, string circuitFile, string address,
-                              ProtocolTimer* protocolTimer, int groupID)*/
+ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("PerfectSecureMPC", argc, argv)
 {
 
     string circuitFile = arguments["circuitFile"];
@@ -294,9 +291,6 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
     m_partyId = stoi(arguments["partyID"]);
     int n = stoi(arguments["partiesNumber"]);
     string partiesFileName = arguments["partiesFile"];
-    string outputTimerFileName = circuitFile + "Times" + to_string(m_partyId) + fieldType + ".csv";
-    ProtocolTimer p(times, outputTimerFileName);
-    this->protocolTimer = new ProtocolTimer(times, outputTimerFileName);
 
     if(fieldType.compare("ZpMersenne") == 0) {
         field = new TemplateField<FieldType>(2147483647);
@@ -345,9 +339,6 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
             parties[i]->getChannel()->write(tmp);
         }
     }
-
-    cout<<"after sending any data"<<endl;
-
 
     readMyInputs();
 
@@ -605,15 +596,14 @@ template <class FieldType>
 void ProtocolParty<FieldType>::run() {
     for (iteration=0; iteration<times; iteration++){
         auto t1start = high_resolution_clock::now();
-        timer->startSubTask();
+        timer->startSubTask(0, iteration);
         runOffline();
         timer->endSubTask(0, iteration);
-        timer->startSubTask();
+        timer->startSubTask(4, iteration);
         runOnline();
         timer->endSubTask(4, iteration);
         auto t2end = high_resolution_clock::now();
         auto duration = duration_cast<milliseconds>(t2end-t1start).count();
-        protocolTimer->totalTimeArr[iteration] = duration;
 
         cout << "time in milliseconds for protocol: " << duration << endl;
     }
@@ -628,7 +618,7 @@ void ProtocolParty<FieldType>::runOffline() {
     shareIndex = 0;//numOfInputGates;
 
     auto t1 = high_resolution_clock::now();
-    timer->startSubTask();
+    timer->startSubTask(1, iteration);
     if(RandomSharingForInputs() == false) {
         if(flag_print) {
             cout << "cheating!!!" << '\n';}
@@ -645,9 +635,8 @@ void ProtocolParty<FieldType>::runOffline() {
     if(flag_print_timings) {
         cout << "time in milliseconds preparationForInputsPhase: " << duration << endl;
     }
-    protocolTimer->preparationForInputsPhaseArr[iteration] =duration;
     t1 = high_resolution_clock::now();
-    timer->startSubTask();
+    timer->startSubTask(2, iteration);
     if(preparationPhase() == false) {
         if(flag_print) {
             cout << "cheating!!!" << '\n';}
@@ -663,10 +652,9 @@ void ProtocolParty<FieldType>::runOffline() {
     if(flag_print_timings) {
         cout << "time in milliseconds preparationPhase: " << duration << endl;
     }
-    protocolTimer->preparationPhaseArr[iteration] =duration;
 
     t1 = high_resolution_clock::now();
-    timer->startSubTask();
+    timer->startSubTask(3, iteration);
     if(inputPreparation() == false) {
         cout << "cheating!!!" << '\n';
         if(flag_print) {
@@ -680,7 +668,6 @@ void ProtocolParty<FieldType>::runOffline() {
     timer->endSubTask(3, iteration);
     t2 = high_resolution_clock::now();
     duration = duration_cast<milliseconds>(t2-t1).count();
-    protocolTimer->inputPreparationArr[iteration] = duration;
     if(flag_print_timings) {
         cout << "time in milliseconds inputPreparation: " << duration << endl;
     }
@@ -698,13 +685,12 @@ void ProtocolParty<FieldType>::runOnline() {
     string sss = "";
 
     auto t1 = high_resolution_clock::now();
-    timer->startSubTask();
+    timer->startSubTask(5, iteration);
     inputAdjustment(sss/*, matrix_him*/);
     timer->endSubTask(5, iteration);
     auto t2 = high_resolution_clock::now();
 
     auto duration = duration_cast<milliseconds>(t2-t1).count();
-    protocolTimer->inputAdjustmentArr[iteration] = duration;
 
     if(flag_print_timings) {
         cout << "time in milliseconds inputAdjustment: " << duration << endl;
@@ -713,26 +699,24 @@ void ProtocolParty<FieldType>::runOnline() {
         cout << "after Input Adjustment " << '\n'; }
 
     t1 = high_resolution_clock::now();
-    timer->startSubTask();
+    timer->startSubTask(6, iteration);
     computationPhase(m);
     timer->endSubTask(6, iteration);
     t2 = high_resolution_clock::now();
 
     duration = duration_cast<milliseconds>(t2-t1).count();
-    protocolTimer->computationPhaseArr[iteration] = duration;
 
     if(flag_print_timings) {
         cout << "time in milliseconds computationPhase: " << duration << endl;
     }
 
     t1 = high_resolution_clock::now();
-    timer->startSubTask();
+    timer->startSubTask(7, iteration);
     outputPhase();
     timer->endSubTask(7, iteration);
     t2 = high_resolution_clock::now();
 
     duration = duration_cast<milliseconds>(t2-t1).count();
-    protocolTimer->outputPhaseArr[iteration] = duration;
 
     if(flag_print_timings) {
         cout << "time in milliseconds outputPhase: " << duration << endl;
@@ -1589,21 +1573,14 @@ bool ProtocolParty<FieldType>::RandomSharingForInputs()
     }
 
 
-    if(flag_print) {
-        cout << "before round" << endl;}
-    //comm->roundfunctionI(sendBufs1Bytes, recBufsBytes,5);
-
+    if(flag_print)
+        cout << "before round" << endl;
 
     t3 = high_resolution_clock::now();
-    //comm->roundfunctionI(sendBufsBytes, recBufsBytes,4);
     roundFunctionSync(sendBufsBytes, recBufsBytes,5);
     t4 = high_resolution_clock::now();
     duration2 = duration_cast<milliseconds>( t4 - t3 ).count();
-    //cout << "roundfunction 5 took : " <<duration2<<" ms"<<endl;
 
-
-    cout << "after roundfunction 5 " << endl;
-    //cout<<"after round function 5"<<endl;
     if(flag_print) {
         cout << "after round" << endl;}
     int count = no_buckets * (2*T) / N; // nr of sharings *I* have to check
@@ -1630,8 +1607,6 @@ bool ProtocolParty<FieldType>::RandomSharingForInputs()
             x_until_d[i] = *(field->GetZero());
         }
         if(flag_print) {
-
-            //  cout <<"k "<<k<< "tinterpolate(x1).toString()  " << tinterpolate(x_until_d).toString() << endl;
             cout << "k " << k << "interpolate(x1).toString()  " << field->elementToString(interpolate(x1)) << endl;
         }
         // Check that x1 is t-consistent and x2 is 2t-consistent and secret is the same
@@ -2205,33 +2180,13 @@ void ProtocolParty<FieldType>::recData(vector<byte> &message, vector<vector<byte
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
 template <class FieldType>
 ProtocolParty<FieldType>::~ProtocolParty()
 {
     delete field;
-
-    protocolTimer->writeToFile();
-    delete protocolTimer;
-
     io_service.stop();
-
     delete timer;
 }
-
-
-
-
 
 
 #endif /* PROTOCOL_H_ */
