@@ -285,12 +285,12 @@ template <class FieldType>
 ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("PerfectSecureMPC", argc, argv)
 {
 
-    string circuitFile = arguments["circuitFile"];
-    this->times = stoi(arguments["internalIterationsNumber"]);
-    string fieldType = arguments["fieldType"];
-    m_partyId = stoi(arguments["partyID"]);
-    int n = stoi(arguments["partiesNumber"]);
-    string partiesFileName = arguments["partiesFile"];
+    string circuitFile = this->getParser().getValueByKey(arguments, "circuitFile");
+    this->times = stoi(this->getParser().getValueByKey(arguments, "internalIterationsNumber"));
+    string fieldType = this->getParser().getValueByKey(arguments, "fieldType");
+    m_partyId = stoi(this->getParser().getValueByKey(arguments, "partyID"));
+    int n = stoi(this->getParser().getValueByKey(arguments, "partiesNumber"));
+    string partiesFileName = this->getParser().getValueByKey(arguments, "partiesFile");
 
     if(fieldType.compare("ZpMersenne") == 0) {
         field = new TemplateField<FieldType>(2147483647);
@@ -306,15 +306,16 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
 
     N = n;
     T = n/3 - 1;
-    this->inputsFile = arguments["inputFile"];
-    this->outputFile = arguments["outputFile"];
+    this->inputsFile = this->getParser().getValueByKey(arguments, "inputFile");
+    this->outputFile = this->getParser().getValueByKey(arguments, "outputFile");
     if(n%3 > 0)
     {
         T++;
     }
 
-    vector<string> subTaskNames{"Offline", "PreparationForInputPhase", "PreparationPhase", "inputPreparation", "Online", "InputAdjustment", "ComputationPhase", "OutputPhase"};
-    timer = new Measurement("SecretSharing", m_partyId, N, times, subTaskNames);
+    vector<string> subTaskNames{"Offline", "PreparationForInputPhase", "PreparationPhase", "inputPreparation", "Online",
+                                "InputAdjustment", "ComputationPhase", "OutputPhase"};
+    timer = new Measurement(*this, subTaskNames);
 
     s = to_string(m_partyId);
     circuit.readCircuit(circuitFile.c_str());
@@ -596,12 +597,12 @@ template <class FieldType>
 void ProtocolParty<FieldType>::run() {
     for (iteration=0; iteration<times; iteration++){
         auto t1start = high_resolution_clock::now();
-        timer->startSubTask(0, iteration);
+        timer->startSubTask("Offline", iteration);
         runOffline();
-        timer->endSubTask(0, iteration);
-        timer->startSubTask(4, iteration);
+        timer->endSubTask("Offline", iteration);
+        timer->startSubTask("Online", iteration);
         runOnline();
-        timer->endSubTask(4, iteration);
+        timer->endSubTask("Online", iteration);
         auto t2end = high_resolution_clock::now();
         auto duration = duration_cast<milliseconds>(t2end-t1start).count();
 
@@ -618,7 +619,7 @@ void ProtocolParty<FieldType>::runOffline() {
     shareIndex = 0;//numOfInputGates;
 
     auto t1 = high_resolution_clock::now();
-    timer->startSubTask(1, iteration);
+    timer->startSubTask("PreparationForInputPhase", iteration);
     if(RandomSharingForInputs() == false) {
         if(flag_print) {
             cout << "cheating!!!" << '\n';}
@@ -629,14 +630,14 @@ void ProtocolParty<FieldType>::runOffline() {
             cout << "no cheating!!!" << '\n' << "finish preparationForInputs Phase" << '\n';}
     }
 
-    timer->endSubTask(1, iteration);
+    timer->endSubTask("PreparationForInputPhase", iteration);
     auto t2 = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(t2-t1).count();
     if(flag_print_timings) {
         cout << "time in milliseconds preparationForInputsPhase: " << duration << endl;
     }
     t1 = high_resolution_clock::now();
-    timer->startSubTask(2, iteration);
+    timer->startSubTask("PreparationPhase", iteration);
     if(preparationPhase() == false) {
         if(flag_print) {
             cout << "cheating!!!" << '\n';}
@@ -646,7 +647,7 @@ void ProtocolParty<FieldType>::runOffline() {
         if(flag_print) {
             cout << "no cheating!!!" << '\n' << "finish Preparation Phase" << '\n';}
     }
-    timer->endSubTask(2, iteration);
+    timer->endSubTask("PreparationPhase", iteration);
     t2 = high_resolution_clock::now();
     duration = duration_cast<milliseconds>(t2-t1).count();
     if(flag_print_timings) {
@@ -654,7 +655,7 @@ void ProtocolParty<FieldType>::runOffline() {
     }
 
     t1 = high_resolution_clock::now();
-    timer->startSubTask(3, iteration);
+    timer->startSubTask("inputPreparation", iteration);
     if(inputPreparation() == false) {
         cout << "cheating!!!" << '\n';
         if(flag_print) {
@@ -665,7 +666,7 @@ void ProtocolParty<FieldType>::runOffline() {
         if(flag_print) {
             cout << "no cheating!!!" << '\n' << "finish Input Preparation" << '\n';}
     }
-    timer->endSubTask(3, iteration);
+    timer->endSubTask("inputPreparation", iteration);
     t2 = high_resolution_clock::now();
     duration = duration_cast<milliseconds>(t2-t1).count();
     if(flag_print_timings) {
@@ -685,9 +686,9 @@ void ProtocolParty<FieldType>::runOnline() {
     string sss = "";
 
     auto t1 = high_resolution_clock::now();
-    timer->startSubTask(5, iteration);
+    timer->startSubTask("InputAdjustment", iteration);
     inputAdjustment(sss/*, matrix_him*/);
-    timer->endSubTask(5, iteration);
+    timer->endSubTask("InputAdjustment", iteration);
     auto t2 = high_resolution_clock::now();
 
     auto duration = duration_cast<milliseconds>(t2-t1).count();
@@ -699,9 +700,9 @@ void ProtocolParty<FieldType>::runOnline() {
         cout << "after Input Adjustment " << '\n'; }
 
     t1 = high_resolution_clock::now();
-    timer->startSubTask(6, iteration);
+    timer->startSubTask("ComputationPhase", iteration);
     computationPhase(m);
-    timer->endSubTask(6, iteration);
+    timer->endSubTask("ComputationPhase", iteration);
     t2 = high_resolution_clock::now();
 
     duration = duration_cast<milliseconds>(t2-t1).count();
@@ -711,9 +712,9 @@ void ProtocolParty<FieldType>::runOnline() {
     }
 
     t1 = high_resolution_clock::now();
-    timer->startSubTask(7, iteration);
+    timer->startSubTask("OutputPhase", iteration);
     outputPhase();
-    timer->endSubTask(7, iteration);
+    timer->endSubTask("OutputPhase", iteration);
     t2 = high_resolution_clock::now();
 
     duration = duration_cast<milliseconds>(t2-t1).count();

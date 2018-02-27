@@ -17,5 +17,4 @@ add_executable(Secret_Sharing ${SOURCE_FILES})
 
 TARGET_LINK_LIBRARIES(Secret_Sharing $ENV{HOME}/ntl-9.10.0/src/ntl.a
         $ENV{HOME}/libscapi/libscapi.a gmp
-        OTExtensionBristol libsimpleot.a libjsoncpp.a
         libboost_system.a libboost_thread.a pthread crypto dl ssl z)
