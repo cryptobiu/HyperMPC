@@ -9,6 +9,7 @@
 #include <fstream>
 #include <chrono>
 #include "TemplateField.h"
+#include "DDSCommunicator.hpp"
 #include <libscapi/include/comm/MPCCommunication.hpp>
 #include <libscapi/include/infra/Common.hpp>
 #include <libscapi/include/infra/Measurement.hpp>
@@ -52,6 +53,7 @@ private:
     //Communication* comm;
     boost::asio::io_service io_service;
     vector<shared_ptr<ProtocolPartyData>>  parties;
+    DDSCommunicator* myNewChannel;
 
     ArithmeticCircuit circuit;
     vector<FieldType> gateValueArr; // the value of the gate (for my input and output gates)
@@ -315,7 +317,7 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
 
     vector<string> subTaskNames{"Offline", "PreparationForInputPhase", "PreparationPhase", "inputPreparation", "Online",
                                 "InputAdjustment", "ComputationPhase", "OutputPhase"};
-    timer = new Measurement(*this, subTaskNames);
+    //timer = new Measurement(*this, subTaskNames);
 
     s = to_string(m_partyId);
     circuit.readCircuit(circuitFile.c_str());
@@ -326,7 +328,8 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
     myInputs.resize(numOfInputGates);
     shareIndex = 0;//numOfInputGates;
 
-    parties = MPCCommunication::setCommunication(io_service, m_partyId, N, partiesFileName);
+//    parties = MPCCommunication::setCommunication(io_service, m_partyId, N, partiesFileName);
+    myNewChannel = new DDSCommunicator(m_partyId, N, partiesFileName);
 
     string tmp = "init times";
     //cout<<"before sending any data"<<endl;

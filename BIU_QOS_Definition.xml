@@ -1,0 +1,53 @@
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="/home/liork/rti_connext_dds-5.3.0/resource/schema/rti_dds_qos_profiles.xsd"
+	version="5.3.0">
+
+	<qos_library name="BIU_Library">
+		<qos_profile name="BIU_QOS_Profile"
+			base_name="BuiltinQosLibExp::Generic.KeepLastReliable.LargeData"
+			is_default_qos="true">
+			<datawriter_qos>
+				<publication_name>
+					<name>BIUDataWriter</name>
+				</publication_name>
+				<history>
+					<kind>KEEP_LAST_HISTORY_QOS</kind>
+					<depth>1000</depth>
+				</history>
+			</datawriter_qos>
+			<datareader_qos>
+				<subscription_name>
+					<name>BIUDataReader</name>
+				</subscription_name>
+				<history>
+					<kind>KEEP_LAST_HISTORY_QOS</kind>
+					<depth>1000</depth>
+				</history>
+			</datareader_qos>
+			<participant_qos>
+				<transport_builtin>
+					<mask>UDPv4</mask>
+				</transport_builtin>
+				<participant_name>
+					<name>Secret_Sharing_Protocol</name>
+					<role_name></role_name>
+				</participant_name>
+				<discovery_config>
+					<max_liveliness_loss_detection_period>
+						<nanosec>0</nanosec>
+						<sec>1</sec>
+					</max_liveliness_loss_detection_period>
+					<participant_liveliness_lease_duration>
+						<nanosec>0</nanosec>
+						<sec>3</sec>
+					</participant_liveliness_lease_duration>
+					<participant_liveliness_assert_period>
+						<nanosec>0</nanosec>
+						<sec>1</sec>
+					</participant_liveliness_assert_period>
+				</discovery_config>
+			</participant_qos>
+		</qos_profile>
+
+	</qos_library>
+</dds>
