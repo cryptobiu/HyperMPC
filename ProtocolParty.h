@@ -15,6 +15,9 @@
 #include <libscapi/include/infra/Measurement.hpp>
 #include <thread>
 #include <libscapi/include/cryptoInfra/Protocol.hpp>
+#include <map>
+#include <dds/pub/ddspub.hpp>
+#include <dds/pub/DataWriter.hpp>
 
 #define flag_print false
 #define flag_print_timings true
@@ -23,6 +26,7 @@
 
 using namespace std;
 using namespace std::chrono;
+using namespace rti::core;
 
 template <class FieldType>
 class ProtocolParty : public Protocol, public HonestMajority, public MultiParty {
@@ -40,7 +44,7 @@ private:
     int N, M, T, m_partyId;
     int numOfInputGates, numOfOutputGates;
     string inputsFile, outputFile;
-    vector<FieldType> beta;
+    std::vector<FieldType> beta;
     HIM<FieldType> matrix_for_interpolate;
     HIM<FieldType> matrix_for_t;
     HIM<FieldType> matrix_for_2t;
@@ -52,33 +56,33 @@ private:
 
     //Communication* comm;
     boost::asio::io_service io_service;
-    vector<shared_ptr<ProtocolPartyData>>  parties;
+    std::vector<shared_ptr<ProtocolPartyData>>  parties;
     DDSCommunicator* myNewChannel;
 
     ArithmeticCircuit circuit;
-    vector<FieldType> gateValueArr; // the value of the gate (for my input and output gates)
-    vector<FieldType> gateShareArr; // my share of the gate (for all gates)
-    vector<FieldType> alpha; // N distinct non-zero field elements
+    std::vector<FieldType> gateValueArr; // the value of the gate (for my input and output gates)
+    std::vector<FieldType> gateShareArr; // my share of the gate (for all gates)
+    std::vector<FieldType> alpha; // N distinct non-zero field elements
 
-    vector<FieldType> sharingBufTElements; // prepared T-sharings (my shares)
-    vector<FieldType> sharingBuf2TElements; // prepared 2T-sharings (my shares)
-    vector<FieldType> sharingBufInputsTElements; // prepared T-sharings (my shares)
+    std::vector<FieldType> sharingBufTElements; // prepared T-sharings (my shares)
+    std::vector<FieldType> sharingBuf2TElements; // prepared 2T-sharings (my shares)
+    std::vector<FieldType> sharingBufInputsTElements; // prepared T-sharings (my shares)
     int shareIndex;
 
 
-    vector<int> myInputs;
+    std::vector<int> myInputs;
     string s;
 
 public:
     ProtocolParty(int argc, char* argv []);
-    void split(const string &s, char delim, vector<string> &elems);
-    vector<string> split(const string &s, char delim);
+    void split(const string &s, char delim, std::vector<string> &elems);
+    std::vector<string> split(const string &s, char delim);
 
 
-    void roundFunctionSync(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int round);
-    void exchangeData(vector<vector<byte>> &sendBufs,vector<vector<byte>> &recBufs, int first, int last);
-    void roundFunctionSyncBroadcast(vector<byte> &message, vector<vector<byte>> &recBufs);
-    void recData(vector<byte> &message, vector<vector<byte>> &recBufs, int first, int last);
+    void roundFunctionSync(std::vector<std::vector<byte>> &sendBufs, std::vector<std::vector<byte>> &recBufs, int round);
+    void exchangeData(std::vector<std::vector<byte>> &sendBufs, std::vector<std::vector<byte>> &recBufs, int first, int last);
+    void roundFunctionSyncBroadcast(std::vector<byte> &message, std::vector<std::vector<byte>> &recBufs);
+    void recData(std::vector<byte> &message, std::vector<std::vector<byte>> &recBufs, int first, int last);
 
 
 
@@ -179,7 +183,7 @@ public:
      * 3. ∀j,k: Pj sends yk to Pk.
      * 4. ∀k: Pk checks whether all received values {yk(j)}j are equal. If so, be happy, otherwise cry.
      */
-    bool broadcast(int party_id, vector<byte> myMessage, vector<vector<byte>> &recBufsdiffBytes, HIM<FieldType> &mat);
+    bool broadcast(int party_id, std::vector<byte> myMessage, std::vector<std::vector<byte>> &recBufsdiffBytes, HIM<FieldType> &mat);
 
     /**
      * For multiplication and for output gates, we need public reconstruction of sharings (degree t and degree 2t).
@@ -200,7 +204,7 @@ public:
      * However, in our protocol, arbitrary many sharings can be reconstructed.
      * This is achieved by dividing the sharings into buckets of size n − t.
      */
-    void publicReconstruction(vector<FieldType> &myShares, int &count, int d, vector<FieldType> &valBuf, HIM<FieldType> &m);
+    void publicReconstruction(std::vector<FieldType> &myShares, int &count, int d, std::vector<FieldType> &valBuf, HIM<FieldType> &m);
 
     /**
      * The input phase proceeds in two steps: input preparation and input adjustment
@@ -228,7 +232,7 @@ public:
      * Check whether given points lie on polynomial of degree d.
      * This check is performed by interpolating x on the first d + 1 positions of α and check the remaining positions.
      */
-    bool checkConsistency(vector<FieldType>& x, int d);
+    bool checkConsistency(std::vector<FieldType>& x, int d);
 
     /**
      * Process all additions which are ready.
@@ -270,9 +274,9 @@ public:
      * this HIM with the given x-vector (this is actually a scalar product).
      * The first (and only) element of the output vector is the secret.
      */
-    FieldType interpolate(vector<FieldType> x);
+    FieldType interpolate(std::vector<FieldType> x);
 
-    FieldType tinterpolate(vector<FieldType> x);
+    FieldType tinterpolate(std::vector<FieldType> x);
 
     /**
      * Walk through the circuit and reconstruct output gates.
@@ -315,7 +319,7 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
         T++;
     }
 
-    vector<string> subTaskNames{"Offline", "PreparationForInputPhase", "PreparationPhase", "inputPreparation", "Online",
+    std::vector<string> subTaskNames{"Offline", "PreparationForInputPhase", "PreparationPhase", "inputPreparation", "Online",
                                 "InputAdjustment", "ComputationPhase", "OutputPhase"};
     //timer = new Measurement(*this, subTaskNames);
 
@@ -330,6 +334,7 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
 
 //    parties = MPCCommunication::setCommunication(io_service, m_partyId, N, partiesFileName);
     myNewChannel = new DDSCommunicator(m_partyId, N, partiesFileName);
+
 
     string tmp = "init times";
     //cout<<"before sending any data"<<endl;
@@ -358,7 +363,7 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
 }
 
 template <class FieldType>
-void ProtocolParty<FieldType>::split(const string &s, char delim, vector<string> &elems) {
+void ProtocolParty<FieldType>::split(const string &s, char delim, std::vector<string> &elems) {
     stringstream ss;
     ss.str(s);
     string item;
@@ -368,8 +373,8 @@ void ProtocolParty<FieldType>::split(const string &s, char delim, vector<string>
 }
 
 template <class FieldType>
-vector<string> ProtocolParty<FieldType>::split(const string &s, char delim) {
-    vector<string> elems;
+std::vector<string> ProtocolParty<FieldType>::split(const string &s, char delim) {
+    std::vector<string> elems;
     split(s, delim, elems);
     return elems;
 }
@@ -390,15 +395,16 @@ vector<string> ProtocolParty<FieldType>::split(const string &s, char delim) {
  *  @param recBufsdiff = the values which received from the protocol.
  */
 template <class FieldType>
-bool ProtocolParty<FieldType>::broadcast(int party_id, vector<byte> myMessage, vector<vector<byte>> &recBufsdiffBytes, HIM<FieldType> &mat)
+bool ProtocolParty<FieldType>::broadcast(int party_id, std::vector<byte> myMessage,
+                                         std::vector<std::vector<byte>> &recBufsdiffBytes, HIM<FieldType> &mat)
 {
     int no_buckets;
-    vector<vector<byte>> sendBufsBytes(N);
-    vector<vector<FieldType>> sendBufsElements(N);
-    vector<vector<FieldType>> recBufsElements(N);
+    std::vector<std::vector<byte>> sendBufsBytes(N);
+    std::vector<std::vector<FieldType>> sendBufsElements(N);
+    std::vector<std::vector<FieldType>> recBufsElements(N);
 
-    vector<vector<byte>> recBufs2Bytes(N);
-    vector<vector<FieldType>> recBufs2Elements(N);
+    std::vector<std::vector<byte>> recBufs2Bytes(N);
+    std::vector<std::vector<FieldType>> recBufs2Elements(N);
 
 
     // Ps sends his values to all parties and received there values.
@@ -423,8 +429,8 @@ bool ProtocolParty<FieldType>::broadcast(int party_id, vector<byte> myMessage, v
         }
     }
 
-    vector<FieldType> X1(N);
-    vector<FieldType> Y1(N);
+    std::vector<FieldType> X1(N);
+    std::vector<FieldType> Y1(N);
 
     // calculate total number of values which received
     int count = 0;
@@ -434,7 +440,7 @@ bool ProtocolParty<FieldType>::broadcast(int party_id, vector<byte> myMessage, v
     }
 
 
-    vector<FieldType> valBufs(count);
+    std::vector<FieldType> valBufs(count);
     int index = 0;
 
     // concatenate everything
@@ -763,12 +769,12 @@ void ProtocolParty<FieldType>::inputAdjustment(string &diff)
     int input;
     int index = 0;
 
-    vector<FieldType> diffElements;
-    vector<byte> sendBufBytes;
+    std::vector<FieldType> diffElements;
+    std::vector<byte> sendBufBytes;
 
     // read the inputs of the party
 
-    vector<int> sizes(N);
+    std::vector<int> sizes(N);
     for (int k = 0; k < numOfInputGates; k++)
     {
         if(circuit.getGates()[k].gateType == INPUT) {
@@ -806,8 +812,8 @@ void ProtocolParty<FieldType>::inputAdjustment(string &diff)
         cout << "try to print diff" << '\n';
         cout << diff << '\n';}
 
-    vector<vector<byte>> recBufsdiffBytes(N);
-    vector<vector<FieldType>> recBufsdiffElements(N);
+    std::vector<std::vector<byte>> recBufsdiffBytes(N);
+    std::vector<std::vector<FieldType>> recBufsdiffElements(N);
 
     //adjust the size of the difference we need to recieve
     for(int i=0; i<N; i++){
@@ -847,7 +853,7 @@ void ProtocolParty<FieldType>::inputAdjustment(string &diff)
     }
 
 
-    vector<int> counters(N);
+    std::vector<int> counters(N);
 
     for(int i=0; i<N; i++){
         counters[i] =0;
@@ -882,8 +888,8 @@ void ProtocolParty<FieldType>::initializationPhase()
     gateValueArr.resize(M);  // the value of the gate (for my input and output gates)
     gateShareArr.resize(M - circuit.getNrOfOutputGates()); // my share of the gate (for all gates)
     alpha.resize(N); // N distinct non-zero field elements
-    vector<FieldType> alpha1(N-T);
-    vector<FieldType> alpha2(T);
+    std::vector<FieldType> alpha1(N-T);
+    std::vector<FieldType> alpha2(T);
 
     beta[0] = field->GetElement(0); // zero of the field
     matrix_for_interpolate.allocate(1,N, field);
@@ -918,16 +924,16 @@ void ProtocolParty<FieldType>::initializationPhase()
 
     matrix_for_interpolate.InitHIMByVectors(alpha, beta);
 
-    vector<FieldType> alpha_until_t(T + 1);
-    vector<FieldType> alpha_from_t(N - 1 - T);
+    std::vector<FieldType> alpha_until_t(T + 1);
+    std::vector<FieldType> alpha_from_t(N - 1 - T);
 
     // Interpolate first d+1 positions of (alpha,x)
     matrix_for_t.allocate(N - 1 - T, T + 1, field); // slices, only positions from 0..d
     //matrix_for_t.InitHIMByVectors(alpha_until_t, alpha_from_t);
     matrix_for_t.InitHIMVectorAndsizes(alpha, T+1, N-T-1);
 
-    vector<FieldType> alpha_until_2t(2*T + 1);
-    vector<FieldType> alpha_from_2t(N - 1 - 2*T);
+    std::vector<FieldType> alpha_until_2t(2*T + 1);
+    std::vector<FieldType> alpha_from_2t(N - 1 - 2*T);
 
     // Interpolate first d+1 positions of (alpha,x)
     matrix_for_2t.allocate(N - 1 - 2*T, 2*T + 1, field); // slices, only positions from 0..d
@@ -958,7 +964,8 @@ void ProtocolParty<FieldType>::initializationPhase()
  * @param valBuf
  */
 template <class FieldType>
-void ProtocolParty<FieldType>::publicReconstruction(vector<FieldType> &myShares, int &count, int d, vector<FieldType> &valBuf, HIM<FieldType> &m)
+void ProtocolParty<FieldType>::publicReconstruction(std::vector<FieldType> &myShares, int &count, int d,
+                                                    std::vector<FieldType> &valBuf, HIM<FieldType> &m)
 {
     int no_buckets = count / (N-T) + 1;
     if(flag_print) {
@@ -966,18 +973,18 @@ void ProtocolParty<FieldType>::publicReconstruction(vector<FieldType> &myShares,
         cout << "no buckets" << no_buckets << endl; }
     FieldType x;
 
-    vector<FieldType> x1(N);
-    vector<FieldType> y1(N);
-    vector<FieldType> y2(N);
+    std::vector<FieldType> x1(N);
+    std::vector<FieldType> y1(N);
+    std::vector<FieldType> y2(N);
 
-    vector<vector<FieldType>> sendBufsElements(N);
-    vector<vector<byte>> sendBufsBytes(N);
+    std::vector<std::vector<FieldType>> sendBufsElements(N);
+    std::vector<std::vector<byte>> sendBufsBytes(N);
 
-    vector<vector<byte>> sendBufs2Bytes(N);
-    vector<vector<FieldType>> sendBufsElements2(N);
+    std::vector<std::vector<byte>> sendBufs2Bytes(N);
+    std::vector<std::vector<FieldType>> sendBufsElements2(N);
 
-    vector<vector<byte>> recBufsBytes(N);
-    vector<vector<byte>> recBufs2Bytes(N);
+    std::vector<std::vector<byte>> recBufsBytes(N);
+    std::vector<std::vector<byte>> recBufs2Bytes(N);
 
     for(int i = 0; i < N; i++)
     {
@@ -1140,16 +1147,16 @@ void ProtocolParty<FieldType>::publicReconstruction(vector<FieldType> &myShares,
 template <class FieldType>
 bool ProtocolParty<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, HIM<FieldType> &matrix_him*/)
 {
-    vector<vector<byte>> recBufsBytes(N);
+    std::vector<std::vector<byte>> recBufsBytes(N);
     //vector<vector<byte>> recBufs1Bytes(N);
     int robin = 0;
 
     // the number of random double sharings we need altogether
     int no_random = circuit.getNrOfMultiplicationGates();
-    vector<FieldType> x1(N),x2(N),y1(N),y2(N);
+    std::vector<FieldType> x1(N),x2(N),y1(N),y2(N);
 
-    vector<vector<FieldType>> sendBufsElements(N);
-    vector<vector<byte>> sendBufsBytes(N);
+    std::vector<std::vector<FieldType>> sendBufsElements(N);
+    std::vector<std::vector<byte>> sendBufsBytes(N);
 
     // the number of buckets (each bucket requires one double-sharing
     // from each party and gives N-2T random double-sharings)
@@ -1367,7 +1374,7 @@ bool ProtocolParty<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, H
         }
 
 
-        vector<FieldType> x_until_d(N);
+        std::vector<FieldType> x_until_d(N);
         for(int i=0; i<T; i++)
         {
             x_until_d[i] = x1[i];
@@ -1397,16 +1404,16 @@ bool ProtocolParty<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, H
 template <class FieldType>
 bool ProtocolParty<FieldType>::RandomSharingForInputs()
 {
-    vector<vector<byte>> recBufsBytes(N);
+    std::vector<std::vector<byte>> recBufsBytes(N);
     //vector<vector<byte>> recBufs1Bytes(N);
     int robin = 0;
 
     // the number of random double sharings we need altogether
     int no_random = circuit.getNrOfInputGates();
-    vector<FieldType> x1(N),y1(N);
+    std::vector<FieldType> x1(N),y1(N);
 
-    vector<vector<FieldType>> sendBufsElements(N);
-    vector<vector<byte>> sendBufsBytes(N);
+    std::vector<std::vector<FieldType>> sendBufsElements(N);
+    std::vector<std::vector<byte>> sendBufsBytes(N);
 
     // the number of buckets (each bucket requires one double-sharing
     // from each party and gives N-2T random double-sharings)
@@ -1601,7 +1608,7 @@ bool ProtocolParty<FieldType>::RandomSharingForInputs()
         }
 
 
-        vector<FieldType> x_until_d(N);
+        std::vector<FieldType> x_until_d(N);
         for(int i=0; i<T; i++)
         {
             x_until_d[i] = x1[i];
@@ -1631,12 +1638,12 @@ bool ProtocolParty<FieldType>::RandomSharingForInputs()
 template <class FieldType>
 bool ProtocolParty<FieldType>::inputPreparation()
 {
-    vector<vector<FieldType>> sendBufsElements(N); // upper bound
-    vector<vector<byte>> sendBufsBytes(N);
+    std::vector<std::vector<FieldType>> sendBufsElements(N); // upper bound
+    std::vector<std::vector<byte>> sendBufsBytes(N);
 
-    vector<vector<FieldType>> recBufsElements(N);
-    vector<vector<byte>> recBufsBytes(N);
-    vector<FieldType> x1(N); // vector for the shares of my inputs
+    std::vector<std::vector<FieldType>> recBufsElements(N);
+    std::vector<std::vector<byte>> recBufsBytes(N);
+    std::vector<FieldType> x1(N); // vector for the shares of my inputs
     FieldType elem;
     FieldType secret;
     int i;
@@ -1736,12 +1743,12 @@ bool ProtocolParty<FieldType>::inputPreparation()
  * the first d + 1 positions of α and check the remaining positions.
  */
 template <class FieldType>
-bool ProtocolParty<FieldType>::checkConsistency(vector<FieldType>& x, int d)
+bool ProtocolParty<FieldType>::checkConsistency(std::vector<FieldType>& x, int d)
 {
     if(d == T)
     {
-        vector<FieldType> y(N - 1 - d); // the result of multiplication
-        vector<FieldType> x_until_t(T + 1);
+        std::vector<FieldType> y(N - 1 - d); // the result of multiplication
+        std::vector<FieldType> x_until_t(T + 1);
 
         for (int i = 0; i < T + 1; i++) {
             x_until_t[i] = x[i];
@@ -1760,9 +1767,9 @@ bool ProtocolParty<FieldType>::checkConsistency(vector<FieldType>& x, int d)
         return true;
     } else if (d == 2*T)
     {
-        vector<FieldType> y(N - 1 - d); // the result of multiplication
+        std::vector<FieldType> y(N - 1 - d); // the result of multiplication
 
-        vector<FieldType> x_until_2t(2*T + 1);
+        std::vector<FieldType> x_until_2t(2*T + 1);
 
         for (int i = 0; i < 2*T + 1; i++) {
             x_until_2t[i] = x[i];
@@ -1780,10 +1787,10 @@ bool ProtocolParty<FieldType>::checkConsistency(vector<FieldType>& x, int d)
         return true;
 
     } else {
-        vector<FieldType> alpha_until_d(d + 1);
-        vector<FieldType> alpha_from_d(N - 1 - d);
-        vector<FieldType> x_until_d(d + 1);
-        vector<FieldType> y(N - 1 - d); // the result of multiplication
+        std::vector<FieldType> alpha_until_d(d + 1);
+        std::vector<FieldType> alpha_from_d(N - 1 - d);
+        std::vector<FieldType> x_until_d(d + 1);
+        std::vector<FieldType> y(N - 1 - d); // the result of multiplication
 
         for (int i = 0; i < d + 1; i++) {
             alpha_until_d[i] = alpha[i];
@@ -1812,9 +1819,9 @@ bool ProtocolParty<FieldType>::checkConsistency(vector<FieldType>& x, int d)
 
 // Interpolate polynomial at position Zero
 template <class FieldType>
-FieldType ProtocolParty<FieldType>::interpolate(vector<FieldType> x)
+FieldType ProtocolParty<FieldType>::interpolate(std::vector<FieldType> x)
 {
-    vector<FieldType> y(N); // result of interpolate
+    std::vector<FieldType> y(N); // result of interpolate
     matrix_for_interpolate.MatrixMult(x, y);
     return y[0];
 }
@@ -1877,12 +1884,13 @@ int ProtocolParty<FieldType>::processMultiplications(HIM<FieldType> &m)
     int index = 0;
     FieldType p2, d2;
     FieldType r1, r2;
-    vector<FieldType> valBuf(circuit.getLayers()[currentCirciutLayer+1]- circuit.getLayers()[currentCirciutLayer]); // Buffers for differences
+    // Buffers for differences
+    std::vector<FieldType> valBuf(circuit.getLayers()[currentCirciutLayer+1]- circuit.getLayers()[currentCirciutLayer]);
     FieldType d;
     int indexForValBuf = 0;
-    vector<FieldType> ReconsBuf(circuit.getLayers()[currentCirciutLayer+1]- circuit.getLayers()[currentCirciutLayer]);
-
-    for(int k = circuit.getLayers()[currentCirciutLayer]; k < circuit.getLayers()[currentCirciutLayer+1] ; k++)//go over only the logit gates
+    std::vector<FieldType> ReconsBuf(circuit.getLayers()[currentCirciutLayer+1]- circuit.getLayers()[currentCirciutLayer]);
+    //go over only the logit gates
+    for(int k = circuit.getLayers()[currentCirciutLayer]; k < circuit.getLayers()[currentCirciutLayer+1] ; k++)
     {
         // its a multiplication which not yet processed and ready
         if(circuit.getGates()[k].gateType == MULT )
@@ -1893,8 +1901,8 @@ int ProtocolParty<FieldType>::processMultiplications(HIM<FieldType> &m)
 
             shareIndex++;
 
-
-            p2 = gateShareArr[circuit.getGates()[k].input1] * gateShareArr[circuit.getGates()[k].input2]; // product share (degree-2t)
+            // product share (degree-2t)
+            p2 = gateShareArr[circuit.getGates()[k].input1] * gateShareArr[circuit.getGates()[k].input2];
             d2 = p2 - r2; // t2-share of difference
             ReconsBuf[index] = d2; // reconstruct difference (later)
             index++;
@@ -1964,10 +1972,10 @@ template <class FieldType>
 void ProtocolParty<FieldType>::outputPhase()
 {
     int count=0;
-    vector<FieldType> x1(N); // vector for the shares of my outputs
-    vector<vector<FieldType>> sendBufsElements(N);
-    vector<vector<byte>> sendBufsBytes(N);
-    vector<vector<byte>> recBufBytes(N);
+    std::vector<FieldType> x1(N); // vector for the shares of my outputs
+    std::vector<std::vector<FieldType>> sendBufsElements(N);
+    std::vector<std::vector<byte>> sendBufsBytes(N);
+    std::vector<std::vector<byte>> recBufBytes(N);
 
     FieldType num;
     ofstream myfile;
@@ -2032,30 +2040,33 @@ void ProtocolParty<FieldType>::outputPhase()
 
 
 template <class FieldType>
-void ProtocolParty<FieldType>::roundFunctionSync(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int round) {
+void ProtocolParty<FieldType>::roundFunctionSync(std::vector<std::vector<byte>> &sendBufs,
+                                                 std::vector<std::vector<byte>> &recBufs, int round) {
 
     //cout<<"in roundFunctionSync "<< round<< endl;
 
-    int numThreads = parties.size();
-    int numPartiesForEachThread;
+    int numThreads = 1;
+    int numPartiesForEachThread = 1;
 
-    if (parties.size() <= numThreads){
-        numThreads = parties.size();
-        numPartiesForEachThread = 1;
-    } else{
-        numPartiesForEachThread = (parties.size() + numThreads - 1)/ numThreads;
-    }
+//    if (parties.size() <= numThreads){
+//        numThreads = parties.size();
+//        numPartiesForEachThread = 1;
+//    } else{
+//        numPartiesForEachThread = (parties.size() + numThreads - 1)/ numThreads;
+//    }
 
 
     recBufs[m_partyId] = sendBufs[m_partyId];//move(sendBufs[m_partyId-1]);
+    exchangeData(sendBufs, recBufs, round, round);
     //recieve the data using threads
-    vector<thread> threads(numThreads);
+    std::vector<thread> threads(numThreads);
     for (int t=0; t<numThreads; t++) {
         if ((t + 1) * numPartiesForEachThread <= parties.size()) {
             threads[t] = thread(&ProtocolParty::exchangeData, this, ref(sendBufs), ref(recBufs),
                                 t * numPartiesForEachThread, (t + 1) * numPartiesForEachThread);
         } else {
-            threads[t] = thread(&ProtocolParty::exchangeData, this, ref(sendBufs), ref(recBufs), t * numPartiesForEachThread, parties.size());
+            threads[t] = thread(&ProtocolParty::exchangeData, this, ref(sendBufs), ref(recBufs),
+                                t * numPartiesForEachThread, parties.size());
         }
     }
     for (int t=0; t<numThreads; t++){
@@ -2066,43 +2077,44 @@ void ProtocolParty<FieldType>::roundFunctionSync(vector<vector<byte>> &sendBufs,
 
 
 template <class FieldType>
-void ProtocolParty<FieldType>::exchangeData(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int first, int last){
+void ProtocolParty<FieldType>::exchangeData(std::vector<std::vector<byte>> &sendBufs,
+                                            std::vector<std::vector<byte>> &recBufs, int first, int last){
 
 
     //cout<<"in exchangeData";
     for (int i=first; i < last; i++) {
 
-        if ((m_partyId) < parties[i]->getID()) {
-
-
+        DDSChannelWriter MyChannelWriter = myNewChannel->GetDDSChannelWriter(myNewChannel->getMyIP());
+        if ((m_partyId) < i)
+        {
             //send shares to my input bits
-            parties[i]->getChannel()->write(sendBufs[parties[i]->getID()].data(), sendBufs[parties[i]->getID()].size());
-            //cout<<"write the data:: my Id = " << m_partyId - 1<< "other ID = "<< parties[i]->getID() <<endl;
+            MyChannelWriter.Write((const char*)&sendBufs[parties[i]->getID()], sendBufs[parties[i]->getID()].size());
 
+            map<string, bounded_sequence<char, (MAX_SEQUENCE_SIZE)>> readInputMap;
 
-            //receive shares from the other party and set them in the shares array
-            parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
-            //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
+            myNewChannel->Read(&readInputMap);
+            auto input1 = readInputMap.find("")->second;
 
-        } else{
-
-
-            //receive shares from the other party and set them in the shares array
-            parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
-            //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
-
-
-
-            //send shares to my input bits
-            parties[i]->getChannel()->write(sendBufs[parties[i]->getID()].data(), sendBufs[parties[i]->getID()].size());
-            //cout<<"write the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID() <<endl;
-
+            //taken from here https://stackoverflow.com/a/48750483/4193208
+            std::transform(recBufs[parties[i]->getID()].begin(), recBufs[parties[i]->getID()].end(),
+                std::back_inserter(input1), [](unsigned char c) {return byte{c};});
 
         }
+        else
+        {
+            map<string, bounded_sequence<char, (MAX_SEQUENCE_SIZE)>> readInputMap;
 
+            myNewChannel->Read(&readInputMap);
+            auto input1 = readInputMap.find("")->second;
+
+            //taken from here https://stackoverflow.com/a/48750483/4193208
+            std::transform(recBufs[parties[i]->getID()].begin(), recBufs[parties[i]->getID()].end(),
+                           std::back_inserter(input1), [](unsigned char c) {return byte{c};});
+
+            //send shares to my input bits
+            MyChannelWriter.Write((const char*)&sendBufs[parties[i]->getID()], sendBufs[parties[i]->getID()].size());
+        }
     }
-
-
 }
 
 
@@ -2110,30 +2122,24 @@ void ProtocolParty<FieldType>::exchangeData(vector<vector<byte>> &sendBufs, vect
 
 
 template <class FieldType>
-void ProtocolParty<FieldType>::roundFunctionSyncBroadcast(vector<byte> &message, vector<vector<byte>> &recBufs) {
+void ProtocolParty<FieldType>::roundFunctionSyncBroadcast(std::vector<byte> &message,
+                                                          std::vector<std::vector<byte>> &recBufs) {
 
     //cout<<"in roundFunctionSyncBroadcast "<< endl;
 
-    int numThreads = parties.size();
-    int numPartiesForEachThread;
-
-    if (parties.size() <= numThreads){
-        numThreads = parties.size();
-        numPartiesForEachThread = 1;
-    } else{
-        numPartiesForEachThread = (parties.size() + numThreads - 1)/ numThreads;
-    }
-
+    int numThreads = 1;
+    int numPartiesForEachThread = 1;;
 
     recBufs[m_partyId] = message;
     //recieve the data using threads
-    vector<thread> threads(numThreads);
+    std::vector<thread> threads(numThreads);
     for (int t=0; t<numThreads; t++) {
         if ((t + 1) * numPartiesForEachThread <= parties.size()) {
             threads[t] = thread(&ProtocolParty::recData, this, ref(message), ref(recBufs),
                                 t * numPartiesForEachThread, (t + 1) * numPartiesForEachThread);
         } else {
-            threads[t] = thread(&ProtocolParty::recData, this, ref(message),  ref(recBufs), t * numPartiesForEachThread, parties.size());
+            threads[t] = thread(&ProtocolParty::recData, this, ref(message),  ref(recBufs), t * numPartiesForEachThread,
+                                parties.size());
         }
     }
     for (int t=0; t<numThreads; t++){
@@ -2144,43 +2150,47 @@ void ProtocolParty<FieldType>::roundFunctionSyncBroadcast(vector<byte> &message,
 
 
 template <class FieldType>
-void ProtocolParty<FieldType>::recData(vector<byte> &message, vector<vector<byte>> &recBufs, int first, int last){
-
-
+void ProtocolParty<FieldType>::recData(std::vector<byte> &message, std::vector<std::vector<byte>> &recBufs,
+                                       int first, int last)
+{
     //cout<<"in exchangeData";
-    for (int i=first; i < last; i++) {
 
-        if ((m_partyId) < parties[i]->getID()) {
+    for (int i=first; i < last; i++)
+    {
 
-
-            //send shares to my input bits
-            parties[i]->getChannel()->write(message.data(), message.size());
-            //cout<<"write the data:: my Id = " << m_partyId - 1<< "other ID = "<< parties[i]->getID() <<endl;
-
-
-            //receive shares from the other party and set them in the shares array
-            parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
-            //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
-
-        } else{
-
-
-            //receive shares from the other party and set them in the shares array
-            parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
-            //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
-
+        DDSChannelWriter MyChannelWriter = myNewChannel->GetDDSChannelWriter(myNewChannel->getMyIP());
+        if ((m_partyId) < i)
+        {
 
 
             //send shares to my input bits
-            parties[i]->getChannel()->write(message.data(), message.size());
-            //cout<<"write the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID() <<endl;
+            MyChannelWriter.Write((const char*)message.data(), message.size());
 
+            map<string, bounded_sequence<char, (MAX_SEQUENCE_SIZE)>> readInputMap;
+
+            myNewChannel->Read(&readInputMap);
+            auto input1 = readInputMap.find("")->second;
+
+            //taken from here https://stackoverflow.com/a/48750483/4193208
+            std::transform(recBufs[parties[i]->getID()].begin(), recBufs[parties[i]->getID()].end(),
+                           std::back_inserter(input1), [](unsigned char c) {return byte{c};});
 
         }
+        else
+        {
+            map<string, bounded_sequence<char, (MAX_SEQUENCE_SIZE)>> readInputMap;
 
+            myNewChannel->Read(&readInputMap);
+            auto input1 = readInputMap.find("")->second;
+
+            //taken from here https://stackoverflow.com/a/48750483/4193208
+            std::transform(recBufs[parties[i]->getID()].begin(), recBufs[parties[i]->getID()].end(),
+                           std::back_inserter(input1), [](unsigned char c) {return byte{c};});
+
+            MyChannelWriter.Write((const char*)message.data(), message.size());
+
+        }
     }
-
-
 }
 
 

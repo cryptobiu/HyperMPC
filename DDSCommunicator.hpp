@@ -34,6 +34,7 @@ public:
 	virtual ~DDSCommunicator();
 	DDSChannelWriter GetDDSChannelWriter (string PartyIP);
 	void Read (map<string,rti::core::bounded_sequence<char,(MAX_SEQUENCE_SIZE)>> *readinputMap);
+	string getMyIP(){ return _ownIP;}
 
 
 private:
