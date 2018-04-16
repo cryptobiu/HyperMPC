@@ -333,7 +333,7 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
     shareIndex = 0;//numOfInputGates;
 
 //    parties = MPCCommunication::setCommunication(io_service, m_partyId, N, partiesFileName);
-    myNewChannel = new DDSCommunicator(m_partyId, N, partiesFileName, 200, false);
+    myNewChannel = new DDSCommunicator(m_partyId, N, partiesFileName, 200, true);
 
     readMyInputs();
 
