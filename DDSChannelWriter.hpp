@@ -26,8 +26,8 @@ public:
 	virtual ~DDSChannelWriter();
 	void Write (const char* data,int size);
 	string GetTopicName ();
-	bool isPublicationMatched ();
-	string getChannelID(){return _sample.ID();};
+	bool isPublicationMatched (unsigned int elapsedTime);
+	string getChannelID() { return _sample.ID(); };
 
 private:
 //	Methods

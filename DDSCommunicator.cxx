@@ -5,13 +5,16 @@
  *      Author: GalSchlesinger
  */
 
+
 #include <fstream>
 #include "DDSCommunicator.hpp"
 
-DDSCommunicator::DDSCommunicator(int id, int numParties, string configFile) {
+
+DDSCommunicator::DDSCommunicator(int id, int numParties, string configFile, unsigned int elapsedTime, bool addIPtoPeerList) {
 	//cout << "DDSCommunicator Constructor" << endl;
 	_id = id;
 	_numParties = numParties;
+	_elapsedTime = elapsedTime;
 	ParsePartiesIPs(configFile);
 
 // Loading DDS QOS
@@ -30,7 +33,7 @@ DDSCommunicator::DDSCommunicator(int id, int numParties, string configFile) {
 
 //adding the peers list to the Participant for discovery purposes.
 	for (auto IP : _partiesIPList) {
-		//string DDSTopicName = IP;
+		if (addIPtoPeerList == false) break;
 		(*_participant)->add_peer(IP);
 	}
 
@@ -52,12 +55,11 @@ void DDSCommunicator::ParsePartiesIPs(string PartiesIPs) {
     string data;
 
     while (getline(file, data))
-	{
-	    if(!data.length())
-	        continue;
-		line += data;
-	}
-
+    {
+        if(!data.length())
+            continue;
+        line += data;
+    }
 
 	istringstream PartiesIPsStream(line);
 	string IP;
@@ -141,7 +143,7 @@ bool DDSCommunicator::isSubscriptionMatched (){
 
 		auto checkTime = high_resolution_clock::now();
 		auto timeSpanSeconds = duration_cast<seconds>(checkTime - startTime);
-		if (timeSpanSeconds.count() > 5){
+		if (timeSpanSeconds.count() > _elapsedTime){
 			throw runtime_error("Initialization time elapsed on communicator reader");
 		}
 
@@ -152,7 +154,7 @@ bool DDSCommunicator::isSubscriptionMatched (){
 void DDSCommunicator::VerifyConnections (){
 	//cout << "VerifyConnections" << endl;
 	for (auto channelWriter : _DDSChannelWriterList){
-		channelWriter.isPublicationMatched();
+		channelWriter.isPublicationMatched(_elapsedTime);
 	}
 	this->isSubscriptionMatched();
 }

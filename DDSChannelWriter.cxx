@@ -31,7 +31,7 @@ string DDSChannelWriter::GetTopicName (){
 	return _writer->topic()->name();
 }
 
-bool DDSChannelWriter::isPublicationMatched (){
+bool DDSChannelWriter::isPublicationMatched (unsigned int elapsedTime){
 	//cout << "isPublicationMatched" << endl;
 	unsigned int publicationMatchedCount;
 	auto startTime = high_resolution_clock::now();
@@ -44,8 +44,8 @@ bool DDSChannelWriter::isPublicationMatched (){
 
 		auto checkTime = high_resolution_clock::now();
 		auto timeSpanSeconds = duration_cast<seconds>(checkTime - startTime);
-		if (timeSpanSeconds.count() > 5){
-			throw runtime_error("Initialization time elapsed with party" + this->GetTopicName());
+		if (timeSpanSeconds.count() > elapsedTime){
+			throw runtime_error("Initialization time elapsed with party " + this->GetTopicName());
 		}
 
 		rti::util::sleep(dds::core::Duration::from_millisecs(100));

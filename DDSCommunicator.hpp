@@ -15,26 +15,29 @@
 #include <dds/core/ddscore.hpp>
 #include <dds/dds.hpp>
 #include <dds/sub/DataReader.hpp>
-#include "DDSChannelWriter.hpp"
 
 #include <iostream>
 #include <exception>
 #include <map>
+#include <vector>
 
-#include <libscapi/include/infra/ConfigFile.hpp>
+#include "Test.hpp"
 
-//#include "Test.hpp"
+#include "DDSChannelWriter.hpp"
+
+
 
 using namespace std;
 using namespace chrono;
 
 class DDSCommunicator {
 public:
-	DDSCommunicator(int id, int numParties, string configFile);
+	DDSCommunicator(int id, int numParties, string configFile, unsigned int elapsedTime = 5, bool addIPtoPeerList = true);
 	virtual ~DDSCommunicator();
 	DDSChannelWriter GetDDSChannelWriter (string PartyIP);
 	void Read (map<string,rti::core::bounded_sequence<char,(MAX_SEQUENCE_SIZE)>> *readinputMap);
-	string getMyIP(){ return _ownIP;}
+	string getMyIP() { return _ownIP; };
+    std::vector<string> _partiesIPList;
 
 
 private:
@@ -47,9 +50,9 @@ private:
 	bool isSubscriptionMatched ();
 
 // Variables
-	vector<string> _partiesIPList;
-	vector<dds::topic::Topic<MyStruct>> _DDSTopicsList;
-	vector<DDSChannelWriter> _DDSChannelWriterList;
+//	std::vector<string> _partiesIPList;
+	std::vector<dds::topic::Topic<MyStruct>> _DDSTopicsList;
+	std::vector<DDSChannelWriter> _DDSChannelWriterList;
 	dds::domain::DomainParticipant *_participant;
 	dds::sub::DataReader<MyStruct> *_reader;
 	dds::sub::LoanedSamples<MyStruct> _samples;
@@ -58,6 +61,7 @@ private:
 	string _ownIP;
 	unsigned int _id;
 	unsigned int _numParties;
+	unsigned int _elapsedTime;
 };
 
 #endif /* DDSCOMMUNICATOR_HPP_ */
