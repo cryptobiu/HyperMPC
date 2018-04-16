@@ -2071,7 +2071,6 @@ void ProtocolParty<FieldType>::exchangeData(std::vector<std::vector<byte>> &send
     for (int i=first; i < last; i++) {
 
         DDSChannelWriter MyChannelWriter = myNewChannel->GetDDSChannelWriter(myNewChannel->getMyIP());
-        auto it = find(myNewChannel->_partiesIPList.begin(), myNewChannel->_partiesIPList.end(), MyChannelWriter.GetTopicName();
         if ((m_partyId) < i)
         {
             //send shares to my input bits
