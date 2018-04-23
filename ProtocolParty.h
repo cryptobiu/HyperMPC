@@ -56,7 +56,7 @@ private:
 
     //Communication* comm;
     boost::asio::io_service io_service;
-    std::vector<shared_ptr<ProtocolPartyData>>  parties;
+//    std::vector<shared_ptr<ProtocolPartyData>>  parties;
     DDSCommunicator* myNewChannel;
 
     ArithmeticCircuit circuit;
@@ -2047,12 +2047,12 @@ void ProtocolParty<FieldType>::roundFunctionSync(std::vector<std::vector<byte>> 
     //recieve the data using threads
     std::vector<thread> threads(numThreads);
     for (int t=0; t<numThreads; t++) {
-        if ((t + 1) * numPartiesForEachThread <= parties.size()) {
+        if ((t + 1) * numPartiesForEachThread <= myNewChannel->getPartiesIPList().size()) {
             threads[t] = thread(&ProtocolParty::exchangeData, this, ref(sendBufs), ref(recBufs),
                                 t * numPartiesForEachThread, (t + 1) * numPartiesForEachThread);
         } else {
             threads[t] = thread(&ProtocolParty::exchangeData, this, ref(sendBufs), ref(recBufs),
-                                t * numPartiesForEachThread, parties.size());
+                                t * numPartiesForEachThread, myNewChannel->getPartiesIPList().size());
         }
     }
     for (int t=0; t<numThreads; t++){
@@ -2068,22 +2068,19 @@ void ProtocolParty<FieldType>::exchangeData(std::vector<std::vector<byte>> &send
 
 
     //cout<<"in exchangeData";
+    std::vector <string> ipsList = myNewChannel->getPartiesIPList();
     for (int i=first; i < last; i++) {
 
-        DDSChannelWriter MyChannelWriter = *myNewChannel->getDDSChannelWriter(myNewChannel->getOwnIP());
+        DDSChannelWriter MyChannelWriter = *myNewChannel->getDDSChannelWriter(ipsList[i]);
         if ((m_partyId) < i)
         {
             //send shares to my input bits
-            MyChannelWriter.Write((const char*)&sendBufs[parties[i]->getID()], sendBufs[parties[i]->getID()].size());
+            MyChannelWriter.Write((const char*)&sendBufs[i], sendBufs[i].size());
 
             map<string, DDSSample> readInputMap;
 
             myNewChannel->ReadAllInputs(&readInputMap);
             auto input1 = readInputMap.find("")->second;
-            auto aa = myNewChannel->getDDSChannelWriter(myNewChannel->getPartiesIPList()[i]).;
-            std::copy(input1.getPayload() + strlen(input1.getPayload()),
-                      std::back_inserter(recBufs[aa]));
-//            recBufs[parties[i]->getID()](input1.getPayload(), input1.getPayload() + strlen(input1.getPayload()));
         }
         else
         {
@@ -2092,12 +2089,9 @@ void ProtocolParty<FieldType>::exchangeData(std::vector<std::vector<byte>> &send
             myNewChannel->ReadAllInputs(&readInputMap);
             auto input1 = readInputMap.find("")->second;
 
-            //taken from here https://stackoverflow.com/a/48750483/4193208
-//            std::transform(recBufs[parties[i]->getID()].begin(), recBufs[parties[i]->getID()].end(),
-//                           std::back_inserter(input1), [](unsigned char c) {return byte{c};});
 
             //send shares to my input bits
-            MyChannelWriter.Write((const char*)&sendBufs[parties[i]->getID()], sendBufs[parties[i]->getID()].size());
+            MyChannelWriter.Write((const char*)&sendBufs[i], sendBufs[i].size());
         }
     }
 }
@@ -2119,12 +2113,12 @@ void ProtocolParty<FieldType>::roundFunctionSyncBroadcast(std::vector<byte> &mes
     //recieve the data using threads
     std::vector<thread> threads(numThreads);
     for (int t=0; t<numThreads; t++) {
-        if ((t + 1) * numPartiesForEachThread <= parties.size()) {
+        if ((t + 1) * numPartiesForEachThread <= myNewChannel->getPartiesIPList().size()) {
             threads[t] = thread(&ProtocolParty::recData, this, ref(message), ref(recBufs),
                                 t * numPartiesForEachThread, (t + 1) * numPartiesForEachThread);
         } else {
             threads[t] = thread(&ProtocolParty::recData, this, ref(message),  ref(recBufs), t * numPartiesForEachThread,
-                                parties.size());
+                                myNewChannel->getPartiesIPList().size());
         }
     }
     for (int t=0; t<numThreads; t++){
@@ -2152,11 +2146,8 @@ void ProtocolParty<FieldType>::recData(std::vector<byte> &message, std::vector<s
             map<string, DDSSample> readInputMap;
 
             myNewChannel->ReadAllInputs(&readInputMap);
-            auto input1 = readInputMap.find("")->second;
+            auto input1 = readInputMap.find("")->second.getPayload();
 
-            //taken from here https://stackoverflow.com/a/48750483/4193208
-//            std::transform(recBufs[parties[i]->getID()].begin(), recBufs[parties[i]->getID()].end(),
-//                           std::back_inserter(input1), [](unsigned char c) {return byte{c};});
 
         }
         else
@@ -2165,9 +2156,6 @@ void ProtocolParty<FieldType>::recData(std::vector<byte> &message, std::vector<s
             myNewChannel->ReadAllInputs(&readInputMap);
             auto input1 = readInputMap.find("")->second;
 
-            //taken from here https://stackoverflow.com/a/48750483/4193208
-//            std::transform(recBufs[parties[i]->getID()].begin(), recBufs[parties[i]->getID()].end(),
-//                           std::back_inserter(input1), [](unsigned char c) {return byte{c};});
             MyChannelWriter.Write((const char*)message.data(), message.size());
 
         }
