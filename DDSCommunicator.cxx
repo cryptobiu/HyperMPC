@@ -10,14 +10,15 @@
 #include "DDSCommunicator.hpp"
 
 
-DDSCommunicator::DDSCommunicator(int id, int numParties, string configFile, unsigned int elapsedTime, bool addIPtoPeerList) {
-	//cout << "DDSCommunicator Constructor" << endl;
-	_id = id;
+DDSCommunicator::DDSCommunicator(int id, int numParties, string configFile, unsigned int elapsedTime, bool AddDiscoveryPeers, bool printDebugFlag) {
+	_printDebugFlag = printDebugFlag;
+	if (_printDebugFlag) cout << "DDSCommunicator Constructor" << endl;
+	_ownID = id;
 	_numParties = numParties;
 	_elapsedTime = elapsedTime;
 	ParsePartiesIPs(configFile);
 
-// Loading DDS QOS
+	// Loading DDS QOS
 	rti::core::QosProviderParams provider_params;
 	auto QOSConfigFile = "BIU_QOS_Definition.xml";
 	dds::core::StringSeq stringseq(1);
@@ -25,18 +26,18 @@ DDSCommunicator::DDSCommunicator(int id, int numParties, string configFile, unsi
 	provider_params.url_profile(stringseq);
 	dds::core::QosProvider::Default()->default_provider_params(provider_params);
 
-//For monitoring purposes, setting the role name of the participant to OwnIP.
+	//For monitoring purposes, setting the role name of the participant to OwnIP.
 	dds::domain::qos::DomainParticipantQos parQOS = dds::core::QosProvider::Default()->participant_qos();
 	parQOS->participant_name.role_name(_ownIP);
-// Create DDS Participant
-	_participant = new dds::domain::DomainParticipant(domain_id,parQOS,NULL,dds::core::status::StatusMask::all());
+	// Create DDS Participant
+	_participant = new dds::domain::DomainParticipant(domain_id, parQOS, NULL, dds::core::status::StatusMask::all());
 
-//adding the peers list to the Participant for discovery purposes.
+	//adding the peers list to the Participant for discovery purposes.
 	for (auto IP : _partiesIPList) {
-		if (addIPtoPeerList == false) break;
+		if (AddDiscoveryPeers == false) break;
 		(*_participant)->add_peer(IP);
 	}
-
+	(*_participant)->add_peer("100@localhost");
 	this->CreateDDSTopics();
 	this->CreateDDSTopicChannelWriters();
 	this->CreateOwnTopicReader();
@@ -47,103 +48,155 @@ DDSCommunicator::~DDSCommunicator() {
 	// TODO Auto-generated destructor stub
 }
 
-void DDSCommunicator::ParsePartiesIPs(string PartiesIPs) {
-	//cout << "ParsePartiesIPs" << endl;
+void DDSCommunicator::ParsePartiesIPs(string configFileDir) {
+	if (_printDebugFlag) cout << "ParsePartiesIPs" << endl;
 
-    ifstream file(PartiesIPs.c_str());
-    string line;
-    string data;
+	ifstream file(configFileDir.c_str());
+	if (file.fail()) {
+		throw runtime_error("Failed to open/find the IPs configFile");
+	}
+	string line;
+	string data;
 
-    while (getline(file, data))
-    {
-        if(!data.length())
-            continue;
-        line += data;
-    }
+	while (getline(file, data))
+	{
+		if (!data.length())
+			continue;
+		line += data;
+	}
 
 	istringstream PartiesIPsStream(line);
 	string IP;
 	while (getline(PartiesIPsStream, IP, ',')) {
 		_partiesIPList.push_back(IP);
 	}
-	_ownIP=_partiesIPList[_id];
+
+	if (_ownID<0 || _ownID>(_partiesIPList.size() - 1)) {
+		throw runtime_error("ownID is is out of bounds");
+	}
+
+	_ownIP = _partiesIPList[_ownID];
+
+	if (_partiesIPList.size() != _numParties) {
+		throw runtime_error("_partiesIPList.size() != _numParties");
+	}
+
 }
 
 void DDSCommunicator::CreateDDSTopics() {
-	//cout << "CreateDDSTopics" << endl;
-
+	if (_printDebugFlag) cout << "CreateDDSTopics" << endl;
+	unsigned int IPCounter = 0;
+	string DDSTopicName;
 	for (auto IP : _partiesIPList) {
-		string DDSTopicName = IP;
-		dds::topic::Topic<MyStruct> topic(*_participant, DDSTopicName.c_str());
+		DDSTopicName = to_string(IPCounter);
+		DDSTopicName += "-";
+		DDSTopicName += IP;
+
+		dds::topic::Topic<BIUDDSStruct> topic(*_participant, DDSTopicName.c_str());
 		_DDSTopicsList.push_back(topic);
+
+		IPCounter++;
 	}
 }
 
 void DDSCommunicator::CreateDDSTopicChannelWriters() {
-	//cout << "CreateDDSTopicChannelWriters" << endl;
+	if (_printDebugFlag) cout << "CreateDDSTopicChannelWriters" << endl;
 	for (auto DDSTopic : _DDSTopicsList) {
 		//don't need to create a writer to my own topic
-		if (_DDSTopicsList[_id]->instance_handle()
-				== DDSTopic->instance_handle()){
+		if (_DDSTopicsList[_ownID]->instance_handle()
+			== DDSTopic->instance_handle()) {
 			continue;
 		}
-		DDSChannelWriter writer(_participant, DDSTopic, _ownIP);
-		_DDSChannelWriterList.push_back(writer);
+		_DDSChannelWriterList.push_back(new DDSChannelWriter(_participant, DDSTopic, _ownIP, _ownID, _printDebugFlag));
 	}
 }
 
 void DDSCommunicator::CreateOwnTopicReader() {
-	_reader = new dds::sub::DataReader<MyStruct>(
-			dds::sub::Subscriber(*_participant), _DDSTopicsList[_id]);
+	_reader = new dds::sub::DataReader<BIUDDSStruct>(
+		dds::sub::Subscriber(*_participant), _DDSTopicsList[_ownID]);
+
+	_readCondition = new ReadCondition(
+		*_reader, DataState(
+			SampleState::not_read(),
+			ViewState::any(),
+			InstanceState::any()));
+
+	_waitset = new WaitSet;
+
+	_waitset->attach_condition(*_readCondition);
 }
 
-DDSChannelWriter DDSCommunicator::GetDDSChannelWriter(string PartyIP) {
+DDSChannelWriter* DDSCommunicator::getDDSChannelWriter(string PartyIP) {
 	for (auto DDSChannelWriter : _DDSChannelWriterList) {
-		if (DDSChannelWriter.GetTopicName() == PartyIP) {
+		if (DDSChannelWriter->GetTopicIP() == PartyIP) {
 			return DDSChannelWriter;
 		}
 	}
 	throw runtime_error("No channel was found for the specified IP");
 }
 
-void DDSCommunicator::Read(map<string,rti::core::bounded_sequence<char,(MAX_SEQUENCE_SIZE)>> *readinputMap) {
-	//cout << "Read" << endl;
+void DDSCommunicator::ReadAllInputs(map<string, DDSSample> *samplesMap) {
 
-	map<string,rti::core::bounded_sequence<char,(MAX_SEQUENCE_SIZE)>> readInputMap;
+	if (_printDebugFlag) cout << "ReadAllInputs" << endl;
+
+	DDSSample tempDDSSample;
 
 	for (unsigned int samplesCounter = 0; samplesCounter < (_numParties - 1);) {
-		_samples = _reader->take();//todo change history depth QOS
-		for (_sampleIt = _samples.begin() ; _sampleIt != _samples.end() ; ++_sampleIt) {
+		if (_printDebugFlag) std::cout << "Waiting" << endl;
+
+		_waitset->wait(dds::core::Duration::from_millisecs(5000));
+		_loandSamples = _reader->take();
+
+		for (_sampleIt = _loandSamples.begin(); _sampleIt != _loandSamples.end(); ++_sampleIt) {
 			if (_sampleIt->info().valid()) {
 				samplesCounter++;
-				string source = _sampleIt->data().ID();
-				readinputMap->insert(make_pair(source,_sampleIt->data().data()));
+
+				*(tempDDSSample.getUnderlyingSample()) = *_sampleIt;
+				string source = _sampleIt->data().sourceIP();
+				samplesMap->insert(make_pair(source, tempDDSSample));
 			}
-			else{
-				throw runtime_error("Received non-valid data");
+			else {
+				throw runtime_error("Received non-valid DDS sample");
 			}
-		 }
+		}
 	}
-	if (readinputMap->size()!=(_numParties-1)){
-		throw runtime_error("Not all data was received and the timeout has passed");
+	if (samplesMap->size() != (_numParties - 1)) {
+		throw runtime_error("Not all data was received");
+	}
+}
+
+void DDSCommunicator::ReadInput(DDSSample* sample) {
+	if (_printDebugFlag) cout << "ReadInput" << endl;
+
+	_waitset->wait(dds::core::Duration(50000)); //practically infinite
+		
+	*_reader >> take >> max_samples(1) >> _loandSamples;
+	_sampleIt = _loandSamples.begin();
+
+	if (_sampleIt->info().valid()) {
+		*(sample->getUnderlyingSample()) = *_sampleIt;
+	}
+	else {
+		throw runtime_error("Received a non-valid DDS sample");
 	}
 }
 
 
-bool DDSCommunicator::isSubscriptionMatched (){
-	//cout << "isSubscriptionMatched" << endl;
+
+bool DDSCommunicator::isSubscriptionMatched() {
+	if (_printDebugFlag) cout << "isSubscriptionMatched" << endl;
 	unsigned int SubscriptionMatchedCount;
 	auto startTime = high_resolution_clock::now();
 
-	while (true){
+	while (true) {
 		SubscriptionMatchedCount = _reader->subscription_matched_status()->current_count();
-		if (SubscriptionMatchedCount == (_numParties-1)){
+		if (SubscriptionMatchedCount == (_numParties - 1)) {
 			return true;
 		}
 
 		auto checkTime = high_resolution_clock::now();
 		auto timeSpanSeconds = duration_cast<seconds>(checkTime - startTime);
-		if (timeSpanSeconds.count() > _elapsedTime){
+		if (timeSpanSeconds.count() > _elapsedTime) {
 			throw runtime_error("Initialization time elapsed on communicator reader");
 		}
 
@@ -151,10 +204,10 @@ bool DDSCommunicator::isSubscriptionMatched (){
 	}
 }
 
-void DDSCommunicator::VerifyConnections (){
-	//cout << "VerifyConnections" << endl;
-	for (auto channelWriter : _DDSChannelWriterList){
-		channelWriter.isPublicationMatched(_elapsedTime);
+void DDSCommunicator::VerifyConnections() {
+	if (_printDebugFlag) cout << "VerifyConnections" << endl;
+	for (auto channelWriter : _DDSChannelWriterList) {
+		channelWriter->isPublicationMatched(_elapsedTime);
 	}
 	this->isSubscriptionMatched();
 }

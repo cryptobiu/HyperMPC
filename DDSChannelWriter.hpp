@@ -15,27 +15,30 @@
 #include <dds/pub/ddspub.hpp>
 #include <dds/sub/ddssub.hpp>
 #include <dds/pub/DataWriter.hpp>
-#include "Test.hpp"
+#include "BIUDDSType.hpp"
 
 using namespace std;
 using namespace chrono;
 
 class DDSChannelWriter {
 public:
-	DDSChannelWriter(dds::domain::DomainParticipant *_participant, dds::topic::Topic<MyStruct> _topic, string ownIP);
+	DDSChannelWriter(dds::domain::DomainParticipant *_participant, dds::topic::Topic<BIUDDSStruct> _topic, string ownIP, unsigned long ownID, bool printDebugFlag = false);
 	virtual ~DDSChannelWriter();
-	void Write (const char* data,int size);
-	string GetTopicName ();
+	void Write (const char* data,int size, string tag = "");
+	string GetTopicIP() { return _topicIP; };
+	string GetTopicID() { return _topicID; };
 	bool isPublicationMatched (unsigned int elapsedTime);
-	string getChannelID() { return _sample.ID(); };
 
 private:
 //	Methods
 
 //	Variables
-    dds::pub::DataWriter<MyStruct> *_writer;
-    MyStruct _sample;
-
+    dds::pub::DataWriter<BIUDDSStruct> *_writer;
+	BIUDDSStruct _sample;
+	string _topicIP;
+	string _topicID;
+	bool _printDebugFlag;
+	unsigned int _samplesSequenceNumber = 1;
 };
 
 #endif /* DDSCHANNELWRITER_HPP_ */

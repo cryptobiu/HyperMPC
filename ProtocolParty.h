@@ -333,7 +333,7 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
     shareIndex = 0;//numOfInputGates;
 
 //    parties = MPCCommunication::setCommunication(io_service, m_partyId, N, partiesFileName);
-    myNewChannel = new DDSCommunicator(m_partyId, N, partiesFileName, 200, true);
+    myNewChannel = new DDSCommunicator(m_partyId, N, partiesFileName, 200, false, false);
 
     readMyInputs();
 
@@ -2070,32 +2070,31 @@ void ProtocolParty<FieldType>::exchangeData(std::vector<std::vector<byte>> &send
     //cout<<"in exchangeData";
     for (int i=first; i < last; i++) {
 
-        DDSChannelWriter MyChannelWriter = myNewChannel->GetDDSChannelWriter(myNewChannel->getMyIP());
+        DDSChannelWriter MyChannelWriter = *myNewChannel->getDDSChannelWriter(myNewChannel->getOwnIP());
         if ((m_partyId) < i)
         {
             //send shares to my input bits
             MyChannelWriter.Write((const char*)&sendBufs[parties[i]->getID()], sendBufs[parties[i]->getID()].size());
 
-            map<string, bounded_sequence<char, (MAX_SEQUENCE_SIZE)>> readInputMap;
+            map<string, DDSSample> readInputMap;
 
-            myNewChannel->Read(&readInputMap);
+            myNewChannel->ReadAllInputs(&readInputMap);
             auto input1 = readInputMap.find("")->second;
-
-            //taken from here https://stackoverflow.com/a/48750483/4193208
-            std::transform(recBufs[parties[i]->getID()].begin(), recBufs[parties[i]->getID()].end(),
-                std::back_inserter(input1), [](unsigned char c) {return byte{c};});
-
+            auto aa = myNewChannel->getDDSChannelWriter(myNewChannel->getPartiesIPList()[i]).;
+            std::copy(input1.getPayload() + strlen(input1.getPayload()),
+                      std::back_inserter(recBufs[aa]));
+//            recBufs[parties[i]->getID()](input1.getPayload(), input1.getPayload() + strlen(input1.getPayload()));
         }
         else
         {
-            map<string, bounded_sequence<char, (MAX_SEQUENCE_SIZE)>> readInputMap;
+            map<string, DDSSample> readInputMap;
 
-            myNewChannel->Read(&readInputMap);
+            myNewChannel->ReadAllInputs(&readInputMap);
             auto input1 = readInputMap.find("")->second;
 
             //taken from here https://stackoverflow.com/a/48750483/4193208
-            std::transform(recBufs[parties[i]->getID()].begin(), recBufs[parties[i]->getID()].end(),
-                           std::back_inserter(input1), [](unsigned char c) {return byte{c};});
+//            std::transform(recBufs[parties[i]->getID()].begin(), recBufs[parties[i]->getID()].end(),
+//                           std::back_inserter(input1), [](unsigned char c) {return byte{c};});
 
             //send shares to my input bits
             MyChannelWriter.Write((const char*)&sendBufs[parties[i]->getID()], sendBufs[parties[i]->getID()].size());
@@ -2144,35 +2143,31 @@ void ProtocolParty<FieldType>::recData(std::vector<byte> &message, std::vector<s
     for (int i=first; i < last; i++)
     {
 
-        DDSChannelWriter MyChannelWriter = myNewChannel->GetDDSChannelWriter(myNewChannel->getMyIP());
+        DDSChannelWriter MyChannelWriter = *myNewChannel->getDDSChannelWriter(myNewChannel->getOwnIP());
         if ((m_partyId) < i)
         {
-
-
             //send shares to my input bits
             MyChannelWriter.Write((const char*)message.data(), message.size());
 
-            map<string, bounded_sequence<char, (MAX_SEQUENCE_SIZE)>> readInputMap;
+            map<string, DDSSample> readInputMap;
 
-            myNewChannel->Read(&readInputMap);
+            myNewChannel->ReadAllInputs(&readInputMap);
             auto input1 = readInputMap.find("")->second;
 
             //taken from here https://stackoverflow.com/a/48750483/4193208
-            std::transform(recBufs[parties[i]->getID()].begin(), recBufs[parties[i]->getID()].end(),
-                           std::back_inserter(input1), [](unsigned char c) {return byte{c};});
+//            std::transform(recBufs[parties[i]->getID()].begin(), recBufs[parties[i]->getID()].end(),
+//                           std::back_inserter(input1), [](unsigned char c) {return byte{c};});
 
         }
         else
         {
-            map<string, bounded_sequence<char, (MAX_SEQUENCE_SIZE)>> readInputMap;
-
-            myNewChannel->Read(&readInputMap);
+            map<string, DDSSample> readInputMap;
+            myNewChannel->ReadAllInputs(&readInputMap);
             auto input1 = readInputMap.find("")->second;
 
             //taken from here https://stackoverflow.com/a/48750483/4193208
-            std::transform(recBufs[parties[i]->getID()].begin(), recBufs[parties[i]->getID()].end(),
-                           std::back_inserter(input1), [](unsigned char c) {return byte{c};});
-
+//            std::transform(recBufs[parties[i]->getID()].begin(), recBufs[parties[i]->getID()].end(),
+//                           std::back_inserter(input1), [](unsigned char c) {return byte{c};});
             MyChannelWriter.Write((const char*)message.data(), message.size());
 
         }

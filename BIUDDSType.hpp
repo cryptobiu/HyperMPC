@@ -3,14 +3,14 @@
 /*
 WARNING: THIS FILE IS AUTO-GENERATED. DO NOT MODIFY.
 
-This file was generated from Test.idl using "rtiddsgen".
+This file was generated from BIUDDSType.idl using "rtiddsgen".
 The rtiddsgen tool is part of the RTI Connext distribution.
 For more information, type 'rtiddsgen -help' at a command shell
 or consult the RTI Connext manual.
 */
 
-#ifndef Test_1083273499_hpp
-#define Test_1083273499_hpp
+#ifndef BIUDDSType_712083984_hpp
+#define BIUDDSType_712083984_hpp
 
 #include <iosfwd>
 
@@ -63,74 +63,86 @@ static const int32_t MAX_SEQUENCE_SIZE = 4000000;
 template class NDDSUSERDllExport std::allocator<char>;
 template class NDDSUSERDllExport std::vector<char >;
 #endif
-class NDDSUSERDllExport MyStruct {
+class NDDSUSERDllExport BIUDDSStruct {
 
   public:
-    MyStruct();
-    MyStruct(
-        const std::string& ID,
+    BIUDDSStruct();
+    BIUDDSStruct(
+        const std::string& sourceIP,
+        uint32_t sourceID,
         int32_t sequenceNumber,
-        const rti::core::bounded_sequence<char, (MAX_SEQUENCE_SIZE)>& data);
+        const std::string& tag,
+        const rti::core::bounded_sequence<char, (MAX_SEQUENCE_SIZE)>& payload);
 
     #ifdef RTI_CXX11_RVALUE_REFERENCES
     #ifndef RTI_CXX11_NO_IMPLICIT_MOVE_OPERATIONS
-    MyStruct (MyStruct&&) = default;
-    MyStruct& operator=(MyStruct&&) = default;
-    MyStruct& operator=(const MyStruct&) = default;
-    MyStruct(const MyStruct&) = default;
+    BIUDDSStruct (BIUDDSStruct&&) = default;
+    BIUDDSStruct& operator=(BIUDDSStruct&&) = default;
+    BIUDDSStruct& operator=(const BIUDDSStruct&) = default;
+    BIUDDSStruct(const BIUDDSStruct&) = default;
     #else
-    MyStruct(MyStruct&& other_) OMG_NOEXCEPT;  
-    MyStruct& operator=(MyStruct&&  other_) OMG_NOEXCEPT;
+    BIUDDSStruct(BIUDDSStruct&& other_) OMG_NOEXCEPT;  
+    BIUDDSStruct& operator=(BIUDDSStruct&&  other_) OMG_NOEXCEPT;
     #endif
     #endif 
 
-    std::string& ID() OMG_NOEXCEPT; 
-    const std::string& ID() const OMG_NOEXCEPT;
-    void ID(const std::string& value);
+    std::string& sourceIP() OMG_NOEXCEPT; 
+    const std::string& sourceIP() const OMG_NOEXCEPT;
+    void sourceIP(const std::string& value);
+
+    uint32_t& sourceID() OMG_NOEXCEPT; 
+    const uint32_t& sourceID() const OMG_NOEXCEPT;
+    void sourceID(uint32_t value);
 
     int32_t& sequenceNumber() OMG_NOEXCEPT; 
     const int32_t& sequenceNumber() const OMG_NOEXCEPT;
     void sequenceNumber(int32_t value);
 
-    rti::core::bounded_sequence<char, (MAX_SEQUENCE_SIZE)>& data() OMG_NOEXCEPT; 
-    const rti::core::bounded_sequence<char, (MAX_SEQUENCE_SIZE)>& data() const OMG_NOEXCEPT;
-    void data(const rti::core::bounded_sequence<char, (MAX_SEQUENCE_SIZE)>& value);
+    std::string& tag() OMG_NOEXCEPT; 
+    const std::string& tag() const OMG_NOEXCEPT;
+    void tag(const std::string& value);
 
-    bool operator == (const MyStruct& other_) const;
-    bool operator != (const MyStruct& other_) const;
+    rti::core::bounded_sequence<char, (MAX_SEQUENCE_SIZE)>& payload() OMG_NOEXCEPT; 
+    const rti::core::bounded_sequence<char, (MAX_SEQUENCE_SIZE)>& payload() const OMG_NOEXCEPT;
+    void payload(const rti::core::bounded_sequence<char, (MAX_SEQUENCE_SIZE)>& value);
 
-    void swap(MyStruct& other_) OMG_NOEXCEPT ;
+    bool operator == (const BIUDDSStruct& other_) const;
+    bool operator != (const BIUDDSStruct& other_) const;
+
+    void swap(BIUDDSStruct& other_) OMG_NOEXCEPT ;
 
   private:
 
-    std::string m_ID_;
+    std::string m_sourceIP_;
+    uint32_t m_sourceID_;
     int32_t m_sequenceNumber_;
-    rti::core::bounded_sequence<char, (MAX_SEQUENCE_SIZE)> m_data_;
+    std::string m_tag_;
+    rti::core::bounded_sequence<char, (MAX_SEQUENCE_SIZE)> m_payload_;
 
 };
 
-inline void swap(MyStruct& a, MyStruct& b)  OMG_NOEXCEPT 
+inline void swap(BIUDDSStruct& a, BIUDDSStruct& b)  OMG_NOEXCEPT 
 {
     a.swap(b);
 }
 
-NDDSUSERDllExport std::ostream& operator<<(std::ostream& o, const MyStruct& sample);
+NDDSUSERDllExport std::ostream& operator<<(std::ostream& o, const BIUDDSStruct& sample);
 
 namespace dds { 
     namespace topic {
 
         template<>
-        struct topic_type_name<MyStruct> {
+        struct topic_type_name<BIUDDSStruct> {
             NDDSUSERDllExport static std::string value() {
-                return "MyStruct";
+                return "BIUDDSStruct";
             }
         };
 
         template<>
-        struct is_topic_type<MyStruct> : public dds::core::true_type {};
+        struct is_topic_type<BIUDDSStruct> : public dds::core::true_type {};
 
         template<>
-        struct topic_type_support<MyStruct> {
+        struct topic_type_support<BIUDDSStruct> {
             NDDSUSERDllExport 
             static void register_type(
                 dds::domain::DomainParticipant& participant,
@@ -138,16 +150,16 @@ namespace dds {
 
             NDDSUSERDllExport 
             static std::vector<char>& to_cdr_buffer(
-                std::vector<char>& buffer, const MyStruct& sample);
+                std::vector<char>& buffer, const BIUDDSStruct& sample);
 
             NDDSUSERDllExport 
-            static void from_cdr_buffer(MyStruct& sample, const std::vector<char>& buffer);
+            static void from_cdr_buffer(BIUDDSStruct& sample, const std::vector<char>& buffer);
 
             NDDSUSERDllExport 
-            static void reset_sample(MyStruct& sample);
+            static void reset_sample(BIUDDSStruct& sample);
 
             NDDSUSERDllExport 
-            static void allocate_sample(MyStruct& sample, int, int);
+            static void allocate_sample(BIUDDSStruct& sample, int, int);
 
             static const rti::topic::TypePluginKind::type type_plugin_kind = 
             rti::topic::TypePluginKind::STL;
@@ -160,13 +172,13 @@ namespace rti {
     namespace topic {
 
         template<>
-        struct dynamic_type<MyStruct> {
+        struct dynamic_type<BIUDDSStruct> {
             typedef dds::core::xtypes::StructType type;
             NDDSUSERDllExport static const dds::core::xtypes::StructType& get();
         };
 
         template <>
-        struct extensibility<MyStruct> {
+        struct extensibility<BIUDDSStruct> {
             static const dds::core::xtypes::ExtensibilityKind::type kind =
             dds::core::xtypes::ExtensibilityKind::EXTENSIBLE;                
         };
@@ -181,5 +193,5 @@ namespace rti {
 #define NDDSUSERDllExport
 #endif
 
-#endif // Test_1083273499_hpp
+#endif // BIUDDSType_712083984_hpp
 

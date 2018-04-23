@@ -3,16 +3,16 @@
 /*
 WARNING: THIS FILE IS AUTO-GENERATED. DO NOT MODIFY.
 
-This file was generated from Test.idl using "rtiddsgen".
+This file was generated from BIUDDSType.idl using "rtiddsgen".
 The rtiddsgen tool is part of the RTI Connext distribution.
 For more information, type 'rtiddsgen -help' at a command shell
 or consult the RTI Connext manual.
 */
 
-#ifndef TestPlugin_1083273499_h
-#define TestPlugin_1083273499_h
+#ifndef BIUDDSTypePlugin_712083984_h
+#define BIUDDSTypePlugin_712083984_h
 
-#include "Test.hpp"
+#include "BIUDDSType.hpp"
 
 struct RTICdrStream;
 
@@ -27,57 +27,90 @@ struct RTICdrStream;
 #define NDDSUSERDllExport __declspec(dllexport)
 #endif
 
-#define MyStructPlugin_get_sample PRESTypePluginDefaultEndpointData_getSample 
-#define MyStructPlugin_get_buffer PRESTypePluginDefaultEndpointData_getBuffer 
-#define MyStructPlugin_return_buffer PRESTypePluginDefaultEndpointData_returnBuffer 
+/* The type used to store keys for instances of type struct
+* AnotherSimple.
+*
+* By default, this type is struct BIUDDSStruct
+* itself. However, if for some reason this choice is not practical for your
+* system (e.g. if sizeof(struct BIUDDSStruct)
+* is very large), you may redefine this typedef in terms of another type of
+* your choosing. HOWEVER, if you define the KeyHolder type to be something
+* other than struct AnotherSimple, the
+* following restriction applies: the key of struct
+* BIUDDSStruct must consist of a
+* single field of your redefined KeyHolder type and that field must be the
+* first field in struct BIUDDSStruct.
+*/
+typedef  class BIUDDSStruct BIUDDSStructKeyHolder;
 
-#define MyStructPlugin_create_sample PRESTypePluginDefaultEndpointData_createSample 
-#define MyStructPlugin_destroy_sample PRESTypePluginDefaultEndpointData_deleteSample 
+#define BIUDDSStructPlugin_get_sample PRESTypePluginDefaultEndpointData_getSample 
+#define BIUDDSStructPlugin_get_buffer PRESTypePluginDefaultEndpointData_getBuffer 
+#define BIUDDSStructPlugin_return_buffer PRESTypePluginDefaultEndpointData_returnBuffer 
+
+#define BIUDDSStructPlugin_get_key PRESTypePluginDefaultEndpointData_getKey 
+#define BIUDDSStructPlugin_return_key PRESTypePluginDefaultEndpointData_returnKey
+
+#define BIUDDSStructPlugin_create_sample PRESTypePluginDefaultEndpointData_createSample 
+#define BIUDDSStructPlugin_destroy_sample PRESTypePluginDefaultEndpointData_deleteSample 
 
 /* --------------------------------------------------------------------------------------
 Support functions:
 * -------------------------------------------------------------------------------------- */
 
-NDDSUSERDllExport extern MyStruct*
-MyStructPluginSupport_create_data_w_params(
+NDDSUSERDllExport extern BIUDDSStruct*
+BIUDDSStructPluginSupport_create_data_w_params(
     const struct DDS_TypeAllocationParams_t * alloc_params);
 
-NDDSUSERDllExport extern MyStruct*
-MyStructPluginSupport_create_data_ex(RTIBool allocate_pointers);
+NDDSUSERDllExport extern BIUDDSStruct*
+BIUDDSStructPluginSupport_create_data_ex(RTIBool allocate_pointers);
 
-NDDSUSERDllExport extern MyStruct*
-MyStructPluginSupport_create_data(void);
+NDDSUSERDllExport extern BIUDDSStruct*
+BIUDDSStructPluginSupport_create_data(void);
 
 NDDSUSERDllExport extern RTIBool 
-MyStructPluginSupport_copy_data(
-    MyStruct *out,
-    const MyStruct *in);
+BIUDDSStructPluginSupport_copy_data(
+    BIUDDSStruct *out,
+    const BIUDDSStruct *in);
 
 NDDSUSERDllExport extern void 
-MyStructPluginSupport_destroy_data_w_params(
-    MyStruct *sample,
+BIUDDSStructPluginSupport_destroy_data_w_params(
+    BIUDDSStruct *sample,
     const struct DDS_TypeDeallocationParams_t * dealloc_params);
 
 NDDSUSERDllExport extern void 
-MyStructPluginSupport_destroy_data_ex(
-    MyStruct *sample,RTIBool deallocate_pointers);
+BIUDDSStructPluginSupport_destroy_data_ex(
+    BIUDDSStruct *sample,RTIBool deallocate_pointers);
 
 NDDSUSERDllExport extern void 
-MyStructPluginSupport_destroy_data(
-    MyStruct *sample);
+BIUDDSStructPluginSupport_destroy_data(
+    BIUDDSStruct *sample);
 
 NDDSUSERDllExport extern void 
-MyStructPluginSupport_print_data(
-    const MyStruct *sample,
+BIUDDSStructPluginSupport_print_data(
+    const BIUDDSStruct *sample,
     const char *desc,
     unsigned int indent);
+
+NDDSUSERDllExport extern BIUDDSStruct*
+BIUDDSStructPluginSupport_create_key_ex(RTIBool allocate_pointers);
+
+NDDSUSERDllExport extern BIUDDSStruct*
+BIUDDSStructPluginSupport_create_key(void);
+
+NDDSUSERDllExport extern void 
+BIUDDSStructPluginSupport_destroy_key_ex(
+    BIUDDSStructKeyHolder *key,RTIBool deallocate_pointers);
+
+NDDSUSERDllExport extern void 
+BIUDDSStructPluginSupport_destroy_key(
+    BIUDDSStructKeyHolder *key);
 
 /* ----------------------------------------------------------------------------
 Callback functions:
 * ---------------------------------------------------------------------------- */
 
 NDDSUSERDllExport extern PRESTypePluginParticipantData 
-MyStructPlugin_on_participant_attached(
+BIUDDSStructPlugin_on_participant_attached(
     void *registration_data, 
     const struct PRESTypePluginParticipantInfo *participant_info,
     RTIBool top_level_registration, 
@@ -85,40 +118,40 @@ MyStructPlugin_on_participant_attached(
     RTICdrTypeCode *typeCode);
 
 NDDSUSERDllExport extern void 
-MyStructPlugin_on_participant_detached(
+BIUDDSStructPlugin_on_participant_detached(
     PRESTypePluginParticipantData participant_data);
 
 NDDSUSERDllExport extern PRESTypePluginEndpointData 
-MyStructPlugin_on_endpoint_attached(
+BIUDDSStructPlugin_on_endpoint_attached(
     PRESTypePluginParticipantData participant_data,
     const struct PRESTypePluginEndpointInfo *endpoint_info,
     RTIBool top_level_registration, 
     void *container_plugin_context);
 
 NDDSUSERDllExport extern void 
-MyStructPlugin_on_endpoint_detached(
+BIUDDSStructPlugin_on_endpoint_detached(
     PRESTypePluginEndpointData endpoint_data);
 
 NDDSUSERDllExport extern void    
-MyStructPlugin_return_sample(
+BIUDDSStructPlugin_return_sample(
     PRESTypePluginEndpointData endpoint_data,
-    MyStruct *sample,
+    BIUDDSStruct *sample,
     void *handle);    
 
 NDDSUSERDllExport extern RTIBool 
-MyStructPlugin_copy_sample(
+BIUDDSStructPlugin_copy_sample(
     PRESTypePluginEndpointData endpoint_data,
-    MyStruct *out,
-    const MyStruct *in);
+    BIUDDSStruct *out,
+    const BIUDDSStruct *in);
 
 /* ----------------------------------------------------------------------------
 (De)Serialize functions:
 * ------------------------------------------------------------------------- */
 
 NDDSUSERDllExport extern RTIBool 
-MyStructPlugin_serialize(
+BIUDDSStructPlugin_serialize(
     PRESTypePluginEndpointData endpoint_data,
-    const MyStruct *sample,
+    const BIUDDSStruct *sample,
     struct RTICdrStream *stream, 
     RTIBool serialize_encapsulation,
     RTIEncapsulationId encapsulation_id,
@@ -126,24 +159,24 @@ MyStructPlugin_serialize(
     void *endpoint_plugin_qos);
 
 NDDSUSERDllExport extern RTIBool 
-MyStructPlugin_deserialize_sample(
+BIUDDSStructPlugin_deserialize_sample(
     PRESTypePluginEndpointData endpoint_data,
-    MyStruct *sample, 
+    BIUDDSStruct *sample, 
     struct RTICdrStream *stream,
     RTIBool deserialize_encapsulation,
     RTIBool deserialize_sample, 
     void *endpoint_plugin_qos);
 
 NDDSUSERDllExport extern RTIBool
-MyStructPlugin_serialize_to_cdr_buffer(
+BIUDDSStructPlugin_serialize_to_cdr_buffer(
     char * buffer,
     unsigned int * length,
-    const MyStruct *sample); 
+    const BIUDDSStruct *sample); 
 
 NDDSUSERDllExport extern RTIBool 
-MyStructPlugin_deserialize(
+BIUDDSStructPlugin_deserialize(
     PRESTypePluginEndpointData endpoint_data,
-    MyStruct **sample, 
+    BIUDDSStruct **sample, 
     RTIBool * drop_sample,
     struct RTICdrStream *stream,
     RTIBool deserialize_encapsulation,
@@ -151,13 +184,13 @@ MyStructPlugin_deserialize(
     void *endpoint_plugin_qos);
 
 NDDSUSERDllExport extern RTIBool
-MyStructPlugin_deserialize_from_cdr_buffer(
-    MyStruct *sample,
+BIUDDSStructPlugin_deserialize_from_cdr_buffer(
+    BIUDDSStruct *sample,
     const char * buffer,
     unsigned int length);    
 
 NDDSUSERDllExport extern RTIBool
-MyStructPlugin_skip(
+BIUDDSStructPlugin_skip(
     PRESTypePluginEndpointData endpoint_data,
     struct RTICdrStream *stream, 
     RTIBool skip_encapsulation,  
@@ -165,7 +198,7 @@ MyStructPlugin_skip(
     void *endpoint_plugin_qos);
 
 NDDSUSERDllExport extern unsigned int 
-MyStructPlugin_get_serialized_sample_max_size_ex(
+BIUDDSStructPlugin_get_serialized_sample_max_size_ex(
     PRESTypePluginEndpointData endpoint_data,
     RTIBool * overflow,
     RTIBool include_encapsulation,
@@ -173,35 +206,35 @@ MyStructPlugin_get_serialized_sample_max_size_ex(
     unsigned int current_alignment);    
 
 NDDSUSERDllExport extern unsigned int 
-MyStructPlugin_get_serialized_sample_max_size(
+BIUDDSStructPlugin_get_serialized_sample_max_size(
     PRESTypePluginEndpointData endpoint_data,
     RTIBool include_encapsulation,
     RTIEncapsulationId encapsulation_id,
     unsigned int current_alignment);
 
 NDDSUSERDllExport extern unsigned int 
-MyStructPlugin_get_serialized_sample_min_size(
+BIUDDSStructPlugin_get_serialized_sample_min_size(
     PRESTypePluginEndpointData endpoint_data,
     RTIBool include_encapsulation,
     RTIEncapsulationId encapsulation_id,
     unsigned int current_alignment);
 
 NDDSUSERDllExport extern unsigned int
-MyStructPlugin_get_serialized_sample_size(
+BIUDDSStructPlugin_get_serialized_sample_size(
     PRESTypePluginEndpointData endpoint_data,
     RTIBool include_encapsulation,
     RTIEncapsulationId encapsulation_id,
     unsigned int current_alignment,
-    const MyStruct * sample);
+    const BIUDDSStruct * sample);
 
 /* --------------------------------------------------------------------------------------
 Key Management functions:
 * -------------------------------------------------------------------------------------- */
 NDDSUSERDllExport extern PRESTypePluginKeyKind 
-MyStructPlugin_get_key_kind(void);
+BIUDDSStructPlugin_get_key_kind(void);
 
 NDDSUSERDllExport extern unsigned int 
-MyStructPlugin_get_serialized_key_max_size_ex(
+BIUDDSStructPlugin_get_serialized_key_max_size_ex(
     PRESTypePluginEndpointData endpoint_data,
     RTIBool * overflow,
     RTIBool include_encapsulation,
@@ -209,16 +242,16 @@ MyStructPlugin_get_serialized_key_max_size_ex(
     unsigned int current_alignment);
 
 NDDSUSERDllExport extern unsigned int 
-MyStructPlugin_get_serialized_key_max_size(
+BIUDDSStructPlugin_get_serialized_key_max_size(
     PRESTypePluginEndpointData endpoint_data,
     RTIBool include_encapsulation,
     RTIEncapsulationId encapsulation_id,
     unsigned int current_alignment);
 
 NDDSUSERDllExport extern RTIBool 
-MyStructPlugin_serialize_key(
+BIUDDSStructPlugin_serialize_key(
     PRESTypePluginEndpointData endpoint_data,
-    const MyStruct *sample,
+    const BIUDDSStruct *sample,
     struct RTICdrStream *stream,
     RTIBool serialize_encapsulation,
     RTIEncapsulationId encapsulation_id,
@@ -226,18 +259,18 @@ MyStructPlugin_serialize_key(
     void *endpoint_plugin_qos);
 
 NDDSUSERDllExport extern RTIBool 
-MyStructPlugin_deserialize_key_sample(
+BIUDDSStructPlugin_deserialize_key_sample(
     PRESTypePluginEndpointData endpoint_data,
-    MyStruct * sample,
+    BIUDDSStruct * sample,
     struct RTICdrStream *stream,
     RTIBool deserialize_encapsulation,
     RTIBool deserialize_key,
     void *endpoint_plugin_qos);
 
 NDDSUSERDllExport extern RTIBool 
-MyStructPlugin_deserialize_key(
+BIUDDSStructPlugin_deserialize_key(
     PRESTypePluginEndpointData endpoint_data,
-    MyStruct ** sample,
+    BIUDDSStruct ** sample,
     RTIBool * drop_sample,
     struct RTICdrStream *stream,
     RTIBool deserialize_encapsulation,
@@ -245,20 +278,46 @@ MyStructPlugin_deserialize_key(
     void *endpoint_plugin_qos);
 
 NDDSUSERDllExport extern RTIBool
-MyStructPlugin_serialized_sample_to_key(
+BIUDDSStructPlugin_serialized_sample_to_key(
     PRESTypePluginEndpointData endpoint_data,
-    MyStruct *sample,
+    BIUDDSStruct *sample,
     struct RTICdrStream *stream, 
     RTIBool deserialize_encapsulation,  
     RTIBool deserialize_key, 
     void *endpoint_plugin_qos);
 
+NDDSUSERDllExport extern RTIBool 
+BIUDDSStructPlugin_instance_to_key(
+    PRESTypePluginEndpointData endpoint_data,
+    BIUDDSStructKeyHolder *key, 
+    const BIUDDSStruct *instance);
+
+NDDSUSERDllExport extern RTIBool 
+BIUDDSStructPlugin_key_to_instance(
+    PRESTypePluginEndpointData endpoint_data,
+    BIUDDSStruct *instance, 
+    const BIUDDSStructKeyHolder *key);
+
+NDDSUSERDllExport extern RTIBool 
+BIUDDSStructPlugin_instance_to_keyhash(
+    PRESTypePluginEndpointData endpoint_data,
+    DDS_KeyHash_t *keyhash,
+    const BIUDDSStruct *instance);
+
+NDDSUSERDllExport extern RTIBool 
+BIUDDSStructPlugin_serialized_sample_to_keyhash(
+    PRESTypePluginEndpointData endpoint_data,
+    struct RTICdrStream *stream, 
+    DDS_KeyHash_t *keyhash,
+    RTIBool deserialize_encapsulation,
+    void *endpoint_plugin_qos); 
+
 /* Plugin Functions */
 NDDSUSERDllExport extern struct PRESTypePlugin*
-MyStructPlugin_new(void);
+BIUDDSStructPlugin_new(void);
 
 NDDSUSERDllExport extern void
-MyStructPlugin_delete(struct PRESTypePlugin *);
+BIUDDSStructPlugin_delete(struct PRESTypePlugin *);
 
 #if (defined(RTI_WIN32) || defined (RTI_WINCE)) && defined(NDDS_USER_DLL_EXPORT)
 /* If the code is building on Windows, stop exporting symbols.
@@ -267,5 +326,5 @@ MyStructPlugin_delete(struct PRESTypePlugin *);
 #define NDDSUSERDllExport
 #endif
 
-#endif /* TestPlugin_1083273499_h */
+#endif /* BIUDDSTypePlugin_712083984_h */
 

@@ -12,7 +12,7 @@ INCLUDE_DIRECTORIES($ENV{HOME}/ntl-9.10.0/include $ENV{HOME} $ENV{HOME}/libscapi
 
 set(SOURCE_FILES main.cpp ProtocolParty.cpp ProtocolParty.h TemplateField.h TemplateField.cpp ProtocolTimer.cpp
         ProtocolTimer.h ZpGMPElement.cpp ZpGMPElement.h  GF2_8LookupTable.cpp GF2_8LookupTable.h
-        DDSCommunicator.cxx DDSChannelWriter.cxx Test.cxx TestPlugin.cxx)
+        DDSCommunicator.cxx DDSChannelWriter.cxx DDSSample.cxx BIUDDSType.cxx BIUDDSTypePlugin.cxx)
 
 link_directories(/usr/ssl/lib/ $ENV{HOME}/libscapi/install/lib ${NDDSHOME}/lib/x64Linux3gcc5.4.0)
 

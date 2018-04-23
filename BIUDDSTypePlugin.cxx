@@ -3,7 +3,7 @@
 /*
 WARNING: THIS FILE IS AUTO-GENERATED. DO NOT MODIFY.
 
-This file was generated from Test.idl using "rtiddsgen".
+This file was generated from BIUDDSType.idl using "rtiddsgen".
 The rtiddsgen tool is part of the RTI Connext distribution.
 For more information, type 'rtiddsgen -help' at a command shell
 or consult the RTI Connext manual.
@@ -58,21 +58,21 @@ or consult the RTI Connext manual.
 
 #define RTI_CDR_CURRENT_SUBMODULE RTI_CDR_SUBMODULE_MASK_STREAM
 
-#include "TestPlugin.hpp"
+#include "BIUDDSTypePlugin.hpp"
 
 /* ----------------------------------------------------------------------------
-*  Type MyStruct
+*  Type BIUDDSStruct
 * -------------------------------------------------------------------------- */
 
 /* -----------------------------------------------------------------------------
 Support functions:
 * -------------------------------------------------------------------------- */
 
-MyStruct *
-MyStructPluginSupport_create_data(void)
+BIUDDSStruct *
+BIUDDSStructPluginSupport_create_data(void)
 {
     try {
-        MyStruct *sample = new MyStruct;    
+        BIUDDSStruct *sample = new BIUDDSStruct;    
         rti::topic::allocate_sample(*sample);
         return sample;
     } catch (...) {
@@ -81,16 +81,16 @@ MyStructPluginSupport_create_data(void)
 }
 
 void 
-MyStructPluginSupport_destroy_data(
-    MyStruct *sample) 
+BIUDDSStructPluginSupport_destroy_data(
+    BIUDDSStruct *sample) 
 {
     delete sample;
 }
 
 RTIBool 
-MyStructPluginSupport_copy_data(
-    MyStruct *dst,
-    const MyStruct *src)
+BIUDDSStructPluginSupport_copy_data(
+    BIUDDSStruct *dst,
+    const BIUDDSStruct *src)
 {
     try {
         *dst = *src;
@@ -101,12 +101,25 @@ MyStructPluginSupport_copy_data(
     return RTI_TRUE;
 }
 
+BIUDDSStruct *
+BIUDDSStructPluginSupport_create_key(void)
+{
+    return BIUDDSStructPluginSupport_create_data();
+}
+
+void 
+BIUDDSStructPluginSupport_destroy_key(
+    BIUDDSStructKeyHolder *key) 
+{
+    delete key;
+}
+
 /* ----------------------------------------------------------------------------
 Callback functions:
 * ---------------------------------------------------------------------------- */
 
 PRESTypePluginParticipantData 
-MyStructPlugin_on_participant_attached(
+BIUDDSStructPlugin_on_participant_attached(
     void *registration_data,
     const struct PRESTypePluginParticipantInfo *participant_info,
     RTIBool top_level_registration,
@@ -124,7 +137,7 @@ MyStructPlugin_on_participant_attached(
 }
 
 void 
-MyStructPlugin_on_participant_detached(
+BIUDDSStructPlugin_on_participant_detached(
     PRESTypePluginParticipantData participant_data)
 {
 
@@ -132,7 +145,7 @@ MyStructPlugin_on_participant_detached(
 }
 
 PRESTypePluginEndpointData
-MyStructPlugin_on_endpoint_attached(
+BIUDDSStructPlugin_on_endpoint_attached(
     PRESTypePluginParticipantData participant_data,
     const struct PRESTypePluginEndpointInfo *endpoint_info,
     RTIBool top_level_registration, 
@@ -143,6 +156,8 @@ MyStructPlugin_on_endpoint_attached(
 
         unsigned int serializedSampleMaxSize;
 
+        unsigned int serializedKeyMaxSize;
+
         if (top_level_registration) {} /* To avoid warnings */
         if (containerPluginContext) {} /* To avoid warnings */
 
@@ -150,17 +165,29 @@ MyStructPlugin_on_endpoint_attached(
             participant_data,
             endpoint_info,
             (PRESTypePluginDefaultEndpointDataCreateSampleFunction)
-            MyStructPluginSupport_create_data,
+            BIUDDSStructPluginSupport_create_data,
             (PRESTypePluginDefaultEndpointDataDestroySampleFunction)
-            MyStructPluginSupport_destroy_data,
-            NULL , NULL );
+            BIUDDSStructPluginSupport_destroy_data,
+            (PRESTypePluginDefaultEndpointDataCreateKeyFunction)
+            BIUDDSStructPluginSupport_create_key ,            
+            (PRESTypePluginDefaultEndpointDataDestroyKeyFunction)
+            BIUDDSStructPluginSupport_destroy_key);
 
         if (epd == NULL) {
             return NULL;
         } 
+        serializedKeyMaxSize =  BIUDDSStructPlugin_get_serialized_key_max_size(
+            epd,RTI_FALSE,RTI_CDR_ENCAPSULATION_ID_CDR_BE,0);
+
+        if(!PRESTypePluginDefaultEndpointData_createMD5StreamWithInfo(
+            epd,endpoint_info,serializedKeyMaxSize))  
+        {
+            PRESTypePluginDefaultEndpointData_delete(epd);
+            return NULL;
+        }
 
         if (endpoint_info->endpointKind == PRES_TYPEPLUGIN_ENDPOINT_WRITER) {
-            serializedSampleMaxSize = MyStructPlugin_get_serialized_sample_max_size(
+            serializedSampleMaxSize = BIUDDSStructPlugin_get_serialized_sample_max_size(
                 epd,RTI_FALSE,RTI_CDR_ENCAPSULATION_ID_CDR_BE,0);
 
             PRESTypePluginDefaultEndpointData_setMaxSizeSerializedSample(epd, serializedSampleMaxSize);
@@ -169,9 +196,9 @@ MyStructPlugin_on_endpoint_attached(
                 epd,
                 endpoint_info,
                 (PRESTypePluginGetSerializedSampleMaxSizeFunction)
-                MyStructPlugin_get_serialized_sample_max_size, epd,
+                BIUDDSStructPlugin_get_serialized_sample_max_size, epd,
                 (PRESTypePluginGetSerializedSampleSizeFunction)
-                MyStructPlugin_get_serialized_sample_size,
+                BIUDDSStructPlugin_get_serialized_sample_size,
                 epd) == RTI_FALSE) {
                 PRESTypePluginDefaultEndpointData_delete(epd);
                 return NULL;
@@ -185,7 +212,7 @@ MyStructPlugin_on_endpoint_attached(
 }
 
 void 
-MyStructPlugin_on_endpoint_detached(
+BIUDDSStructPlugin_on_endpoint_detached(
     PRESTypePluginEndpointData endpoint_data)
 {  
 
@@ -193,16 +220,16 @@ MyStructPlugin_on_endpoint_detached(
 }
 
 void    
-MyStructPlugin_return_sample(
+BIUDDSStructPlugin_return_sample(
     PRESTypePluginEndpointData endpoint_data,
-    MyStruct *sample,
+    BIUDDSStruct *sample,
     void *handle)
 {
     try {
         rti::topic::reset_sample(*sample);
     } catch(const std::exception& ex) {
         RTICdrLog_exception(
-            "MyStructPlugin_return_sample",
+            "BIUDDSStructPlugin_return_sample",
             &RTI_LOG_ANY_FAILURE_s,
             "exception: ",
             ex.what());           
@@ -213,28 +240,28 @@ MyStructPlugin_return_sample(
 }
 
 RTIBool 
-MyStructPlugin_copy_sample(
+BIUDDSStructPlugin_copy_sample(
     PRESTypePluginEndpointData,
-    MyStruct *dst,
-    const MyStruct *src)
+    BIUDDSStruct *dst,
+    const BIUDDSStruct *src)
 {
-    return MyStructPluginSupport_copy_data(dst,src);
+    return BIUDDSStructPluginSupport_copy_data(dst,src);
 }
 
 /* ----------------------------------------------------------------------------
 (De)Serialize functions:
 * ------------------------------------------------------------------------- */
 unsigned int 
-MyStructPlugin_get_serialized_sample_max_size(
+BIUDDSStructPlugin_get_serialized_sample_max_size(
     PRESTypePluginEndpointData endpoint_data,
     RTIBool include_encapsulation,
     RTIEncapsulationId encapsulation_id,
     unsigned int current_alignment);
 
 RTIBool 
-MyStructPlugin_serialize(
+BIUDDSStructPlugin_serialize(
     PRESTypePluginEndpointData endpoint_data,
-    const MyStruct *sample, 
+    const BIUDDSStruct *sample, 
     struct RTICdrStream *stream,    
     RTIBool serialize_encapsulation,
     RTIEncapsulationId encapsulation_id,
@@ -260,8 +287,13 @@ MyStructPlugin_serialize(
 
             if (!rti::topic::cdr::serialize(
                 stream, 
-                (sample->ID()).c_str(), 
+                (sample->sourceIP()).c_str(), 
                 (255) + 1)) {
+                return RTI_FALSE;
+            }
+
+            if (!rti::topic::cdr::serialize(
+                stream, &sample->sourceID())) {
                 return RTI_FALSE;
             }
 
@@ -270,7 +302,14 @@ MyStructPlugin_serialize(
                 return RTI_FALSE;
             }
 
-            if (!rti::topic::cdr::serialize_vector(stream, sample->data(), ((MAX_SEQUENCE_SIZE)))) {
+            if (!rti::topic::cdr::serialize(
+                stream, 
+                (sample->tag()).c_str(), 
+                (255) + 1)) {
+                return RTI_FALSE;
+            }
+
+            if (!rti::topic::cdr::serialize_vector(stream, sample->payload(), ((MAX_SEQUENCE_SIZE)))) {
                 return RTI_FALSE;
             }
 
@@ -288,9 +327,9 @@ MyStructPlugin_serialize(
 }
 
 RTIBool 
-MyStructPlugin_deserialize_sample(
+BIUDDSStructPlugin_deserialize_sample(
     PRESTypePluginEndpointData endpoint_data,
-    MyStruct *sample,
+    BIUDDSStruct *sample,
     struct RTICdrStream *stream,   
     RTIBool deserialize_encapsulation,
     RTIBool deserialize_sample, 
@@ -314,8 +353,13 @@ MyStructPlugin_deserialize_sample(
 
         if (!rti::topic::cdr::deserialize(
             stream, 
-            sample->ID(), 
+            sample->sourceIP(), 
             (255) + 1)) {
+            goto fin; 
+        }
+        if (!rti::topic::cdr::deserialize(
+            stream, 
+            &sample->sourceID())) {
             goto fin; 
         }
         if (!rti::topic::cdr::deserialize(
@@ -323,10 +367,16 @@ MyStructPlugin_deserialize_sample(
             &sample->sequenceNumber())) {
             goto fin; 
         }
+        if (!rti::topic::cdr::deserialize(
+            stream, 
+            sample->tag(), 
+            (255) + 1)) {
+            goto fin; 
+        }
         {
             if (!rti::topic::cdr::deserialize_vector(
                 stream, 
-                sample->data(), 
+                sample->payload(), 
                 ((MAX_SEQUENCE_SIZE)))) {
                 goto fin; 
             }
@@ -349,10 +399,10 @@ MyStructPlugin_deserialize_sample(
 }
 
 RTIBool
-MyStructPlugin_serialize_to_cdr_buffer(
+BIUDDSStructPlugin_serialize_to_cdr_buffer(
     char * buffer,
     unsigned int * length,
-    const MyStruct *sample)
+    const BIUDDSStruct *sample)
 {
     try{
         struct RTICdrStream stream;
@@ -364,12 +414,12 @@ MyStructPlugin_serialize_to_cdr_buffer(
         }
 
         epd._maxSizeSerializedSample =
-        MyStructPlugin_get_serialized_sample_max_size(
+        BIUDDSStructPlugin_get_serialized_sample_max_size(
             NULL, RTI_TRUE, RTICdrEncapsulation_getNativeCdrEncapsulationId(), 0);
 
         if (buffer == NULL) {
             *length = 
-            MyStructPlugin_get_serialized_sample_size(
+            BIUDDSStructPlugin_get_serialized_sample_size(
                 (PRESTypePluginEndpointData)&epd,
                 RTI_TRUE,
                 RTICdrEncapsulation_getNativeCdrEncapsulationId(),
@@ -386,7 +436,7 @@ MyStructPlugin_serialize_to_cdr_buffer(
         RTICdrStream_init(&stream);
         RTICdrStream_set(&stream, (char *)buffer, *length);
 
-        result = MyStructPlugin_serialize(
+        result = BIUDDSStructPlugin_serialize(
             (PRESTypePluginEndpointData)&epd, sample, &stream, 
             RTI_TRUE, RTICdrEncapsulation_getNativeCdrEncapsulationId(), 
             RTI_TRUE, NULL);  
@@ -399,8 +449,8 @@ MyStructPlugin_serialize_to_cdr_buffer(
 }
 
 RTIBool
-MyStructPlugin_deserialize_from_cdr_buffer(
-    MyStruct *sample,
+BIUDDSStructPlugin_deserialize_from_cdr_buffer(
+    BIUDDSStruct *sample,
     const char * buffer,
     unsigned int length)
 {
@@ -410,16 +460,16 @@ MyStructPlugin_deserialize_from_cdr_buffer(
     RTICdrStream_set(&stream, (char *)buffer, length);
 
     rti::topic::reset_sample(*sample);
-    return MyStructPlugin_deserialize_sample( 
+    return BIUDDSStructPlugin_deserialize_sample( 
         NULL, sample,
         &stream, RTI_TRUE, RTI_TRUE, 
         NULL);
 }
 
 RTIBool 
-MyStructPlugin_deserialize(
+BIUDDSStructPlugin_deserialize(
     PRESTypePluginEndpointData endpoint_data,
-    MyStruct **sample,
+    BIUDDSStruct **sample,
     RTIBool * drop_sample,
     struct RTICdrStream *stream,   
     RTIBool deserialize_encapsulation,
@@ -428,11 +478,11 @@ MyStructPlugin_deserialize(
 {
     try {
         RTIBool result;
-        const char *METHOD_NAME = "MyStructPlugin_deserialize";
+        const char *METHOD_NAME = "BIUDDSStructPlugin_deserialize";
         if (drop_sample) {} /* To avoid warnings */
 
         stream->_xTypesState.unassignable = RTI_FALSE;
-        result= MyStructPlugin_deserialize_sample( 
+        result= BIUDDSStructPlugin_deserialize_sample( 
             endpoint_data, (sample != NULL)?*sample:NULL,
             stream, deserialize_encapsulation, deserialize_sample, 
             endpoint_plugin_qos);
@@ -446,7 +496,7 @@ MyStructPlugin_deserialize(
             RTICdrLog_exception(
                 METHOD_NAME, 
                 &RTI_CDR_LOG_UNASSIGNABLE_SAMPLE_OF_TYPE_s, 
-                "MyStruct");
+                "BIUDDSStruct");
 
         }
 
@@ -457,7 +507,7 @@ MyStructPlugin_deserialize(
     }
 }
 
-RTIBool MyStructPlugin_skip(
+RTIBool BIUDDSStructPlugin_skip(
     PRESTypePluginEndpointData endpoint_data,
     struct RTICdrStream *stream,   
     RTIBool skip_encapsulation,
@@ -485,7 +535,13 @@ RTIBool MyStructPlugin_skip(
         if (!RTICdrStream_skipString (stream, (255)+1)) {
             goto fin; 
         }
+        if (!RTICdrStream_skipUnsignedLong (stream)) {
+            goto fin; 
+        }
         if (!RTICdrStream_skipLong (stream)) {
+            goto fin; 
+        }
+        if (!RTICdrStream_skipString (stream, (255)+1)) {
             goto fin; 
         }
         {
@@ -517,7 +573,7 @@ catch (...) {
 }
 
 unsigned int 
-MyStructPlugin_get_serialized_sample_max_size_ex(
+BIUDDSStructPlugin_get_serialized_sample_max_size_ex(
     PRESTypePluginEndpointData endpoint_data,
     RTIBool * overflow,
     RTIBool include_encapsulation,
@@ -546,8 +602,14 @@ MyStructPlugin_get_serialized_sample_max_size_ex(
     current_alignment +=RTICdrType_getStringMaxSizeSerialized(
         current_alignment, (255)+1);
 
+    current_alignment +=RTICdrType_getUnsignedLongMaxSizeSerialized(
+        current_alignment);
+
     current_alignment +=RTICdrType_getLongMaxSizeSerialized(
         current_alignment);
+
+    current_alignment +=RTICdrType_getStringMaxSizeSerialized(
+        current_alignment, (255)+1);
 
     current_alignment +=RTICdrType_getPrimitiveSequenceMaxSizeSerialized(
         current_alignment,((MAX_SEQUENCE_SIZE)),RTI_CDR_CHAR_TYPE) ;
@@ -559,7 +621,7 @@ MyStructPlugin_get_serialized_sample_max_size_ex(
 }
 
 unsigned int 
-MyStructPlugin_get_serialized_sample_max_size(
+BIUDDSStructPlugin_get_serialized_sample_max_size(
     PRESTypePluginEndpointData endpoint_data,
     RTIBool include_encapsulation,
     RTIEncapsulationId encapsulation_id,
@@ -569,7 +631,7 @@ MyStructPlugin_get_serialized_sample_max_size(
         unsigned int size;
         RTIBool overflow = RTI_FALSE;
 
-        size = MyStructPlugin_get_serialized_sample_max_size_ex(
+        size = BIUDDSStructPlugin_get_serialized_sample_max_size_ex(
             endpoint_data,&overflow,include_encapsulation,encapsulation_id,current_alignment);
 
         if (overflow) {
@@ -583,7 +645,7 @@ MyStructPlugin_get_serialized_sample_max_size(
 }
 
 unsigned int 
-MyStructPlugin_get_serialized_sample_min_size(
+BIUDDSStructPlugin_get_serialized_sample_min_size(
     PRESTypePluginEndpointData endpoint_data,
     RTIBool include_encapsulation,
     RTIEncapsulationId encapsulation_id,
@@ -610,8 +672,12 @@ MyStructPlugin_get_serialized_sample_min_size(
 
         current_alignment +=RTICdrType_getStringMaxSizeSerialized(
             current_alignment, 1);
+        current_alignment +=RTICdrType_getUnsignedLongMaxSizeSerialized(
+            current_alignment);
         current_alignment +=RTICdrType_getLongMaxSizeSerialized(
             current_alignment);
+        current_alignment +=RTICdrType_getStringMaxSizeSerialized(
+            current_alignment, 1);
         current_alignment +=    RTICdrType_getPrimitiveSequenceMaxSizeSerialized(
             current_alignment,0, RTI_CDR_CHAR_TYPE);
 
@@ -631,12 +697,12 @@ MyStructPlugin_get_serialized_sample_min_size(
 * encapsulation flags.
 */
 unsigned int
-MyStructPlugin_get_serialized_sample_size(
+BIUDDSStructPlugin_get_serialized_sample_size(
     PRESTypePluginEndpointData endpoint_data,
     RTIBool include_encapsulation,
     RTIEncapsulationId encapsulation_id,
     unsigned int current_alignment,
-    const MyStruct * sample) 
+    const BIUDDSStruct * sample) 
 {
     try {  
         unsigned int initial_alignment = current_alignment;
@@ -669,17 +735,27 @@ MyStructPlugin_get_serialized_sample_size(
         }
 
         current_alignment += rti::topic::cdr::calculate_serialized_size(
-            sample->ID(),
+            sample->sourceIP(),
             PRESTypePluginDefaultEndpointData_getAlignment(
                 endpoint_data, 
                 current_alignment));
+
+        current_alignment += RTICdrType_getUnsignedLongMaxSizeSerialized(
+            PRESTypePluginDefaultEndpointData_getAlignment(
+                endpoint_data, current_alignment));
 
         current_alignment += RTICdrType_getLongMaxSizeSerialized(
             PRESTypePluginDefaultEndpointData_getAlignment(
                 endpoint_data, current_alignment));
 
         current_alignment += rti::topic::cdr::calculate_serialized_size(
-            sample->data(),
+            sample->tag(),
+            PRESTypePluginDefaultEndpointData_getAlignment(
+                endpoint_data, 
+                current_alignment));
+
+        current_alignment += rti::topic::cdr::calculate_serialized_size(
+            sample->payload(),
             PRESTypePluginDefaultEndpointData_getAlignment(endpoint_data, current_alignment));
 
         if (include_encapsulation) {
@@ -696,15 +772,15 @@ Key Management functions:
 * -------------------------------------------------------------------------------------- */
 
 PRESTypePluginKeyKind 
-MyStructPlugin_get_key_kind(void)
+BIUDDSStructPlugin_get_key_kind(void)
 {
-    return PRES_TYPEPLUGIN_NO_KEY;
+    return PRES_TYPEPLUGIN_USER_KEY;
 }
 
 RTIBool 
-MyStructPlugin_serialize_key(
+BIUDDSStructPlugin_serialize_key(
     PRESTypePluginEndpointData endpoint_data,
-    const MyStruct *sample, 
+    const BIUDDSStruct *sample, 
     struct RTICdrStream *stream,    
     RTIBool serialize_encapsulation,
     RTIEncapsulationId encapsulation_id,
@@ -713,6 +789,9 @@ MyStructPlugin_serialize_key(
 {
     try {
         char * position = NULL;
+
+        if (endpoint_data) {} /* To avoid warnings */
+        if (endpoint_plugin_qos) {} /* To avoid warnings */
 
         if(serialize_encapsulation) {
             if (!RTICdrStream_serializeAndSetCdrEncapsulation(stream , encapsulation_id)) {
@@ -724,13 +803,8 @@ MyStructPlugin_serialize_key(
 
         if(serialize_key) {
 
-            if (!MyStructPlugin_serialize(
-                endpoint_data,
-                sample,
-                stream,
-                RTI_FALSE, encapsulation_id,
-                RTI_TRUE,
-                endpoint_plugin_qos)) {
+            if (!rti::topic::cdr::serialize(
+                stream, &sample->sourceID())) {
                 return RTI_FALSE;
             }
 
@@ -746,9 +820,9 @@ MyStructPlugin_serialize_key(
     }
 }
 
-RTIBool MyStructPlugin_deserialize_key_sample(
+RTIBool BIUDDSStructPlugin_deserialize_key_sample(
     PRESTypePluginEndpointData endpoint_data,
-    MyStruct *sample, 
+    BIUDDSStruct *sample, 
     struct RTICdrStream *stream,
     RTIBool deserialize_encapsulation,
     RTIBool deserialize_key,
@@ -770,10 +844,9 @@ RTIBool MyStructPlugin_deserialize_key_sample(
         }
         if (deserialize_key) {
 
-            if (!MyStructPlugin_deserialize_sample(
-                endpoint_data, sample, stream, 
-                RTI_FALSE, RTI_TRUE, 
-                endpoint_plugin_qos)) {
+            if (!rti::topic::cdr::deserialize(
+                stream, 
+                &sample->sourceID())) {
                 return RTI_FALSE;
             }
         }
@@ -788,9 +861,9 @@ RTIBool MyStructPlugin_deserialize_key_sample(
     }
 }
 
-RTIBool MyStructPlugin_deserialize_key(
+RTIBool BIUDDSStructPlugin_deserialize_key(
     PRESTypePluginEndpointData endpoint_data,
-    MyStruct **sample, 
+    BIUDDSStruct **sample, 
     RTIBool * drop_sample,
     struct RTICdrStream *stream,
     RTIBool deserialize_encapsulation,
@@ -801,7 +874,7 @@ RTIBool MyStructPlugin_deserialize_key(
         RTIBool result;
         if (drop_sample) {} /* To avoid warnings */
         stream->_xTypesState.unassignable = RTI_FALSE;
-        result= MyStructPlugin_deserialize_key_sample(
+        result= BIUDDSStructPlugin_deserialize_key_sample(
             endpoint_data, (sample != NULL)?*sample:NULL, stream,
             deserialize_encapsulation, deserialize_key, endpoint_plugin_qos);
         if (result) {
@@ -817,7 +890,7 @@ RTIBool MyStructPlugin_deserialize_key(
 }
 
 unsigned int
-MyStructPlugin_get_serialized_key_max_size_ex(
+BIUDDSStructPlugin_get_serialized_key_max_size_ex(
     PRESTypePluginEndpointData endpoint_data,
     RTIBool * overflow,
     RTIBool include_encapsulation,
@@ -843,8 +916,8 @@ MyStructPlugin_get_serialized_key_max_size_ex(
         initial_alignment = 0;
     }
 
-    current_alignment += MyStructPlugin_get_serialized_sample_max_size_ex(
-        endpoint_data, overflow,RTI_FALSE, encapsulation_id, current_alignment);
+    current_alignment +=RTICdrType_getUnsignedLongMaxSizeSerialized(
+        current_alignment);
 
     if (include_encapsulation) {
         current_alignment += encapsulation_size;
@@ -853,7 +926,7 @@ MyStructPlugin_get_serialized_key_max_size_ex(
 }
 
 unsigned int
-MyStructPlugin_get_serialized_key_max_size(
+BIUDDSStructPlugin_get_serialized_key_max_size(
     PRESTypePluginEndpointData endpoint_data,
     RTIBool include_encapsulation,
     RTIEncapsulationId encapsulation_id,
@@ -863,7 +936,7 @@ MyStructPlugin_get_serialized_key_max_size(
         unsigned int size;
         RTIBool overflow = RTI_FALSE;
 
-        size = MyStructPlugin_get_serialized_key_max_size_ex(
+        size = BIUDDSStructPlugin_get_serialized_key_max_size_ex(
             endpoint_data,&overflow,include_encapsulation,encapsulation_id,current_alignment);
 
         if (overflow) {
@@ -877,9 +950,9 @@ MyStructPlugin_get_serialized_key_max_size(
 }
 
 RTIBool 
-MyStructPlugin_serialized_sample_to_key(
+BIUDDSStructPlugin_serialized_sample_to_key(
     PRESTypePluginEndpointData endpoint_data,
-    MyStruct *sample,
+    BIUDDSStruct *sample,
     struct RTICdrStream *stream, 
     RTIBool deserialize_encapsulation,  
     RTIBool deserialize_key, 
@@ -890,6 +963,9 @@ MyStructPlugin_serialized_sample_to_key(
 
     RTIBool done = RTI_FALSE;
     RTIBool error = RTI_FALSE;
+
+    if (endpoint_data) {} /* To avoid warnings */
+    if (endpoint_plugin_qos) {} /* To avoid warnings */
 
     if (stream == NULL) {
         error = RTI_TRUE;
@@ -904,10 +980,31 @@ MyStructPlugin_serialized_sample_to_key(
 
     if (deserialize_key) {
 
-        if (!MyStructPlugin_deserialize_sample(
-            endpoint_data, sample, stream, RTI_FALSE, 
-            RTI_TRUE, endpoint_plugin_qos)) {
+        if (!RTICdrStream_skipString (stream, (255)+1)) {
+            goto fin; 
+        }
+
+        if (!rti::topic::cdr::deserialize(
+            stream, 
+            &sample->sourceID())) {
             return RTI_FALSE;
+        }
+        if (!RTICdrStream_skipLong (stream)) {
+            goto fin; 
+        }
+
+        if (!RTICdrStream_skipString (stream, (255)+1)) {
+            goto fin; 
+        }
+
+        {
+            RTICdrUnsignedLong sequence_length;
+            if (!RTICdrStream_skipPrimitiveSequence(
+                stream,
+                &sequence_length,
+                RTI_CDR_CHAR_TYPE)){
+                goto fin; 
+            }
         }
 
     }
@@ -933,10 +1030,205 @@ MyStructPlugin_serialized_sample_to_key(
     return RTI_FALSE;
 } 
 
+RTIBool 
+BIUDDSStructPlugin_instance_to_key(
+    PRESTypePluginEndpointData endpoint_data,
+    BIUDDSStructKeyHolder *dst, 
+    const BIUDDSStruct *src)
+{
+    try {
+        if (endpoint_data) {} /* To avoid warnings */   
+
+        dst->sourceID() = src->sourceID();
+        return RTI_TRUE;
+    } catch (...) {
+        return RTI_FALSE;
+    }    
+}
+
+RTIBool 
+BIUDDSStructPlugin_key_to_instance(
+    PRESTypePluginEndpointData endpoint_data,
+    BIUDDSStruct *dst, const
+    BIUDDSStructKeyHolder *src)
+{
+    try {
+        if (endpoint_data) {} /* To avoid warnings */   
+        dst->sourceID() = src->sourceID();
+        return RTI_TRUE;
+    } catch (...) {
+        return RTI_FALSE;
+    }    
+}
+
+RTIBool 
+BIUDDSStructPlugin_instance_to_keyhash(
+    PRESTypePluginEndpointData endpoint_data,
+    DDS_KeyHash_t *keyhash,
+    const BIUDDSStruct *instance)
+{
+    try {
+        struct RTICdrStream * md5Stream = NULL;
+        struct RTICdrStreamState cdrState;
+        char * buffer = NULL;
+
+        RTICdrStreamState_init(&cdrState);
+        md5Stream = PRESTypePluginDefaultEndpointData_getMD5Stream(endpoint_data);
+
+        if (md5Stream == NULL) {
+            return RTI_FALSE;
+        }
+
+        RTICdrStream_resetPosition(md5Stream);
+        RTICdrStream_setDirtyBit(md5Stream, RTI_TRUE);
+
+        if (!BIUDDSStructPlugin_serialize_key(
+            endpoint_data,instance,md5Stream, RTI_FALSE, RTI_CDR_ENCAPSULATION_ID_CDR_BE, RTI_TRUE,NULL)) {
+
+            int size;
+
+            RTICdrStream_pushState(md5Stream, &cdrState, -1);
+
+            size = (int)BIUDDSStructPlugin_get_serialized_sample_size(
+                endpoint_data,
+                RTI_FALSE,
+                RTI_CDR_ENCAPSULATION_ID_CDR_BE,
+                0,
+                instance);
+
+            if (size <= RTICdrStream_getBufferLength(md5Stream)) {
+                RTICdrStream_popState(md5Stream, &cdrState);        
+                return RTI_FALSE;
+            }   
+
+            RTIOsapiHeap_allocateBuffer(&buffer,size,0);
+
+            if (buffer == NULL) {
+                RTICdrStream_popState(md5Stream, &cdrState);
+                return RTI_FALSE;
+            }
+
+            RTICdrStream_set(md5Stream, buffer, size);
+            RTIOsapiMemory_zero(
+                RTICdrStream_getBuffer(md5Stream),
+                RTICdrStream_getBufferLength(md5Stream));
+            RTICdrStream_resetPosition(md5Stream);
+            RTICdrStream_setDirtyBit(md5Stream, RTI_TRUE);
+            if (!BIUDDSStructPlugin_serialize_key(
+                endpoint_data,
+                instance,
+                md5Stream, 
+                RTI_FALSE, 
+                RTI_CDR_ENCAPSULATION_ID_CDR_BE, 
+                RTI_TRUE,
+                NULL)) 
+            {
+                RTICdrStream_popState(md5Stream, &cdrState);
+                RTIOsapiHeap_freeBuffer(buffer);
+                return RTI_FALSE;
+            }        
+        }   
+
+        if (PRESTypePluginDefaultEndpointData_getMaxSizeSerializedKey(endpoint_data) > 
+        (unsigned int)(MIG_RTPS_KEY_HASH_MAX_LENGTH) ||
+        PRESTypePluginDefaultEndpointData_forceMD5KeyHash(endpoint_data)) {
+            RTICdrStream_computeMD5(md5Stream, keyhash->value);
+        } else {
+            RTIOsapiMemory_zero(keyhash->value,MIG_RTPS_KEY_HASH_MAX_LENGTH);
+            RTIOsapiMemory_copy(
+                keyhash->value, 
+                RTICdrStream_getBuffer(md5Stream), 
+                RTICdrStream_getCurrentPositionOffset(md5Stream));
+        }
+
+        keyhash->length = MIG_RTPS_KEY_HASH_MAX_LENGTH;
+
+        if (buffer != NULL) {
+            RTICdrStream_popState(md5Stream, &cdrState);
+            RTIOsapiHeap_freeBuffer(buffer);
+        }
+
+        return RTI_TRUE;
+
+    } catch (...) {
+        return RTI_FALSE;
+    }
+}
+
+RTIBool 
+BIUDDSStructPlugin_serialized_sample_to_keyhash(
+    PRESTypePluginEndpointData endpoint_data,
+    struct RTICdrStream *stream, 
+    DDS_KeyHash_t *keyhash,
+    RTIBool deserialize_encapsulation,
+    void *endpoint_plugin_qos)
+    try     
+{   
+    char * position = NULL;
+
+    RTIBool done = RTI_FALSE;
+    RTIBool error = RTI_FALSE;
+    BIUDDSStruct * sample=NULL;
+
+    if (endpoint_plugin_qos) {} /* To avoid warnings */
+    if (stream == NULL) {
+        error = RTI_TRUE;
+        goto fin;
+    }
+
+    if(deserialize_encapsulation) {
+        if (!RTICdrStream_deserializeAndSetCdrEncapsulation(stream)) {
+            return RTI_FALSE;
+        }
+
+        position = RTICdrStream_resetAlignment(stream);
+    }
+
+    sample = (BIUDDSStruct *)
+    PRESTypePluginDefaultEndpointData_getTempSample(endpoint_data);
+
+    if (sample == NULL) {
+        return RTI_FALSE;
+    }
+
+    if (!RTICdrStream_skipString (stream, (255)+1)) {
+        goto fin; 
+    }
+    if (!rti::topic::cdr::deserialize(
+        stream, 
+        &sample->sourceID())) {
+        return RTI_FALSE;
+    }
+    done = RTI_TRUE;
+  fin:
+    if(!error) {
+        if (done != RTI_TRUE && 
+        RTICdrStream_getRemainder(stream) >=
+        RTI_CDR_PARAMETER_HEADER_ALIGNMENT) {
+            return RTI_FALSE;   
+        }
+    } else {
+        return RTI_FALSE;
+    } 
+
+    if(deserialize_encapsulation) {
+        RTICdrStream_restoreAlignment(stream,position);
+    }
+
+    if (!BIUDDSStructPlugin_instance_to_keyhash(
+        endpoint_data, keyhash, sample)) {
+        return RTI_FALSE;
+    }
+
+    return RTI_TRUE;
+} catch (...) {
+    return RTI_FALSE;
+}
+
 /* ------------------------------------------------------------------------
 * Plug-in Installation Methods
 * ------------------------------------------------------------------------ */
-struct PRESTypePlugin *MyStructPlugin_new(void) 
+struct PRESTypePlugin *BIUDDSStructPlugin_new(void) 
 { 
     struct PRESTypePlugin *plugin = NULL;
     const struct PRESTypePluginVersion PLUGIN_VERSION = 
@@ -953,88 +1245,109 @@ struct PRESTypePlugin *MyStructPlugin_new(void)
     /* set up parent's function pointers */
     plugin->onParticipantAttached =
     (PRESTypePluginOnParticipantAttachedCallback)
-    MyStructPlugin_on_participant_attached;
+    BIUDDSStructPlugin_on_participant_attached;
     plugin->onParticipantDetached =
     (PRESTypePluginOnParticipantDetachedCallback)
-    MyStructPlugin_on_participant_detached;
+    BIUDDSStructPlugin_on_participant_detached;
     plugin->onEndpointAttached =
     (PRESTypePluginOnEndpointAttachedCallback)
-    MyStructPlugin_on_endpoint_attached;
+    BIUDDSStructPlugin_on_endpoint_attached;
     plugin->onEndpointDetached =
     (PRESTypePluginOnEndpointDetachedCallback)
-    MyStructPlugin_on_endpoint_detached;
+    BIUDDSStructPlugin_on_endpoint_detached;
 
     plugin->copySampleFnc =
     (PRESTypePluginCopySampleFunction)
-    MyStructPlugin_copy_sample;
+    BIUDDSStructPlugin_copy_sample;
     plugin->createSampleFnc =
     (PRESTypePluginCreateSampleFunction)
-    MyStructPlugin_create_sample;
+    BIUDDSStructPlugin_create_sample;
     plugin->destroySampleFnc =
     (PRESTypePluginDestroySampleFunction)
-    MyStructPlugin_destroy_sample;
+    BIUDDSStructPlugin_destroy_sample;
 
     plugin->serializeFnc =
     (PRESTypePluginSerializeFunction)
-    MyStructPlugin_serialize;
+    BIUDDSStructPlugin_serialize;
     plugin->deserializeFnc =
     (PRESTypePluginDeserializeFunction)
-    MyStructPlugin_deserialize;
+    BIUDDSStructPlugin_deserialize;
     plugin->getSerializedSampleMaxSizeFnc =
     (PRESTypePluginGetSerializedSampleMaxSizeFunction)
-    MyStructPlugin_get_serialized_sample_max_size;
+    BIUDDSStructPlugin_get_serialized_sample_max_size;
     plugin->getSerializedSampleMinSizeFnc =
     (PRESTypePluginGetSerializedSampleMinSizeFunction)
-    MyStructPlugin_get_serialized_sample_min_size;
+    BIUDDSStructPlugin_get_serialized_sample_min_size;
 
     plugin->getSampleFnc =
     (PRESTypePluginGetSampleFunction)
-    MyStructPlugin_get_sample;
+    BIUDDSStructPlugin_get_sample;
     plugin->returnSampleFnc =
     (PRESTypePluginReturnSampleFunction)
-    MyStructPlugin_return_sample;
+    BIUDDSStructPlugin_return_sample;
 
     plugin->getKeyKindFnc =
     (PRESTypePluginGetKeyKindFunction)
-    MyStructPlugin_get_key_kind;
+    BIUDDSStructPlugin_get_key_kind;
 
-    /* These functions are only used for keyed types. As this is not a keyed
-    type they are all set to NULL
-    */
-    plugin->serializeKeyFnc = NULL ;    
-    plugin->deserializeKeyFnc = NULL;  
-    plugin->getKeyFnc = NULL;
-    plugin->returnKeyFnc = NULL;
-    plugin->instanceToKeyFnc = NULL;
-    plugin->keyToInstanceFnc = NULL;
-    plugin->getSerializedKeyMaxSizeFnc = NULL;
-    plugin->instanceToKeyHashFnc = NULL;
-    plugin->serializedSampleToKeyHashFnc = NULL;
-    plugin->serializedKeyToKeyHashFnc = NULL;    
+    plugin->getSerializedKeyMaxSizeFnc =   
+    (PRESTypePluginGetSerializedKeyMaxSizeFunction)
+    BIUDDSStructPlugin_get_serialized_key_max_size;
+    plugin->serializeKeyFnc =
+    (PRESTypePluginSerializeKeyFunction)
+    BIUDDSStructPlugin_serialize_key;
+    plugin->deserializeKeyFnc =
+    (PRESTypePluginDeserializeKeyFunction)
+    BIUDDSStructPlugin_deserialize_key;
+    plugin->deserializeKeySampleFnc =
+    (PRESTypePluginDeserializeKeySampleFunction)
+    BIUDDSStructPlugin_deserialize_key_sample;
+
+    plugin-> instanceToKeyHashFnc = 
+    (PRESTypePluginInstanceToKeyHashFunction)
+    BIUDDSStructPlugin_instance_to_keyhash;
+    plugin->serializedSampleToKeyHashFnc = 
+    (PRESTypePluginSerializedSampleToKeyHashFunction)
+    BIUDDSStructPlugin_serialized_sample_to_keyhash;
+
+    plugin->getKeyFnc =
+    (PRESTypePluginGetKeyFunction)
+    BIUDDSStructPlugin_get_key;
+    plugin->returnKeyFnc =
+    (PRESTypePluginReturnKeyFunction)
+    BIUDDSStructPlugin_return_key;
+
+    plugin->instanceToKeyFnc =
+    (PRESTypePluginInstanceToKeyFunction)
+    BIUDDSStructPlugin_instance_to_key;
+    plugin->keyToInstanceFnc =
+    (PRESTypePluginKeyToInstanceFunction)
+    BIUDDSStructPlugin_key_to_instance;
+    plugin->serializedKeyToKeyHashFnc = NULL; /* Not supported yet */
     plugin->typeCode = (struct RTICdrTypeCode *) 
-    &rti::topic::dynamic_type<MyStruct>::get().native();
+    &rti::topic::dynamic_type<BIUDDSStruct>::get().native();
 
     plugin->languageKind = PRES_TYPEPLUGIN_CPPSTL_LANG;
 
     /* Serialized buffer */
     plugin->getBuffer = 
     (PRESTypePluginGetBufferFunction)
-    MyStructPlugin_get_buffer;
+    BIUDDSStructPlugin_get_buffer;
     plugin->returnBuffer = 
     (PRESTypePluginReturnBufferFunction)
-    MyStructPlugin_return_buffer;
+    BIUDDSStructPlugin_return_buffer;
     plugin->getSerializedSampleSizeFnc =
     (PRESTypePluginGetSerializedSampleSizeFunction)
-    MyStructPlugin_get_serialized_sample_size;
+    BIUDDSStructPlugin_get_serialized_sample_size;
 
-    static const char * TYPE_NAME = "MyStruct";
+    static const char * TYPE_NAME = "BIUDDSStruct";
     plugin->endpointTypeName = TYPE_NAME;
 
     return plugin;
 }
 
 void
-MyStructPlugin_delete(struct PRESTypePlugin *plugin)
+BIUDDSStructPlugin_delete(struct PRESTypePlugin *plugin)
 {
     RTIOsapiHeap_freeStructure(plugin);
 } 
