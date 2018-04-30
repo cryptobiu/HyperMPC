@@ -2044,7 +2044,15 @@ void ProtocolParty<FieldType>::roundFunctionSync(vector<vector<byte>> &sendBufs,
         numPartiesForEachThread = (parties.size() + numThreads - 1)/ numThreads;
     }
 
-    timer->writeValue(sendBufs.size() * numThreads);
+
+    unsigned long commSize = 0;
+    for (int commIdx = 0; commIdx < sendBufs.size(); commIdx++)
+    {
+        commSize+= sendBufs[commIdx].size() * numThreads;
+    }
+
+    timer->writeValue(commSize);
+
     recBufs[m_partyId] = sendBufs[m_partyId];//move(sendBufs[m_partyId-1]);
     //recieve the data using threads
     vector<thread> threads(numThreads);
