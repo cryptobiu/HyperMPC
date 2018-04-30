@@ -2067,18 +2067,37 @@ template <class FieldType>
 void ProtocolParty<FieldType>::exchangeData(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int first, int last){
 
 
+    //cout<<"in exchangeData";
     for (int i=first; i < last; i++) {
 
-            cout << "Before writing : " << m_partyId << endl;
+        if ((m_partyId) < parties[i]->getID()) {
+
+
             //send shares to my input bits
             parties[i]->getChannel()->write(sendBufs[parties[i]->getID()].data(), sendBufs[parties[i]->getID()].size());
             //cout<<"write the data:: my Id = " << m_partyId - 1<< "other ID = "<< parties[i]->getID() <<endl;
 
-            cout << "Finish writing, preapre to read : " << m_partyId << endl;
+
             //receive shares from the other party and set them in the shares array
             parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
             //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
-            cout << "Finish reading : " << m_partyId << endl;
+
+        } else{
+
+
+            //receive shares from the other party and set them in the shares array
+            parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
+            //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
+
+
+
+            //send shares to my input bits
+            parties[i]->getChannel()->write(sendBufs[parties[i]->getID()].data(), sendBufs[parties[i]->getID()].size());
+            //cout<<"write the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID() <<endl;
+
+
+        }
+
     }
 
 
@@ -2126,21 +2145,35 @@ template <class FieldType>
 void ProtocolParty<FieldType>::recData(vector<byte> &message, vector<vector<byte>> &recBufs, int first, int last){
 
 
-    //cout<<"in exchangeData";
     for (int i=first; i < last; i++) {
 
+        if ((m_partyId) < parties[i]->getID()) {
+
+
             //send shares to my input bits
-            cout << "Before writing : " << m_partyId << endl;
             parties[i]->getChannel()->write(message.data(), message.size());
             //cout<<"write the data:: my Id = " << m_partyId - 1<< "other ID = "<< parties[i]->getID() <<endl;
 
-            cout << "Finish writing, preapre to read : " << m_partyId << endl;
+
             //receive shares from the other party and set them in the shares array
             parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
             //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
-            cout << "Finish reading : " << m_partyId << endl;
 
-    }
+        } else{
+
+
+            //receive shares from the other party and set them in the shares array
+            parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
+            //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
+
+
+
+            //send shares to my input bits
+            parties[i]->getChannel()->write(message.data(), message.size());
+            //cout<<"write the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID() <<endl;
+
+
+        }
 
 
 }
