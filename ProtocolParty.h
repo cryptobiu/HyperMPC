@@ -2159,7 +2159,7 @@ void ProtocolParty<FieldType>::recData(vector<byte> &message, vector<vector<byte
             parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
             //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
 
-        } else{
+        } else {
 
 
             //receive shares from the other party and set them in the shares array
@@ -2174,6 +2174,7 @@ void ProtocolParty<FieldType>::recData(vector<byte> &message, vector<vector<byte
 
 
         }
+    }
 
 
 }
