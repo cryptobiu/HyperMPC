@@ -332,6 +332,7 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
     //cout<<"before sending any data"<<endl;
     byte tmpBytes[20];
     for (int i=0; i<parties.size(); i++){
+        cout <<"Start handshake with " << parties[i]->getID() << endl;
         if (parties[i]->getID() < m_partyId){
             parties[i]->getChannel()->write(tmp);
             parties[i]->getChannel()->read(tmpBytes, tmp.size());
@@ -2043,7 +2044,7 @@ void ProtocolParty<FieldType>::roundFunctionSync(vector<vector<byte>> &sendBufs,
         numPartiesForEachThread = (parties.size() + numThreads - 1)/ numThreads;
     }
 
-
+    timer->writeValue(sendBufs.size() * numThreads);
     recBufs[m_partyId] = sendBufs[m_partyId];//move(sendBufs[m_partyId-1]);
     //recieve the data using threads
     vector<thread> threads(numThreads);
@@ -2066,37 +2067,18 @@ template <class FieldType>
 void ProtocolParty<FieldType>::exchangeData(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int first, int last){
 
 
-    //cout<<"in exchangeData";
     for (int i=first; i < last; i++) {
 
-        if ((m_partyId) < parties[i]->getID()) {
-
-
+            cout << "Before writing : " << m_partyId << endl;
             //send shares to my input bits
             parties[i]->getChannel()->write(sendBufs[parties[i]->getID()].data(), sendBufs[parties[i]->getID()].size());
             //cout<<"write the data:: my Id = " << m_partyId - 1<< "other ID = "<< parties[i]->getID() <<endl;
 
-
+            cout << "Finish writing, preapre to read : " << m_partyId << endl;
             //receive shares from the other party and set them in the shares array
             parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
             //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
-
-        } else{
-
-
-            //receive shares from the other party and set them in the shares array
-            parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
-            //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
-
-
-
-            //send shares to my input bits
-            parties[i]->getChannel()->write(sendBufs[parties[i]->getID()].data(), sendBufs[parties[i]->getID()].size());
-            //cout<<"write the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID() <<endl;
-
-
-        }
-
+            cout << "Finish reading : " << m_partyId << endl;
     }
 
 
@@ -2121,7 +2103,7 @@ void ProtocolParty<FieldType>::roundFunctionSyncBroadcast(vector<byte> &message,
         numPartiesForEachThread = (parties.size() + numThreads - 1)/ numThreads;
     }
 
-
+    timer->writeValue(message.size() * numThreads);
     recBufs[m_partyId] = message;
     //recieve the data using threads
     vector<thread> threads(numThreads);
@@ -2147,33 +2129,16 @@ void ProtocolParty<FieldType>::recData(vector<byte> &message, vector<vector<byte
     //cout<<"in exchangeData";
     for (int i=first; i < last; i++) {
 
-        if ((m_partyId) < parties[i]->getID()) {
-
-
             //send shares to my input bits
+            cout << "Before writing : " << m_partyId << endl;
             parties[i]->getChannel()->write(message.data(), message.size());
             //cout<<"write the data:: my Id = " << m_partyId - 1<< "other ID = "<< parties[i]->getID() <<endl;
 
-
+            cout << "Finish writing, preapre to read : " << m_partyId << endl;
             //receive shares from the other party and set them in the shares array
             parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
             //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
-
-        } else{
-
-
-            //receive shares from the other party and set them in the shares array
-            parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
-            //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
-
-
-
-            //send shares to my input bits
-            parties[i]->getChannel()->write(message.data(), message.size());
-            //cout<<"write the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID() <<endl;
-
-
-        }
+            cout << "Finish reading : " << m_partyId << endl;
 
     }
 
