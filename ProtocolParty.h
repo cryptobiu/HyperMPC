@@ -2045,10 +2045,10 @@ void ProtocolParty<FieldType>::roundFunctionSync(vector<vector<byte>> &sendBufs,
     }
 
 
-    unsigned long commSize = 0;
+    unsigned long int commSize = 0;
     for (int commIdx = 0; commIdx < sendBufs.size(); commIdx++)
     {
-        commSize+= sendBufs[commIdx].size() * numThreads;
+        commSize+= sendBufs[commIdx].size();
     }
 
     timer->writeValue(commSize);
