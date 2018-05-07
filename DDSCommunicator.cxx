@@ -91,7 +91,6 @@ void DDSCommunicator::CreateDDSTopics() {
 		DDSTopicName = to_string(IPCounter);
 		DDSTopicName += "-";
 		DDSTopicName += IP;
-
 		dds::topic::Topic<BIUDDSStruct> topic(*_participant, DDSTopicName.c_str());
 		_DDSTopicsList.push_back(topic);
 
@@ -135,34 +134,8 @@ DDSChannelWriter* DDSCommunicator::getDDSChannelWriter(string PartyIP) {
 	throw runtime_error("No channel was found for the specified IP");
 }
 
-void DDSCommunicator::ReadAllInputs(map<string, DDSSample> *samplesMap) {
+void DDSCommunicator::ReadAllInputs(map<unsigned long , DDSSample* > *samplesMap) {
 
-	if (_printDebugFlag) cout << "ReadAllInputs" << endl;
-
-	DDSSample tempDDSSample;
-
-	for (unsigned int samplesCounter = 0; samplesCounter < (_numParties - 1);) {
-		if (_printDebugFlag) std::cout << "Waiting" << endl;
-
-		_waitset->wait(dds::core::Duration::from_millisecs(5000));
-		_loandSamples = _reader->take();
-
-		for (_sampleIt = _loandSamples.begin(); _sampleIt != _loandSamples.end(); ++_sampleIt) {
-			if (_sampleIt->info().valid()) {
-				samplesCounter++;
-
-				*(tempDDSSample.getUnderlyingSample()) = *_sampleIt;
-				string source = _sampleIt->data().sourceIP();
-				samplesMap->insert(make_pair(source, tempDDSSample));
-			}
-			else {
-				throw runtime_error("Received non-valid DDS sample");
-			}
-		}
-	}
-	if (samplesMap->size() != (_numParties - 1)) {
-		throw runtime_error("Not all data was received");
-	}
 }
 
 void DDSCommunicator::ReadInput(DDSSample* sample) {
@@ -172,13 +145,14 @@ void DDSCommunicator::ReadInput(DDSSample* sample) {
 		
 	*_reader >> take >> max_samples(1) >> _loandSamples;
 	_sampleIt = _loandSamples.begin();
+	*(sample->getUnderlyingSample()) = *_sampleIt;
 
-	if (_sampleIt->info().valid()) {
-		*(sample->getUnderlyingSample()) = *_sampleIt;
-	}
-	else {
-		throw runtime_error("Received a non-valid DDS sample");
-	}
+//	if (_sampleIt->info().valid()) {
+//		*(sample->getUnderlyingSample()) = *_sampleIt;
+//	}
+//	else {
+//		throw runtime_error("Received a non-valid DDS sample");
+//	}
 }
 
 

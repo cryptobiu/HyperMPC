@@ -39,7 +39,7 @@ public:
 	DDSCommunicator(int id, int numParties, string configFile, unsigned int elapsedTime = 5, bool addIPtoPeerList = true, bool printDebugFlag = false);
 	virtual ~DDSCommunicator();
 	DDSChannelWriter* getDDSChannelWriter (string PartyIP);
-	void ReadAllInputs (map<string, DDSSample> *samplesMap);
+	void ReadAllInputs (map<unsigned long, DDSSample *> *samplesMap);
 	void ReadInput(DDSSample* sample);
 	string getOwnIP() { return _ownIP; };
 	unsigned int getOwnID() { return _ownID; };

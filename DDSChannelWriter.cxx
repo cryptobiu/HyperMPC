@@ -28,12 +28,15 @@ DDSChannelWriter::~DDSChannelWriter() {
 }
 
 
-void DDSChannelWriter::Write (const char* my_data,int size, string tag){
+void DDSChannelWriter::Write (const char* my_data,int size, int myID, string tag ){
 	if (_printDebugFlag) cout<<"writing"<<endl;
 
 	_sample.payload(vector<char>(my_data,my_data+size));
 	_sample.tag(tag);
 	_sample.sequenceNumber(_samplesSequenceNumber);
+	_sample.sourceID(myID);
+	cout << "Writing data len : " << _sample.payload().size() << " seq number is : " << _samplesSequenceNumber <<
+         " my id : " << myID << endl;
     _writer->write(_sample);
 	_samplesSequenceNumber++;
 }

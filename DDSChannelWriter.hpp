@@ -24,7 +24,7 @@ class DDSChannelWriter {
 public:
 	DDSChannelWriter(dds::domain::DomainParticipant *_participant, dds::topic::Topic<BIUDDSStruct> _topic, string ownIP, unsigned long ownID, bool printDebugFlag = false);
 	virtual ~DDSChannelWriter();
-	void Write (const char* data,int size, string tag = "");
+	void Write (const char* data,int size, int myID, string tag = "");
 	string GetTopicIP() { return _topicIP; };
 	string GetTopicID() { return _topicID; };
 	bool isPublicationMatched (unsigned int elapsedTime);

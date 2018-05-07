@@ -28,6 +28,7 @@ public:
 	unsigned long getSourceID() { return _sample.data().sourceID(); };
 	string getSourceIP() { return _sample.data().sourceIP(); };
 	const char* getPayload() {return _sample.data().payload().data(); };
+	unsigned long getPayloadLength(){return _sample.data().payload().size(); };
 	unsigned long getSequenceNumber() { return _sample.data().sequenceNumber(); };
 	Sample<BIUDDSStruct>* getUnderlyingSample() { return &_sample; };
 
