@@ -1309,25 +1309,27 @@ bool ProtocolParty<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, H
 
     }
 
-    for(int i=0; i < N; i++)
-    {
-        sendBufsBytes[i].resize(sendBufsElements[i].size()*fieldByteSize);
-        //cout<< "size of sendBufs1Elements["<<i<<" ].size() is " << sendBufs1Elements[i].size() <<"myID =" <<  m_partyId<<endl;
-        recBufsBytes[i].resize(sendBufsElements[m_partyId].size()*fieldByteSize);
-        for(int j=0; j<sendBufsElements[i].size();j++) {
-            field->elementToBytes(sendBufsBytes[i].data() + (j * fieldByteSize), sendBufsElements[i][j]);
+    if(T>0) {
+        for (int i = 0; i < N; i++) {
+            sendBufsBytes[i].resize(sendBufsElements[i].size() * fieldByteSize);
+            //cout<< "size of sendBufs1Elements["<<i<<" ].size() is " << sendBufs1Elements[i].size() <<"myID =" <<  m_partyId<<endl;
+            recBufsBytes[i].resize(sendBufsElements[m_partyId].size() * fieldByteSize);
+            for (int j = 0; j < sendBufsElements[i].size(); j++) {
+                field->elementToBytes(sendBufsBytes[i].data() + (j * fieldByteSize), sendBufsElements[i][j]);
+            }
         }
+
+
+        if (flag_print) {
+            cout << "before round" << endl;
+        }
+        //comm->roundfunctionI(sendBufs1Bytes, recBufsBytes,5);
+
+
+        t3 = high_resolution_clock::now();
+        //comm->roundfunctionI(sendBufsBytes, recBufsBytes,4);
+        roundFunctionSync(sendBufsBytes, recBufsBytes, 5);
     }
-
-
-    if(flag_print) {
-        cout << "before round" << endl;}
-    //comm->roundfunctionI(sendBufs1Bytes, recBufsBytes,5);
-
-
-    t3 = high_resolution_clock::now();
-    //comm->roundfunctionI(sendBufsBytes, recBufsBytes,4);
-    roundFunctionSync(sendBufsBytes, recBufsBytes,5);
     t4 = high_resolution_clock::now();
     duration2 = duration_cast<milliseconds>( t4 - t3 ).count();
     //cout << "roundfunction 5 took : " <<duration2<<" ms"<<endl;
@@ -2021,7 +2023,7 @@ void ProtocolParty<FieldType>::roundFunctionSync(vector<vector<byte>> &sendBufs,
                                                  int round)
 {
     recBufs[m_partyId] = sendBufs[m_partyId];
-    exchangeData(sendBufs, recBufs, -1, -1);
+    exchangeData(sendBufs, recBufs, round, round);
 }
 
 
@@ -2037,9 +2039,9 @@ void ProtocolParty<FieldType>::exchangeData(vector<vector<byte>> &sendBufs, vect
     for(auto writer: writers)
     {
         int topcId = stoi(writer->GetTopicID());
-        writer->Write((const char*)sendBufs[topcId].data(), sendBufs[topcId].size(), m_partyId);
+        writer->Write((const char*)sendBufs[topcId].data(), sendBufs[topcId].size(), m_partyId, to_string(first));
 //        cout << "party id " << m_partyId << " EXCHANGE Writing to party : " << topcId
-//             << " with size : " << sendBufs[topcId].size() << endl;
+//             << " with size : " << sendBufs[topcId].size() << " round :" << first << endl;
     }
 
 
@@ -2050,9 +2052,11 @@ void ProtocolParty<FieldType>::exchangeData(vector<vector<byte>> &sendBufs, vect
         DDSSample sample;
         myNewChannel->ReadInput(&sample);
 //        cout << "###############Receiving Payload length is : " << sample.getPayloadLength() << " from src id : " <<
-//             sample.getSourceID()<< " seq number : " << sample.getSequenceNumber() <<" my id : " << m_partyId << endl;
+//             sample.getSourceID()<< " seq number : " << sample.getSequenceNumber() <<" my id : " << m_partyId
+//             << " round : " << sample.getTag() << endl;
         if (sample.getPayloadLength() > recBufs[sample.getSourceID()].size())
-            cout << "MEMORY LEAKED FIXED" << endl;
+//            cout << "MEMORY LEAKED FIXED origin size : " << recBufs[sample.getSourceID()].size()
+//                 << " current size : " << sample.getPayloadLength() << " partyID : " << m_partyId << endl;
         recBufs[sample.getSourceID()].resize(sample.getPayloadLength());
         memcpy(recBufs[sample.getSourceID()].data(),sample.getPayload(),sample.getPayloadLength());
         toRead--;
@@ -2079,8 +2083,8 @@ void ProtocolParty<FieldType>::recData(vector<byte> &message, vector<vector<byte
     {
         int topcId = stoi(writer->GetTopicID());
         writer->Write((const char*)message.data(), message.size(), m_partyId);
-//        cout << "party id " << m_partyId << " EXCHANGE Writing to party : " << topcId
-//             << " with size : " << message.size() << endl;
+        cout << "party id " << m_partyId << " EXCHANGE Writing to party : " << topcId
+             << " with size : " << message.size() << endl;
     }
 
 
@@ -2090,10 +2094,12 @@ void ProtocolParty<FieldType>::recData(vector<byte> &message, vector<vector<byte
     {
         DDSSample sample;
         myNewChannel->ReadInput(&sample);
-//        cout << "###############Receiving Payload length is : " << sample.getPayloadLength() << " from src id : " <<
-//             sample.getSourceID()<< " seq number : " << sample.getSequenceNumber() <<" my id : " << m_partyId << endl;
+        cout << "###############Receiving Payload length is : " << sample.getPayloadLength() << " from src id : " <<
+             sample.getSourceID()<< " seq number : " << sample.getSequenceNumber() <<" my id : " << m_partyId
+             << "round : " << sample.getTag() << endl;
         if (sample.getPayloadLength() > recBufs[sample.getSourceID()].size())
-            cout << "MEMORY LEAKED FIXED" << endl;
+            cout << "MEMORY LEAKED FIXED origin size : " << recBufs[sample.getSourceID()].size()
+                 << " current size : " << sample.getPayloadLength() << " partyID : " << m_partyId << endl;
         recBufs[sample.getSourceID()].resize(sample.getPayloadLength());
         memcpy(recBufs[sample.getSourceID()].data(),sample.getPayload(),sample.getPayloadLength());
         toRead--;
