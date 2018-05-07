@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(Secret_Sharing)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fsanitize=address -fstack-protector-all -std=c++11 -maes -mpclmul -mbmi2 -m64 -DRTI_UNIX -DRTI_LINUX -DRTI_64BIT")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11 -maes -mpclmul -mbmi2 -m64 -DRTI_UNIX -DRTI_LINUX -DRTI_64BIT")
 set(NDDSHOME $ENV{HOME}/rti_connext_dds-5.3.0)
 
 

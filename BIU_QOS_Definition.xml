@@ -12,7 +12,7 @@
 				</publication_name>
 				<history>
 					<kind>KEEP_LAST_HISTORY_QOS</kind>
-					<depth>1000</depth>
+					<depth>1</depth>
 				</history>
 			</datawriter_qos>
 			<datareader_qos>

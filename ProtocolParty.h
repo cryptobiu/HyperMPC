@@ -1,28 +1,26 @@
 #ifndef PROTOCOL_H_
 #define PROTOCOL_H_
 
-#include <stdlib.h>
-#include <libscapi/include/primitives/Matrix.hpp>
-#include <libscapi/include/circuits/ArithmeticCircuit.hpp>
+#include <map>
 #include <vector>
-#include <iostream>
-#include <fstream>
 #include <chrono>
+#include <thread>
+#include <fstream>
+#include <iostream>
 #include "TemplateField.h"
 #include "DDSCommunicator.hpp"
-#include <libscapi/include/comm/MPCCommunication.hpp>
-#include <libscapi/include/infra/Common.hpp>
-#include <libscapi/include/infra/Measurement.hpp>
-#include <thread>
-#include <libscapi/include/cryptoInfra/Protocol.hpp>
-#include <map>
 #include <dds/pub/ddspub.hpp>
 #include <dds/pub/DataWriter.hpp>
+#include <libscapi/include/infra/Common.hpp>
+#include <libscapi/include/primitives/Matrix.hpp>
+#include <libscapi/include/infra/Measurement.hpp>
+#include <libscapi/include/cryptoInfra/Protocol.hpp>
+#include <libscapi/include/circuits/ArithmeticCircuit.hpp>
+
 
 #define flag_print false
 #define flag_print_timings true
 #define flag_print_output false
-#define AB_BYPASS true
 
 
 using namespace std;
@@ -40,7 +38,7 @@ private:
     int times; //number of times to run the run function
     int iteration; //number of the current iteration
 
-//    Measurement* //timer;
+//    Measurement* timer;
     int N, M, T, m_partyId;
     int numOfInputGates, numOfOutputGates;
     string inputsFile, outputFile;
@@ -54,9 +52,6 @@ private:
     VDM<FieldType> matrix_vand;
     HIM<FieldType> m;
 
-    //Communication* comm;
-    boost::asio::io_service io_service;
-//    vector<shared_ptr<ProtocolPartyData>>  parties;
     DDSCommunicator* myNewChannel;
 
     ArithmeticCircuit circuit;
@@ -321,7 +316,7 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
 
     vector<string> subTaskNames{"Offline", "PreparationForInputPhase", "PreparationPhase", "inputPreparation", "Online",
                                 "InputAdjustment", "ComputationPhase", "OutputPhase"};
-    ////timer = new Measurement(*this, subTaskNames);
+    //timer = new Measurement(*this, subTaskNames);
 
     s = to_string(m_partyId);
     circuit.readCircuit(circuitFile.c_str());
@@ -332,7 +327,6 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
     myInputs.resize(numOfInputGates);
     shareIndex = 0;//numOfInputGates;
 
-//    parties = MPCCommunication::setCommunication(io_service, m_partyId, N, partiesFileName);
     myNewChannel = new DDSCommunicator(m_partyId, N, partiesFileName, 20000, false, false);
 
     readMyInputs();
@@ -496,7 +490,7 @@ bool ProtocolParty<FieldType>::broadcast(int party_id, vector<byte> myMessage, v
             } }
         for(int i = 0; i < N; i++) {
 
-           sendBufsElements[i][k] = Y1[i];
+            sendBufsElements[i][k] = Y1[i];
         }
         for(int i = 0; i < N; i++)
         {
@@ -510,7 +504,7 @@ bool ProtocolParty<FieldType>::broadcast(int party_id, vector<byte> myMessage, v
 
         cout  << "before roundfunction3 " << endl;
         for(int k=0; k< N; k++) {
-           // cout << k << "  " << buffers[k] << endl;
+            // cout << k << "  " << buffers[k] << endl;
         }}
 
 
@@ -558,14 +552,9 @@ bool ProtocolParty<FieldType>::broadcast(int party_id, vector<byte> myMessage, v
                 {
                     // cheating detected!!!
                     if(flag_print) {
-#ifndef AB_BYPASS
-                        cout << "                 cheating" << endl;
-
+                        cout << "                 cheating" << endl;}
                     return false;
-#endif
-                    }
                 }
-
             }
         }
     }
@@ -598,10 +587,10 @@ void ProtocolParty<FieldType>::run() {
         auto t1start = high_resolution_clock::now();
         ////timer->startSubTask("Offline", iteration);
         runOffline();
-        ////timer->endSubTask("Offline", iteration);
-        ////timer->startSubTask("Online", iteration);
+        //timer->endSubTask("Offline", iteration);
+        //timer->startSubTask("Online", iteration);
         runOnline();
-        ////timer->endSubTask("Online", iteration);
+        //timer->endSubTask("Online", iteration);
         auto t2end = high_resolution_clock::now();
         auto duration = duration_cast<milliseconds>(t2end-t1start).count();
 
@@ -620,11 +609,9 @@ void ProtocolParty<FieldType>::runOffline() {
     auto t1 = high_resolution_clock::now();
     //timer->startSubTask("PreparationForInputPhase", iteration);
     if(RandomSharingForInputs() == false) {
-#ifndef AB_BYPASS
         if(flag_print) {
             cout << "cheating!!!" << '\n';}
         return;
-#endif
     }
     else {
         if(flag_print) {
@@ -640,11 +627,9 @@ void ProtocolParty<FieldType>::runOffline() {
     t1 = high_resolution_clock::now();
     //timer->startSubTask("PreparationPhase", iteration);
     if(preparationPhase() == false) {
-#ifndef AB_BYPASS
         if(flag_print) {
             cout << "cheating!!!" << '\n';}
         return;
-#endif
     }
     else {
         if(flag_print) {
@@ -660,13 +645,10 @@ void ProtocolParty<FieldType>::runOffline() {
     t1 = high_resolution_clock::now();
     //timer->startSubTask("inputPreparation", iteration);
     if(inputPreparation() == false) {
-#ifndef AB_BYPASS
         cout << "cheating!!!" << '\n';
-
         if(flag_print) {
             cout << "cheating!!!" << '\n';}
         return;
-#endif
     }
     else {
         if(flag_print) {
@@ -744,9 +726,9 @@ void ProtocolParty<FieldType>::computationPhase(HIM<FieldType> &m) {
 
         currentCirciutLayer = i;
         count = processNotMult();
-       // cout<<"count mot mult: " << count << "for layer: " << currentCirciutLayer <<"\n";
+        // cout<<"count mot mult: " << count << "for layer: " << currentCirciutLayer <<"\n";
         count += processMultiplications(m);
-       // cout<<"count mult" << count << "for layer: " << currentCirciutLayer<<"\n";
+        // cout<<"count mult" << count << "for layer: " << currentCirciutLayer<<"\n";
 
 
     }
@@ -821,11 +803,9 @@ void ProtocolParty<FieldType>::inputAdjustment(string &diff)
 
     // Broadcast the difference between GateValue[k] to x.
     if(broadcast(m_partyId, sendBufBytes, recBufsdiffBytes, matrix_him) == false) {
-#ifndef AB_BYPASS
         if(flag_print) {
             cout << "cheating!!!" << '\n';}
         return;
-#endif
     }
     else {
         if(flag_print) {
@@ -836,7 +816,7 @@ void ProtocolParty<FieldType>::inputAdjustment(string &diff)
 
         cout << "recBufsdiff" << endl;
         for (int k = 0; k < N; k++) {
-           // cout << "recBufsdiff" << k << "  " << recBufsdiff[k] << endl;
+            // cout << "recBufsdiff" << k << "  " << recBufsdiff[k] << endl;
         }
     }
     // handle after broadcast
@@ -1219,7 +1199,7 @@ bool ProtocolParty<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, H
         for (int i = 0; i < N; i++) {
             for (int k = 0; k < sendBufsElements[0].size(); k++) {
 
-               // cout << "before roundfunction4 send to " <<i <<" element: "<< k << " " << sendBufsElements[i][k] << endl;
+                // cout << "before roundfunction4 send to " <<i <<" element: "<< k << " " << sendBufsElements[i][k] << endl;
             }
         }
     }
@@ -1309,7 +1289,7 @@ bool ProtocolParty<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, H
         matrix_him.MatrixMult(x2, y2);
         // these shall be checked
         for (int i = 0; i < 2 * T; i++) {
-              sendBufsElements[robin].push_back(y1[i]);
+            sendBufsElements[robin].push_back(y1[i]);
             sendBufsElements[robin].push_back(y2[i]);
             robin = (robin+1) % N; // next robin
 
@@ -1389,13 +1369,11 @@ bool ProtocolParty<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, H
         }
         // Check that x1 is t-consistent and x2 is 2t-consistent and secret is the same
         if(!checkConsistency(x1,T) || !checkConsistency(x2,2*T) ||
-                (interpolate(x1)) != (interpolate(x2)))  {
+           (interpolate(x1)) != (interpolate(x2)))  {
             // cheating detected, abort
             if(flag_print) {
                 cout << "k" << k<< endl;}
-#ifndef AB_BYPASS
             return false;
-#endif
         }
     }
     return true;
@@ -1625,9 +1603,7 @@ bool ProtocolParty<FieldType>::RandomSharingForInputs()
             // cheating detected, abort
             if(flag_print) {
                 cout << "k" << k<< endl;}
-#ifndef AB_BYPASS
             return false;
-#endif
         }
     }
     return true;
@@ -1656,7 +1632,7 @@ bool ProtocolParty<FieldType>::inputPreparation()
         gateShareArr[circuit.getGates()[k].output] = sharingBufInputsTElements[k];
         i = (circuit.getGates())[k].party; // the number of party which has the input
         // reconstruct sharing towards input party
-       sendBufsElements[i].push_back(gateShareArr[circuit.getGates()[k].output]);
+        sendBufsElements[i].push_back(gateShareArr[circuit.getGates()[k].output]);
 
     }
     if(flag_print) {
@@ -1724,10 +1700,8 @@ bool ProtocolParty<FieldType>::inputPreparation()
             counter++;
             if(!checkConsistency(x1, T))
             {
-#ifndef AB_BYPASS
                 // someone cheated!
                 return false;
-#endif
             }
             // the (random) secret
             secret = interpolate(x1);
@@ -1765,9 +1739,7 @@ bool ProtocolParty<FieldType>::checkConsistency(vector<FieldType>& x, int d)
         for (int i = 0; i < N - d - 1; i++)   // n-d-2 or n-d-1 ??
         {
             if ((y[i]) != (x[d + 1 + i])) {
-#ifndef AB_BYPASS
                 return false;
-#endif
             }
         }
         return true;
@@ -1787,9 +1759,7 @@ bool ProtocolParty<FieldType>::checkConsistency(vector<FieldType>& x, int d)
         for (int i = 0; i < N - d - 1; i++)   // n-d-2 or n-d-1 ??
         {
             if ((y[i]) != (x[d + 1 + i])) {
-#ifndef AB_BYPASS
                 return false;
-#endif
             }
         }
         return true;
@@ -1817,9 +1787,7 @@ bool ProtocolParty<FieldType>::checkConsistency(vector<FieldType>& x, int d)
         {
             //if (field->elementToString(y[i]) != field->elementToString(x[d + 1 + i])) {
             if (y[i] != x[d + 1 + i]) {
-#ifndef AB_BYPASS
                 return false;
-#endif
             }
         }
         return true;
@@ -1848,7 +1816,7 @@ int ProtocolParty<FieldType>::processNotMult(){
         {
             ;//do nothing
         }
-        // add gate
+            // add gate
         else if(circuit.getGates()[k].gateType == ADD)
         {
             gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] + gateShareArr[circuit.getGates()[k].input2];
@@ -2031,12 +1999,10 @@ void ProtocolParty<FieldType>::outputPhase()
             if (!checkConsistency(x1, T))
             {
                 // someone cheated!
-#ifndef AB_BYPASS
                 if(flag_print) {
                     cout << "cheating!!!" << '\n';}
                 return;
-#endif
-                }
+            }
             if(flag_print_output)
                 cout << "the result for "<< circuit.getGates()[k].input1 << " is : " << field->elementToString(interpolate(x1)) << '\n';
             //myfile << field->elementToString(interpolate(x1));
@@ -2051,59 +2017,40 @@ void ProtocolParty<FieldType>::outputPhase()
 
 
 template <class FieldType>
-void ProtocolParty<FieldType>::roundFunctionSync(vector<vector<byte>> &sendBufs,
-                                                 vector<vector<byte>> &recBufs, int round) {
+void ProtocolParty<FieldType>::roundFunctionSync(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs,
+                                                 int round)
+{
     recBufs[m_partyId] = sendBufs[m_partyId];
     exchangeData(sendBufs, recBufs, -1, -1);
 }
 
 
 template <class FieldType>
-void ProtocolParty<FieldType>::exchangeData(vector<vector<byte>> &sendBufs,
-                                            vector<vector<byte>> &recBufs, int first, int last){
+void ProtocolParty<FieldType>::exchangeData(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs,
+                                            int first, int last)
+{
+//    cout << "*********** EXCHANGE DATA ********************* Party ID: "
+//            << m_partyId << " ******************* " << endl;
 
-    cout << "*********** EXCHANGE DATA ********************* Party ID: " << m_partyId << " ******************8 " << endl;
+    vector<DDSChannelWriter*> writers = myNewChannel->getChannelWriters();
 
-    //cout<<"in exchangeData";
-    vector<string> ipsList = myNewChannel->getPartiesIPList();
-    int counter = 0;
-
-    for (auto IP : ipsList)
+    for(auto writer: writers)
     {
-        if (counter == myNewChannel->getOwnID())
-        {
-            cout << " not sending to myself : " << counter << endl;
-            counter++;
-            continue;
-        }
-
-        DDSChannelWriter *MyChannelWriter = myNewChannel->getDDSChannelWriter(IP);
-        //send shares to my input bits
-//        if (sendBufs[counter].size() > 0)
-            MyChannelWriter->Write((const char*)sendBufs[counter].data(), sendBufs[counter].size(), m_partyId);
-        cout << "party id " << m_partyId << " EXCHANGE Writing to party : " << counter << " with size : " << sendBufs[counter].size() << endl;
-        counter++;
-
+        int topcId = stoi(writer->GetTopicID());
+        writer->Write((const char*)sendBufs[topcId].data(), sendBufs[topcId].size(), m_partyId);
+//        cout << "party id " << m_partyId << " EXCHANGE Writing to party : " << topcId
+//             << " with size : " << sendBufs[topcId].size() << endl;
     }
-//    map<unsigned long, DDSSample*> readInputMap;
-//     myNewChannel->ReadAllInputs(&readInputMap);
-//
-//    for (auto& x : readInputMap)
-//    {
-//        unsigned long partyId =  x.first;  // string (key)
-//        cout << "party id " << m_partyId << " EXCHANGE received data from : " << partyId << " with size : " << x.second->getPayloadLength() << endl;
-//
-//        memcpy(recBufs[partyId].data(), x.second->getPayload(), x.second->getPayloadLength());
-//
-//    }
+
 
     int toRead = N - 1;
 
-    while (toRead > 0) {
+    while (toRead > 0)
+    {
         DDSSample sample;
         myNewChannel->ReadInput(&sample);
-        cout << "###############Receiving Payload length is : " << sample.getPayloadLength() << " from src id : " <<
-             sample.getSourceID()<< " seq number : " << sample.getSequenceNumber() << endl;
+//        cout << "###############Receiving Payload length is : " << sample.getPayloadLength() << " from src id : " <<
+//             sample.getSourceID()<< " seq number : " << sample.getSequenceNumber() <<" my id : " << m_partyId << endl;
         if (sample.getPayloadLength() > recBufs[sample.getSourceID()].size())
             cout << "MEMORY LEAKED FIXED" << endl;
         recBufs[sample.getSourceID()].resize(sample.getPayloadLength());
@@ -2113,63 +2060,38 @@ void ProtocolParty<FieldType>::exchangeData(vector<vector<byte>> &sendBufs,
 }
 
 
-
-
-
 template <class FieldType>
-void ProtocolParty<FieldType>::roundFunctionSyncBroadcast(vector<byte> &message,
-                                                          vector<vector<byte>> &recBufs) {
+void ProtocolParty<FieldType>::roundFunctionSyncBroadcast(vector<byte> &message, vector<vector<byte>> &recBufs)
+{
     recBufs[m_partyId] = message;
     recData(message, recBufs, -1, -1);
- }
+}
 
 
 template <class FieldType>
-void ProtocolParty<FieldType>::recData(vector<byte> &message, vector<vector<byte>> &recBufs,
-                                       int first, int last)
+void ProtocolParty<FieldType>::recData(vector<byte> &message, vector<vector<byte>> &recBufs, int first, int last)
 {
-    cout << "*********** RECDATA ********************* Party ID: " << m_partyId << " ******************8 " << endl;
-    //cout<<"in exchangeData";
-    vector<string> ipsList = myNewChannel->getPartiesIPList();
-    int counter = 0;
+//    cout << "*********** RECDATA ********************* Party ID: " << m_partyId << " ***************** " << endl;
 
-    for (auto IP : ipsList)
+    vector<DDSChannelWriter*> writers = myNewChannel->getChannelWriters();
+
+    for(auto writer: writers)
     {
-        if (counter == myNewChannel->getOwnID())
-        {
-            cout << " not sending to myself : " << counter << endl;
-            counter++;
-            continue;
-        }
-
-
-        DDSChannelWriter *MyChannelWriter = myNewChannel->getDDSChannelWriter(IP);
-        //send shares to my input bits
-//        if (message.size() > 0)
-            MyChannelWriter->Write((const char*)message.data(), message.size(), m_partyId);
-        cout << "party id " << m_partyId << "RECDATA Writing to party : " << counter << " with size : " << message.size() << endl;
-        counter++;
+        int topcId = stoi(writer->GetTopicID());
+        writer->Write((const char*)message.data(), message.size(), m_partyId);
+//        cout << "party id " << m_partyId << " EXCHANGE Writing to party : " << topcId
+//             << " with size : " << message.size() << endl;
     }
 
-//    map<unsigned long, DDSSample*> readInputMap;
-//    myNewChannel->ReadAllInputs(&readInputMap);
-//
-//    for (auto & x : readInputMap)
-//    {
-//        unsigned long partyId =  x.first;
-//        cout << "party id " << m_partyId << " RECDATA received data from : " << partyId << " with size : " << x.second->getPayloadLength() << endl;
-//
-//        memcpy(recBufs[partyId].data(), x.second->getPayload(), x.second->getPayloadLength());
-//
-//    }
 
     int toRead = N - 1;
 
-    while (toRead > 0) {
+    while (toRead > 0)
+    {
         DDSSample sample;
         myNewChannel->ReadInput(&sample);
-        cout << "###############Receiving Payload length is : " << sample.getPayloadLength() << " from src id : " <<
-             sample.getSourceID()<< " seq number : " << sample.getSequenceNumber() << endl;
+//        cout << "###############Receiving Payload length is : " << sample.getPayloadLength() << " from src id : " <<
+//             sample.getSourceID()<< " seq number : " << sample.getSequenceNumber() <<" my id : " << m_partyId << endl;
         if (sample.getPayloadLength() > recBufs[sample.getSourceID()].size())
             cout << "MEMORY LEAKED FIXED" << endl;
         recBufs[sample.getSourceID()].resize(sample.getPayloadLength());
@@ -2183,8 +2105,7 @@ template <class FieldType>
 ProtocolParty<FieldType>::~ProtocolParty()
 {
     delete field;
-    io_service.stop();
-    //delete //timer;
+//    delete timer;
 }
 
 

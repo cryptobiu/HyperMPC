@@ -8,11 +8,11 @@
 #ifndef DDSCOMMUNICATOR_HPP_
 #define DDSCOMMUNICATOR_HPP_
 
-//#include <dds/domain/DomainParticipant.hpp>
-//#include <dds/pub/ddspub.hpp>
-//#include <dds/sub/ddssub.hpp>
-//#include <dds/pub/DataWriter.hpp>
-//#include <dds/core/ddscore.hpp>
+#include <dds/domain/DomainParticipant.hpp>
+#include <dds/pub/ddspub.hpp>
+#include <dds/sub/ddssub.hpp>
+#include <dds/pub/DataWriter.hpp>
+#include <dds/core/ddscore.hpp>
 #include <dds/dds.hpp>
 #include <dds/sub/DataReader.hpp>
 
@@ -38,12 +38,14 @@ class DDSCommunicator {
 public:
 	DDSCommunicator(int id, int numParties, string configFile, unsigned int elapsedTime = 5, bool addIPtoPeerList = true, bool printDebugFlag = false);
 	virtual ~DDSCommunicator();
-	DDSChannelWriter* getDDSChannelWriter (string PartyIP);
+	DDSChannelWriter* getDDSChannelWriter (int partyId);
 	void ReadAllInputs (map<unsigned long, DDSSample *> *samplesMap);
 	void ReadInput(DDSSample* sample);
 	string getOwnIP() { return _ownIP; };
 	unsigned int getOwnID() { return _ownID; };
 	std::vector<string> getPartiesIPList() { return _partiesIPList; };
+	std::vector<DDSChannelWriter*> getChannelWriters() { return _DDSChannelWriterList; }
+	std::vector<dds::topic::Topic<BIUDDSStruct>> getTopics(){ return _DDSTopicsList; };
 
 private:
 //	Methods

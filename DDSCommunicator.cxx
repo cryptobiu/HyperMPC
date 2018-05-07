@@ -125,13 +125,12 @@ void DDSCommunicator::CreateOwnTopicReader() {
 	_waitset->attach_condition(*_readCondition);
 }
 
-DDSChannelWriter* DDSCommunicator::getDDSChannelWriter(string PartyIP) {
-	for (auto DDSChannelWriter : _DDSChannelWriterList) {
-		if (DDSChannelWriter->GetTopicIP() == PartyIP) {
-			return DDSChannelWriter;
-		}
-	}
-	throw runtime_error("No channel was found for the specified IP");
+DDSChannelWriter* DDSCommunicator::getDDSChannelWriter(int partyId) {
+
+    if (partyId > _DDSChannelWriterList.size())
+        throw runtime_error("No channel was found for the specified IP");
+
+    return _DDSChannelWriterList[partyId];
 }
 
 void DDSCommunicator::ReadAllInputs(map<unsigned long , DDSSample* > *samplesMap) {
