@@ -13,18 +13,20 @@
 
 typedef GF2_8LookupTable GF28LT;
 
-class psmpc_ac : public ProtocolParty<GF28LT>, public ac_protocol
+class psmpc_ac : private ProtocolParty<GF28LT>, public ac_protocol
 {
-    typedef enum {
+    typedef enum
+    {
         ps_nil=0,
         ps_rsfi1,
         ps_rsfi2,
         ps_prep1,
         ps_prep2,
-        ps_input_preparation,
-        ps_input_adjusment,
-        ps_computation,
-        ps_output,
+        ps_inprp,
+        ps_inadj1,
+        ps_inadj2,
+        ps_cmptn,
+        ps_outpt,
         ps_done
     } party_state_t;
 
@@ -35,7 +37,8 @@ class psmpc_ac : public ProtocolParty<GF28LT>, public ac_protocol
         bool m_connected;
         size_t m_id;
 
-        std::vector<GF28LT> m_aux1;
+        std::vector<GF28LT> m_aux;
+//        string m_inadj_diff;
 
         //rsfi1
         bool rsfi1_sent, rsfi1_rcvd;
@@ -45,12 +48,24 @@ class psmpc_ac : public ProtocolParty<GF28LT>, public ac_protocol
         bool prep1_sent, prep1_rcvd;
         //prep2
         bool prep2_sent, prep2_rcvd;
+        //inprp
+        bool inprp_sent, inprp_rcvd;
+        //inadj1
+        bool inadj1_sent, inadj1_rcvd;
+        //inadj2
+        bool inadj2_sent, inadj2_rcvd;
+        //outpt
+        bool outpt_sent, outpt_rcvd;
 
         __party_t () : m_current_state(ps_nil), m_connected(false)
                      , rsfi1_sent(false), rsfi1_rcvd(false)
                      , rsfi2_sent(false), rsfi2_rcvd(false)
                      , prep1_sent(false), prep1_rcvd(false)
                      , prep2_sent(false), prep2_rcvd(false)
+                     , inprp_sent(false), inprp_rcvd(false)
+                     , inadj1_sent(false), inadj1_rcvd(false)
+                     , inadj2_sent(false), inadj2_rcvd(false)
+                     , outpt_sent(false), outpt_rcvd(false)
         {}
     }party_t;
 
@@ -63,22 +78,23 @@ class psmpc_ac : public ProtocolParty<GF28LT>, public ac_protocol
     bool on_rsfi2(party_t & peer);
     bool on_prep1(party_t & peer);
     bool on_prep2(party_t & peer);
-    bool on_input_preparation(party_t & peer);
-    bool on_input_adjusment(party_t & peer);
-    bool on_computation(party_t & peer);
-    bool on_output(party_t & peer);
+    bool on_inprp(party_t & peer);
+    bool on_inadj1(party_t & peer);
+    bool on_inadj2(party_t & peer);
+    bool on_cmptn(party_t & peer);
+    bool on_outpt(party_t & peer);
 
     bool all_on_the_same_page(party_state_t & current_state);
     bool rsfi1_2_rsfi2();
     bool rsfi2_2_prep1();
     bool prep1_2_prep2();
-    bool prep2_2_input_preparation();
-    bool input_preparation_2_input_adjustment();
-    bool input_adjustment_2_computation();
-    bool computation_2_output();
-    bool output_2_done();
+    bool prep2_2_inprp();
+    bool inprp_2_inadj1();
+    bool inadj1_2_inadj2();
+    bool inadj2_2_cmptn();
+    bool cmptn_2_outpt();
+    bool outpt_2_done();
 
-    int get_no_buckets() const;
     void generate_random_double_shares();
 
     bool send_aux1(party_t &peer);
