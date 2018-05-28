@@ -25,7 +25,7 @@ using namespace std::chrono;
 
 template <class FieldType>
 class ProtocolParty : public Protocol, public HonestMajority, public MultiParty {
-private:
+protected:
     /**
      * N - number of parties
      * M - number of gates
