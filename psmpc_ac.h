@@ -55,7 +55,7 @@ class psmpc_ac : private ProtocolParty<GF28LT>, public ac_protocol
         //inadj2
         bool inadj2_sent, inadj2_rcvd;
         //outpt
-        bool outpt_sent, outpt_rcvd;
+        size_t outpt_sent, outpt_rcvd;
 
         __party_t () : m_current_state(ps_nil), m_connected(false)
                      , rsfi1_sent(false), rsfi1_rcvd(false)
@@ -65,13 +65,14 @@ class psmpc_ac : private ProtocolParty<GF28LT>, public ac_protocol
                      , inprp_sent(false), inprp_rcvd(false)
                      , inadj1_sent(false), inadj1_rcvd(false)
                      , inadj2_sent(false), inadj2_rcvd(false)
-                     , outpt_sent(false), outpt_rcvd(false)
+                     , outpt_sent(0), outpt_rcvd(0)
         {}
     }party_t;
 
     ///common structs
     vector<party_t> m_parties_state;
     int m_no_buckets, m_no_random;
+    std::string m_circuit_name;
 
     bool party_run_around(const size_t party_id);
     bool on_rsfi1(party_t & peer);
@@ -97,13 +98,14 @@ class psmpc_ac : private ProtocolParty<GF28LT>, public ac_protocol
 
     void generate_random_double_shares();
 
-    bool send_aux1(party_t &peer);
-    bool recv_aux1(party_t & peer, const size_t required_elements);
+    bool send_aux(party_t &peer);
+    bool recv_aux(party_t &peer, const size_t required_elements);
 
 
 public:
     psmpc_ac(int argc, char* argv [], const char * logcat);
     virtual ~psmpc_ac();
+    void set_circuit_name(const std::string &circuit_name);
 
 protected:
     virtual void handle_party_conn(const size_t party_id, const bool connected);
@@ -113,6 +115,8 @@ protected:
     virtual bool run_around();
     virtual bool round_up();
     virtual int post_run();
+
+    int output_phase_comm(const size_t peer_id, size_t &to_send, size_t &to_recv);
 };
 
 

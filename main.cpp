@@ -86,31 +86,18 @@ int main(int argc, char* argv[])
     }
     else if(fieldType.compare("GF2_8LookupTable") == 0)
     {
-
-//        cout<<"lookup table"<<endl;
-//
-//        ProtocolParty<GF2_8LookupTable> protocol(argc, argv);
-//        auto t1 = high_resolution_clock::now();
-//
-//        protocol.run();
-//
-//        auto t2 = high_resolution_clock::now();
-//
-//        auto duration = duration_cast<milliseconds>(t2-t1).count();
-//
-//        cout << "time in milliseconds for " << times << " runs: " << duration << endl;
-//
-//        cout << "end main" << '\n';
-        int id = stoi(argv[2]);
-        int parties = stoi(argv[4]);
+        int id = stoi(parser.getValueByKey(parameters, "partyID"));
+        int parties = stoi(parser.getValueByKey(parameters, "partiesNumber"));
+        std::string partiesFile = parser.getValueByKey(parameters, "partiesFile");
+        std::string circuitName = parser.getValueByKey(parameters, "circuitFile");
 
         char buffer[32];
         snprintf(buffer, 32, "psmpc_%04d.log", id);
         init_log(buffer, "./", 700, "ps");
         psmpc_ac ps(argc, argv, "ps");
-        ps.run_ac_protocol(id ,parties, argv[12], 60);
+        ps.set_circuit_name(circuitName);
+        ps.run_ac_protocol(id ,parties, partiesFile.c_str(), 60);
     }
-
 
     else if(fieldType.compare("GF2E") == 0)
     {
