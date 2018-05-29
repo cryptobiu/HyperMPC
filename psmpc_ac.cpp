@@ -915,5 +915,6 @@ bool psmpc_ac::outpt_2_done()
         m_parties_state[i].m_current_state = ps_done;
 
     LC.notice("%s: Protocol done; success.",__FUNCTION__);
+    sleep(1);
     return (m_run_flag = false);
 }

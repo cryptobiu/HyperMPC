@@ -5,4 +5,5 @@ do
 	echo "Running $i..."
 done
 
+sleep 10
 killall -9 Secret_Sharing

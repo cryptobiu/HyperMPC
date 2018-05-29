@@ -326,21 +326,7 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
     myInputs.resize(numOfInputGates);
     shareIndex = 0;//numOfInputGates;
 
-    parties = MPCCommunication::setCommunication(io_service, m_partyId, N, partiesFileName);
-
-    string tmp = "init times";
-    //cout<<"before sending any data"<<endl;
-    byte tmpBytes[20];
-    for (int i=0; i<parties.size(); i++){
-        cout <<"Start handshake with " << parties[i]->getID() << endl;
-        if (parties[i]->getID() < m_partyId){
-            parties[i]->getChannel()->write(tmp);
-            parties[i]->getChannel()->read(tmpBytes, tmp.size());
-        } else {
-            parties[i]->getChannel()->read(tmpBytes, tmp.size());
-            parties[i]->getChannel()->write(tmp);
-        }
-    }
+//    parties = MPCCommunication::setCommunication(io_service, m_partyId, N, partiesFileName);
 
     readMyInputs();
 
@@ -2193,7 +2179,7 @@ ProtocolParty<FieldType>::~ProtocolParty()
 {
     delete field;
     io_service.stop();
-    delete timer;
+//    delete timer;
 }
 
 
