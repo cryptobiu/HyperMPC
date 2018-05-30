@@ -95,7 +95,6 @@ int main(int argc, char* argv[])
         snprintf(buffer, 32, "psmpc_%04d.log", id);
         init_log(buffer, "./", 700, "ps");
         psmpc_ac ps(argc, argv, "ps");
-        ps.set_circuit_name(circuitName);
         ps.run_ac_protocol(id ,parties, partiesFile.c_str(), 60);
     }
 

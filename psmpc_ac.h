@@ -25,7 +25,6 @@ class psmpc_ac : private ProtocolParty<GF28LT>, public ac_protocol
         ps_inprp,
         ps_inadj1,
         ps_inadj2,
-        ps_cmptn,
         ps_outpt,
         ps_done
     } party_state_t;
@@ -36,54 +35,21 @@ class psmpc_ac : private ProtocolParty<GF28LT>, public ac_protocol
         std::vector<u_int8_t> m_data;
         bool m_connected;
         size_t m_id;
-
         std::vector<GF28LT> m_aux;
-//        string m_inadj_diff;
+        size_t rnd_data_sent, rnd_data_rcvd, rnd_data_2send, rnd_data_2recv;
 
-        //rsfi1
-        bool rsfi1_sent, rsfi1_rcvd;
-        //rsfi2
-        bool rsfi2_sent, rsfi2_rcvd;
-        //prep1
-        bool prep1_sent, prep1_rcvd;
-        //prep2
-        bool prep2_sent, prep2_rcvd;
-        //inprp
-        bool inprp_sent, inprp_rcvd;
-        //inadj1
-        bool inadj1_sent, inadj1_rcvd;
-        //inadj2
-        bool inadj2_sent, inadj2_rcvd;
-        //outpt
-        size_t outpt_sent, outpt_rcvd;
-
-        __party_t () : m_current_state(ps_nil), m_connected(false)
-                     , rsfi1_sent(false), rsfi1_rcvd(false)
-                     , rsfi2_sent(false), rsfi2_rcvd(false)
-                     , prep1_sent(false), prep1_rcvd(false)
-                     , prep2_sent(false), prep2_rcvd(false)
-                     , inprp_sent(false), inprp_rcvd(false)
-                     , inadj1_sent(false), inadj1_rcvd(false)
-                     , inadj2_sent(false), inadj2_rcvd(false)
-                     , outpt_sent(0), outpt_rcvd(0)
+        __party_t () : m_current_state(ps_nil), m_connected(false), m_id((size_t)-1)
+                     , rnd_data_sent(0), rnd_data_rcvd(0)
+                     , rnd_data_2send(0), rnd_data_2recv(0)
         {}
     }party_t;
 
     ///common structs
     vector<party_t> m_parties_state;
     int m_no_buckets, m_no_random;
-    std::string m_circuit_name;
 
     bool party_run_around(const size_t party_id);
-    bool on_rsfi1(party_t & peer);
-    bool on_rsfi2(party_t & peer);
-    bool on_prep1(party_t & peer);
-    bool on_prep2(party_t & peer);
-    bool on_inprp(party_t & peer);
-    bool on_inadj1(party_t & peer);
-    bool on_inadj2(party_t & peer);
-    bool on_cmptn(party_t & peer);
-    bool on_outpt(party_t & peer);
+    bool on_round_send_and_recv(party_t &peer);
 
     bool all_on_the_same_page(party_state_t & current_state);
     bool rsfi1_2_rsfi2();
@@ -92,8 +58,7 @@ class psmpc_ac : private ProtocolParty<GF28LT>, public ac_protocol
     bool prep2_2_inprp();
     bool inprp_2_inadj1();
     bool inadj1_2_inadj2();
-    bool inadj2_2_cmptn();
-    bool cmptn_2_outpt();
+    bool inadj2_2_outpt();
     bool outpt_2_done();
 
     void generate_random_double_shares();
@@ -101,11 +66,9 @@ class psmpc_ac : private ProtocolParty<GF28LT>, public ac_protocol
     bool send_aux(party_t &peer);
     bool recv_aux(party_t &peer, const size_t required_elements);
 
-
 public:
     psmpc_ac(int argc, char* argv [], const char * logcat);
     virtual ~psmpc_ac();
-    void set_circuit_name(const std::string &circuit_name);
 
 protected:
     virtual void handle_party_conn(const size_t party_id, const bool connected);

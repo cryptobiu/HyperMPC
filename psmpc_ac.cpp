@@ -78,23 +78,22 @@ void psmpc_ac::generate_random_double_shares()
      *  subsequent: degree 2t with same secret.
      */
     vector<GF28LT> x1(N, 0),y1(N, 0);
-    for(int k=0; k < m_no_buckets; k++)
+    for(size_t k=0; k < m_no_buckets; k++)
     {
         // generate random degree-T polynomial
-        for(int i = 0; i < T+1; i++)
+        for(size_t i = 0; i < T+1; i++)
             x1[i] = field->Random();
 
         matrix_vand.MatrixMult(x1, y1, T+1); // eval poly at alpha-positions
 
         // prepare shares to be sent
-        for(int i=0; i < N; i++)
+        for(size_t i=0; i < N; i++)
+        {
             m_parties_state[i].m_aux.push_back(y1[i]);
+            m_parties_state[i].rnd_data_2recv++;
+            m_parties_state[i].rnd_data_2send++;
+        }
     }
-}
-
-void psmpc_ac::set_circuit_name(const std::string &circuit_name)
-{
-    m_circuit_name = circuit_name;
 }
 
 int psmpc_ac::output_phase_comm(const size_t peer_id, size_t &to_send, size_t &to_recv)
@@ -143,23 +142,14 @@ bool psmpc_ac::party_run_around(const size_t party_id)
                 peer.m_current_state = ps_rsfi1;
             /* no break */
         case ps_rsfi1:
-            return on_rsfi1(peer);
         case ps_rsfi2:
-            return on_rsfi2(peer);
         case ps_prep1:
-            return on_prep1(peer);
         case ps_prep2:
-            return on_prep2(peer);
         case ps_inprp:
-            return on_inprp(peer);
         case ps_inadj1:
-            return on_inadj1(peer);
         case ps_inadj2:
-            return on_inadj2(peer);
-        case ps_cmptn:
-            return on_cmptn(peer);
         case ps_outpt:
-            return on_outpt(peer);
+            return on_round_send_and_recv(peer);
         case ps_done:
             return true;
         default:
@@ -196,9 +186,7 @@ bool psmpc_ac::round_up()
         case ps_inadj1:
             return inadj1_2_inadj2();
         case ps_inadj2:
-            return inadj2_2_cmptn();
-        case ps_cmptn:
-            return cmptn_2_outpt();
+            return inadj2_2_outpt();
         case ps_outpt:
             return outpt_2_done();
         case ps_done:
@@ -212,7 +200,7 @@ bool psmpc_ac::all_on_the_same_page(party_state_t & current_state)
 {
     current_state = m_parties_state[m_id].m_current_state;
 
-    for (size_t i = 0; i < m_parties_state.size(); ++i)
+    for (size_t i = 0; i < m_parties; ++i)
     {
         if (i == m_id) continue;
 
@@ -261,11 +249,11 @@ bool psmpc_ac::recv_aux(party_t &peer, const size_t required_elements)
     return true;
 }
 
-bool psmpc_ac::on_rsfi1(party_t & peer)
+bool psmpc_ac::on_round_send_and_recv(party_t &peer)
 {
-    static const size_t num_of_elems = peer.m_aux.size();
-
-    if(!peer.rsfi1_sent)
+    LC.debug("%s: peer %lu current state %lu; 2snd %lu; 2rcv %lu;",
+             __FUNCTION__, peer.m_id, peer.m_current_state, peer.rnd_data_2send, peer.rnd_data_2recv);
+    if(peer.rnd_data_sent < peer.rnd_data_2send)
     {
         if (!send_aux(peer))
         {
@@ -273,34 +261,31 @@ bool psmpc_ac::on_rsfi1(party_t & peer)
             return (m_run_flag = false);
         }
         peer.m_aux.clear();
-        peer.rsfi1_sent = true;
-        LC.info("%s: %lu elements sent to peer %lu.", __FUNCTION__, num_of_elems, peer.m_id);
+        peer.rnd_data_sent = peer.rnd_data_2send;
     }
 
-    if(!peer.rsfi1_rcvd)
+    if(peer.rnd_data_rcvd < peer.rnd_data_2recv)
     {
-        size_t required_elements = num_of_elems - peer.m_aux.size();
-
+        size_t required_elements = peer.rnd_data_2recv - peer.m_aux.size();
         if (!recv_aux(peer, required_elements))
             return false;
         else
-        {
-            peer.rsfi1_rcvd = true;
-            LC.info("%s: %lu elements received from peer %lu.", __FUNCTION__, num_of_elems, peer.m_id);
-        }
+            peer.rnd_data_rcvd = peer.rnd_data_2recv;
     }
 
+    peer.rnd_data_2recv = peer.rnd_data_2send = peer.rnd_data_rcvd = peer.rnd_data_sent = 0;
     return true;
 }
 
 bool psmpc_ac::rsfi1_2_rsfi2()
 {
-    vector <GF28LT> x1(N), y1(N);
+    m_parties_state[m_id].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send = 0;
 
+    vector <GF28LT> x1(N), y1(N);
     sharingBufInputsTElements.resize((size_t) m_no_buckets * (N - 2 * T));
+    int robin = 0;
     for(int k=0; k < m_no_buckets; k++)
     {
-
         // generate random degree-T polynomial
         for (int i = 0; i < N; i++)
             x1[i] = m_parties_state[i].m_aux[k];
@@ -310,11 +295,10 @@ bool psmpc_ac::rsfi1_2_rsfi2()
 
         matrix_him.MatrixMult(x1, y1);
 
-        // these shall be checked
-        int robin = 0;
         for (int i = 0; i < 2 * T; i++)
         {
             m_parties_state[robin].m_aux.push_back(y1[i]);
+            m_parties_state[robin].rnd_data_2send++;
             robin = (robin+1) % N; // next robin
         }
 
@@ -324,42 +308,21 @@ bool psmpc_ac::rsfi1_2_rsfi2()
             sharingBufInputsTElements[k*(N-2*T) + i - 2*T] = y1[i];
     }
 
-    for(size_t i = 0; i < m_parties_state.size(); ++i)
+    for (size_t j = 0; j < N; j++)
+    {
+        m_parties_state[j].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send;
+    }
+
+    for(size_t i = 0; i < m_parties; ++i)
         m_parties_state[i].m_current_state = ps_rsfi2;
-
-    return true;
-}
-
-bool psmpc_ac::on_rsfi2(party_t & peer)
-{
-    static const size_t num_of_elems = peer.m_aux.size();
-
-    if (!peer.rsfi2_sent)
-    {
-        if (!send_aux(peer))
-        {
-            LC.error("%s: failed sending data to party %lu; Perfect Secure failed.", __FUNCTION__, peer.m_id);
-            return (m_run_flag = false);
-        }
-        peer.m_aux.clear();
-        peer.rsfi2_sent = true;
-    }
-
-    if(!peer.rsfi2_rcvd)
-    {
-        size_t required_elements = num_of_elems - peer.m_aux.size();
-
-        if (!recv_aux(peer, required_elements))
-            return false;
-        else
-            peer.rsfi2_rcvd = true;
-    }
 
     return true;
 }
 
 bool psmpc_ac::rsfi2_2_prep1()
 {
+    m_parties_state[m_id].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send = 0;
+
     int count = m_no_buckets * (2*T) / N;
     if(m_no_buckets * (2*T)%N > m_partyId)
         count++;
@@ -371,24 +334,16 @@ bool psmpc_ac::rsfi2_2_prep1()
         for (int i = 0; i < N; i++)
             x1[i] = m_parties_state[i].m_aux[k];
 
-
-//        vector<GF28LT> x_until_d(N);
-//        for(int i=0; i<T; i++)
-//            x_until_d[i] = x1[i];
-//
-//        for(int i=T; i<N; i++)
-//            x_until_d[i] = *(field->GetZero());
-
         // Check that x1 is t-consistent and x2 is 2t-consistent and secret is the same
-
         if(!checkConsistency(x1,T))
             return false;
     }
 
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < N; i++) {
         m_parties_state[i].m_aux.clear();
-
-    for(size_t i = 0; i < m_parties_state.size(); ++i)
+    }
+    
+    for(size_t i = 0; i < m_parties; ++i)
         m_parties_state[i].m_current_state = ps_prep1;
 
     sharingBufTElements.resize(m_no_buckets*(N-2*T)); // my shares of the double-sharings
@@ -400,8 +355,12 @@ bool psmpc_ac::rsfi2_2_prep1()
      *  subsequent: degree 2t with same secret.
      */
 
+    size_t round_data_size = (size_t) 2 * m_no_buckets;
     for (int i = 0; i < N; i++)
-        m_parties_state[i].m_aux.resize((size_t) 2 * m_no_buckets);
+    {
+        m_parties_state[i].m_aux.resize(round_data_size);
+        m_parties_state[i].rnd_data_2send = m_parties_state[i].rnd_data_2recv = round_data_size;
+    }
 
     for(int k=0; k < m_no_buckets; k++)
     {
@@ -430,36 +389,10 @@ bool psmpc_ac::rsfi2_2_prep1()
     return true;
 }
 
-bool psmpc_ac::on_prep1(party_t &peer)
-{
-    static const size_t num_of_elems = peer.m_aux.size();
-
-    if (!peer.prep1_sent)
-    {
-        if (!send_aux(peer))
-        {
-            LC.error("%s: failed sending data to party %lu; Perfect Secure failed.", __FUNCTION__, peer.m_id);
-            return (m_run_flag = false);
-        }
-        peer.m_aux.clear();
-        peer.prep1_sent = true;
-    }
-
-    if(!peer.prep1_rcvd)
-    {
-        size_t required_elements = num_of_elems - peer.m_aux.size();
-
-        if (!recv_aux(peer, required_elements))
-            return false;
-        else
-            peer.prep1_rcvd = true;
-    }
-
-    return true;
-}
-
 bool psmpc_ac::prep1_2_prep2()
 {
+    m_parties_state[m_id].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send = 0;
+
     vector<GF28LT> x1(N),x2(N),y1(N),y2(N);
     int robin = 0;
 
@@ -480,7 +413,11 @@ bool psmpc_ac::prep1_2_prep2()
         for (int i = 0; i < 2 * T; i++)
         {
             m_parties_state[robin].m_aux.push_back(y1[i]);
+            m_parties_state[robin].rnd_data_2send++;
+
             m_parties_state[robin].m_aux.push_back(y2[i]);
+            m_parties_state[robin].rnd_data_2send++;
+
             robin = (robin+1) % N; // next robin
         }
 
@@ -496,36 +433,10 @@ bool psmpc_ac::prep1_2_prep2()
         x2[0] = *(field->GetZero());
     }
 
-    for(size_t i = 0; i < m_parties_state.size(); ++i)
+    for(size_t i = 0; i < m_parties; ++i)
+    {
+        m_parties_state[i].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send;
         m_parties_state[i].m_current_state = ps_prep2;
-
-    return true;
-}
-
-
-bool psmpc_ac::on_prep2(party_t &peer)
-{
-    static const size_t num_of_elems = peer.m_aux.size();
-
-    if (!peer.prep2_sent)
-    {
-        if (!send_aux(peer))
-        {
-            LC.error("%s: failed sending data to party %lu; Perfect Secure failed.", __FUNCTION__, peer.m_id);
-            return (m_run_flag = false);
-        }
-        peer.m_aux.clear();
-        peer.prep2_sent = true;
-    }
-
-    if(!peer.prep2_rcvd)
-    {
-        size_t required_elements = num_of_elems - peer.m_aux.size();
-
-        if (!recv_aux(peer, required_elements))
-            return false;
-        else
-            peer.prep2_rcvd = true;
     }
 
     return true;
@@ -533,6 +444,8 @@ bool psmpc_ac::on_prep2(party_t &peer)
 
 bool psmpc_ac::prep2_2_inprp()
 {
+    m_parties_state[m_id].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send = 0;
+
     int count = m_no_buckets * (2*T) / N;
     if(m_no_buckets * (2*T)%N > m_partyId)
         count++;
@@ -560,7 +473,7 @@ bool psmpc_ac::prep2_2_inprp()
             return false;
     }
 
-    for(size_t i = 0; i < m_parties_state.size(); ++i)
+    for(size_t i = 0; i < m_parties; ++i)
         m_parties_state[i].m_current_state = ps_inprp;
 
     for(size_t i =0; i < m_parties;++i)
@@ -572,41 +485,19 @@ bool psmpc_ac::prep2_2_inprp()
         int i = (circuit.getGates())[k].party; // the number of party which has the input
         // reconstruct sharing towards input party
         m_parties_state[i].m_aux.push_back(gateShareArr[circuit.getGates()[k].output]);
+        m_parties_state[i].rnd_data_2send++;
     }
 
-    return true;
-}
-
-bool psmpc_ac::on_inprp(psmpc_ac::party_t &peer)
-{
-    static const size_t num_of_elems = peer.m_aux.size();
-
-    if (!peer.inprp_sent)
-    {
-        if (!send_aux(peer))
-        {
-            LC.error("%s: failed sending data to party %lu; Perfect Secure failed.", __FUNCTION__, peer.m_id);
-            return (m_run_flag = false);
-        }
-        peer.m_aux.clear();
-        peer.inprp_sent = true;
-    }
-
-    if(!peer.inprp_rcvd)
-    {
-        size_t required_elements = num_of_elems - peer.m_aux.size();
-
-        if (!recv_aux(peer, required_elements))
-            return false;
-        else
-            peer.inprp_rcvd = true;
-    }
+    for(size_t i = 0; i < m_parties; ++i)
+        m_parties_state[i].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send;
 
     return true;
 }
 
 bool psmpc_ac::inprp_2_inadj1()
 {
+    m_parties_state[m_id].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send = 0;
+
     vector<GF28LT> x1(N);
     int counter = 0;
     GF28LT secret;
@@ -631,7 +522,7 @@ bool psmpc_ac::inprp_2_inadj1()
         }
     }
 
-    for(size_t i = 0; i < m_parties_state.size(); ++i)
+    for(size_t i = 0; i < m_parties; ++i)
         m_parties_state[i].m_current_state = ps_inadj1;
 
     // read the inputs of the party
@@ -659,34 +550,9 @@ bool psmpc_ac::inprp_2_inadj1()
     }
 
     for(size_t i = 0; i < m_parties; ++i)
+    {
         m_parties_state[i].m_aux = diffElements;
-
-    return true;
-}
-
-bool psmpc_ac::on_inadj1(psmpc_ac::party_t &peer)
-{
-    static const size_t num_of_elems = peer.m_aux.size();
-
-    if (!peer.inadj1_sent)
-    {
-        if (!send_aux(peer))
-        {
-            LC.error("%s: failed sending data to party %lu; Perfect Secure failed.", __FUNCTION__, peer.m_id);
-            return (m_run_flag = false);
-        }
-        peer.m_aux.clear();
-        peer.inadj1_sent = true;
-    }
-
-    if(!peer.inadj1_rcvd)
-    {
-        size_t required_elements = num_of_elems - peer.m_aux.size();
-
-        if (!recv_aux(peer, required_elements))
-            return false;
-        else
-            peer.inadj1_rcvd = true;
+        m_parties_state[i].rnd_data_2recv = m_parties_state[i].rnd_data_2send = diffElements.size();
     }
 
     return true;
@@ -694,6 +560,8 @@ bool psmpc_ac::on_inadj1(psmpc_ac::party_t &peer)
 
 bool psmpc_ac::inadj1_2_inadj2()
 {
+    m_parties_state[m_id].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send = 0;
+
     // calculate total number of values which received
     int count = m_parties * m_parties_state[m_id].m_aux.size();
 
@@ -705,7 +573,7 @@ bool psmpc_ac::inadj1_2_inadj2()
         m_parties_state[i].m_aux.clear();
     }
 
-    for(size_t i = 0; i < m_parties_state.size(); ++i)
+    for(size_t i = 0; i < m_parties; ++i)
         m_parties_state[i].m_current_state = ps_inadj2;
 
     vector<GF28LT> x1(N);
@@ -742,39 +610,16 @@ bool psmpc_ac::inadj1_2_inadj2()
         }
     }
 
-    return true;
-}
-
-bool psmpc_ac::on_inadj2(party_t &peer)
-{
-    static const size_t num_of_elems = peer.m_aux.size();
-
-    if (!peer.inadj2_sent)
-    {
-        if (!send_aux(peer))
-        {
-            LC.error("%s: failed sending data to party %lu; Perfect Secure failed.", __FUNCTION__, peer.m_id);
-            return (m_run_flag = false);
-        }
-        peer.m_aux.clear();
-        peer.inadj2_sent = true;
-    }
-
-    if(!peer.inadj2_rcvd)
-    {
-        size_t required_elements = num_of_elems - peer.m_aux.size();
-
-        if (!recv_aux(peer, required_elements))
-            return false;
-        else
-            peer.inadj2_rcvd = true;
-    }
+    for(size_t i = 0; i < N; i++)
+        m_parties_state[i].rnd_data_2send = m_parties_state[i].rnd_data_2recv = (size_t)m_no_buckets;
 
     return true;
 }
 
-bool psmpc_ac::inadj2_2_cmptn()
+bool psmpc_ac::inadj2_2_outpt()
 {
+    m_parties_state[m_id].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send = 0;
+
     GF28LT temp1;
 
     for(size_t k=0; k < m_no_buckets; k++)
@@ -792,7 +637,6 @@ bool psmpc_ac::inadj2_2_cmptn()
         }
     }
 
-
     GF28LT db;
     vector<int> counters(N, 0);
 
@@ -809,23 +653,9 @@ bool psmpc_ac::inadj2_2_cmptn()
     for(size_t i =0; i < m_parties;++i)
         m_parties_state[i].m_aux.clear();
 
-    for(size_t i = 0; i < m_parties_state.size(); ++i)
-        m_parties_state[i].m_current_state = ps_cmptn;
-
-    return true;
-
-}
-
-bool psmpc_ac::on_cmptn(psmpc_ac::__party_t&)
-{
-    return true;
-}
-
-bool psmpc_ac::cmptn_2_outpt()
-{
     computationPhase(m);
 
-    for(size_t i = 0; i < m_parties_state.size(); ++i)
+    for(size_t i = 0; i < m_parties; ++i)
        m_parties_state[i].m_current_state = ps_outpt;
 
     for(int k=M-numOfOutputGates; k < M; k++)
@@ -845,48 +675,19 @@ bool psmpc_ac::cmptn_2_outpt()
         }
     }
 
-    return true;
-}
-
-bool psmpc_ac::on_outpt(party_t &peer)
-{
-    size_t to_send = 0, to_recv = 0;
-
-    if(0 != output_phase_comm(peer.m_id, to_send, to_recv))
+    for(size_t i = 0; i < m_parties; ++i)
     {
-        LC.error("%s: failed retrieve outputs comm requirements to party %lu; Perfect Secure failed."
-                 , __FUNCTION__, peer.m_id);
-        return (m_run_flag = false);
-    }
-
-    if (peer.outpt_sent < to_send)
-    {
-        if (!send_aux(peer))
+        party_t &peer(m_parties_state[i]);
+        if(0 != output_phase_comm(peer.m_id, peer.rnd_data_2send, peer.rnd_data_2recv))
         {
-            LC.error("%s: failed sending data to party %lu; Perfect Secure failed.", __FUNCTION__, peer.m_id);
+            LC.error("%s: failed retrieve outputs comm requirements to party %lu; Perfect Secure failed."
+                    , __FUNCTION__, peer.m_id);
             return (m_run_flag = false);
         }
-        peer.m_aux.clear();
-        peer.outpt_sent = to_send;
-        LC.debug("%s: Successfully sent %lu elements to peer %lu", __FUNCTION__, to_send, peer.m_id);
-    }
-
-    if(peer.outpt_rcvd < to_recv)
-    {
-        size_t required_elements = to_recv - peer.m_aux.size();
-
-        if (!recv_aux(peer, required_elements))
-            return false;
-        else
-        {
-            peer.outpt_rcvd = to_recv;
-            LC.debug("%s: Successfully received %lu elements to peer %lu", __FUNCTION__, to_recv, peer.m_id);
-        }
     }
 
     return true;
 }
-
 
 bool psmpc_ac::outpt_2_done()
 {
@@ -911,10 +712,11 @@ bool psmpc_ac::outpt_2_done()
         }
     }
 
-    for(size_t i = 0; i < m_parties_state.size(); ++i)
+    for(size_t i = 0; i < m_parties; ++i)
         m_parties_state[i].m_current_state = ps_done;
 
     LC.notice("%s: Protocol done; success.",__FUNCTION__);
     sleep(1);
     return (m_run_flag = false);
 }
+
