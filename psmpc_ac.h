@@ -46,7 +46,7 @@ class psmpc_ac : private ProtocolParty<GF28LT>, public ac_protocol
 
     ///common structs
     vector<party_t> m_parties_state;
-    int m_no_buckets, m_no_random;
+    int m_no_buckets;
 
     bool party_run_around(const size_t party_id);
     bool on_round_send_and_recv(party_t &peer);
@@ -62,6 +62,8 @@ class psmpc_ac : private ProtocolParty<GF28LT>, public ac_protocol
     bool outpt_2_done();
 
     void generate_random_double_shares();
+
+    void print_data() const;
 
     bool send_aux(party_t &peer);
     bool recv_aux(party_t &peer, const size_t required_elements);

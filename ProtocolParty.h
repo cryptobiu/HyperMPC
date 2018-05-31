@@ -63,6 +63,8 @@ protected:
     vector<FieldType> sharingBufInputsTElements; // prepared T-sharings (my shares)
     int shareIndex;
 
+    void printData(const vector<vector<FieldType>> & BufsElements) const;
+
 
     vector<int> myInputs;
     string s;
@@ -451,7 +453,7 @@ bool ProtocolParty<FieldType>::broadcast(int party_id, vector<byte> myMessage, v
 
     if(flag_print) {
         cout << " before the for " << '\n';}
-
+    cout <<__FUNCTION__ <<": NB22:  m_no_buckets = " << no_buckets << endl;
     for(int k = 0; k < no_buckets; k++)
     {
         for(int i = 0; i < N; i++)
@@ -537,7 +539,7 @@ bool ProtocolParty<FieldType>::broadcast(int party_id, vector<byte> myMessage, v
 
         cout << "no_buckets  " << no_buckets << endl;}
     FieldType temp1;
-
+    cout <<__FUNCTION__ <<": NB23:  m_no_buckets = " << no_buckets << endl;
     // no cheating: all parties have same y1
     // ‘‘Reconstruct’’ values towards some party (‘‘reconstruct’’ with degree 0)
     for(int k=0; k < no_buckets; k++) {
@@ -1139,6 +1141,7 @@ bool ProtocolParty<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, H
     // from each party and gives N-2T random double-sharings)
     int no_buckets = (no_random / (N-2*T))+1;
 
+
     sharingBufTElements.resize(no_buckets*(N-2*T)); // my shares of the double-sharings
     sharingBuf2TElements.resize(no_buckets*(N-2*T)); // my shares of the double-sharings
 
@@ -1275,6 +1278,8 @@ bool ProtocolParty<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, H
 
     int fieldBytesSize = field->getElementSizeInBytes();
 
+    cout << __FUNCTION__ <<" : NB20:  no_buckets = "<< no_buckets << endl;
+
     // x1 : used for the N degree-t sharings
     // x2 : used for the N degree-2t sharings
     for(int k=0; k < no_buckets; k++) {
@@ -1318,7 +1323,7 @@ bool ProtocolParty<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, H
         }
     }
 
-
+    printData(sendBufsElements);
     if(flag_print) {
         cout << "before round" << endl;}
     //comm->roundfunctionI(sendBufs1Bytes, recBufsBytes,5);
@@ -1342,6 +1347,7 @@ bool ProtocolParty<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, H
         count++;
     }
 
+    cout << __FUNCTION__ <<" : NB21:  no_buckets = "<< no_buckets << endl;
 
     for(int k=0; k < count; k++) {
         for (int i = 0; i < N; i++) {
@@ -1396,6 +1402,8 @@ bool ProtocolParty<FieldType>::RandomSharingForInputs()
     // from each party and gives N-2T random double-sharings)
     int no_buckets = (no_random / (N-2*T))+1;
 
+    cout << __FUNCTION__ <<" : NB18:  no_buckets = "<< no_buckets << endl;
+
     //sharingBufTElements.resize(no_buckets*(N-2*T)); // my shares of the double-sharings
     //sharingBuf2TElements.resize(no_buckets*(N-2*T)); // my shares of the double-sharings
     sharingBufInputsTElements.resize(no_buckets*(N-2*T));
@@ -1440,8 +1448,6 @@ bool ProtocolParty<FieldType>::RandomSharingForInputs()
 
 
     }//end print one
-
-
 
     if(flag_print) {
         for (int i = 0; i < N; i++) {
@@ -1561,6 +1567,8 @@ bool ProtocolParty<FieldType>::RandomSharingForInputs()
     }
 
 
+    printData(sendBufsElements);
+
     if(flag_print)
         cout << "before round" << endl;
 
@@ -1575,6 +1583,20 @@ bool ProtocolParty<FieldType>::RandomSharingForInputs()
     // got one in the last round
     if(no_buckets * (2*T)%N > m_partyId) { // maybe -1
         count++;
+    }
+
+    cout << __FUNCTION__ <<" : NB19:  no_buckets = "<< no_buckets << endl;
+    cout << __FUNCTION__ <<" : NB19:  count = "<< count << endl;
+    {
+        vector<vector<FieldType>> BufsElement(N);
+        for (int i = 0; i < N; i++)
+        {
+            for(int k=0; k < count; k++)
+            {
+                BufsElement[i].push_back(field->bytesToElement(recBufsBytes[i].data() + (k * fieldBytesSize)));
+            }
+        }
+        printData(BufsElement);
     }
 
 
@@ -2180,6 +2202,31 @@ ProtocolParty<FieldType>::~ProtocolParty()
     delete field;
     io_service.stop();
 //    delete timer;
+}
+
+template <class FieldType>
+void ProtocolParty<FieldType>::printData(const vector<vector<FieldType>> & BufsElements) const
+{
+    {
+        char buffer[128];
+        snprintf(buffer, 128, "prt%dprt.log", m_partyId);
+        FILE* pf = fopen(buffer, "w");
+        if(NULL!= pf)
+        {
+            for(size_t i = 0; i< N; ++i)
+            {
+                snprintf(buffer, 128, "%s party %lu aux size %lu\n", __FUNCTION__,i, BufsElements[i].size());
+                fputs(buffer, pf);
+                for (size_t j = 0; j < BufsElements[i].size(); ++j)
+                {
+                    string ___element = field->elementToString(BufsElements[i][j]);
+                    snprintf(buffer, 128, "%s party %lu aux[%lu]=%s\n", __FUNCTION__, i, j, ___element.c_str());
+                    fputs(buffer, pf);
+                }
+            }
+            fclose(pf);
+        }
+    }
 }
 
 

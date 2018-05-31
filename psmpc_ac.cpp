@@ -10,7 +10,7 @@
 #define LC log4cpp::Category::getInstance(m_logcat)
 
 psmpc_ac::psmpc_ac(int argc, char* argv [], const char * logcat)
-: ProtocolParty<GF28LT>(argc, argv, false), ac_protocol(logcat), m_no_buckets(0), m_no_random(0)
+: ProtocolParty<GF28LT>(argc, argv, false), ac_protocol(logcat), m_no_buckets(-1)
 {
 
 }
@@ -34,8 +34,16 @@ void psmpc_ac::handle_party_conn(const size_t party_id, const bool connected)
     {
         if(peer.m_current_state != ps_done)
         {
-            LC.error("%s: party id %lu premature disconnection; Perfect Secure failed.", __FUNCTION__, party_id);
-            m_run_flag = false;
+            if(peer.m_current_state == ps_outpt)
+            {
+                report_party_comm(party_id, false);
+                LC.warn("%s: peer %lu disconnection event while in output state; deferring", __FUNCTION__, party_id);
+            }
+            else
+            {
+                LC.error("%s: party id %lu premature disconnection; Perfect Secure failed.", __FUNCTION__, party_id);
+                m_run_flag = false;
+            }
         }
         else
         {
@@ -57,11 +65,9 @@ int psmpc_ac::pre_run()
     for(size_t i = 0; i < m_parties; ++i)
         m_parties_state[i].m_id = i;
 
-    m_no_random = circuit.getNrOfInputGates();
-    m_no_buckets = (m_no_random / (N-2*T))+1;
-
     generate_random_double_shares();
     m_parties_state[m_id].m_current_state = ps_rsfi1;
+
     return 0;
 }
 
@@ -77,6 +83,9 @@ void psmpc_ac::generate_random_double_shares()
      *  first degree t.
      *  subsequent: degree 2t with same secret.
      */
+    int no_random = circuit.getNrOfInputGates();
+    m_no_buckets = (no_random / (N-2*T))+1;
+
     vector<GF28LT> x1(N, 0),y1(N, 0);
     for(size_t k=0; k < m_no_buckets; k++)
     {
@@ -287,11 +296,17 @@ bool psmpc_ac::on_round_send_and_recv(party_t &peer)
 bool psmpc_ac::rsfi1_2_rsfi2()
 {
     vector <GF28LT> x1(N), y1(N);
+    int no_random = circuit.getNrOfInputGates();
+    m_no_buckets = (no_random / (N-2*T))+1;
+
+    LC.debug("%s: NB18:  m_no_buckets = %d", __FUNCTION__, m_no_buckets);
+
     sharingBufInputsTElements.resize((size_t) m_no_buckets * (N - 2 * T));
     int robin = 0;
 
+    std::vector< std::vector< GF28LT > > aux_temp(m_parties);
     for (int i = 0; i < N; i++)
-        m_parties_state[i].m_aux.clear();
+        aux_temp[i].swap(m_parties_state[i].m_aux);
 
     for(size_t i = 0; i < m_parties; ++i)
         m_parties_state[i].m_current_state = ps_rsfi2;
@@ -300,7 +315,7 @@ bool psmpc_ac::rsfi1_2_rsfi2()
     {
         // generate random degree-T polynomial
         for (int i = 0; i < N; i++)
-            x1[i] = m_parties_state[i].m_aux[k];
+            x1[i] = aux_temp[i][k];
 
         matrix_him.MatrixMult(x1, y1);
 
@@ -325,9 +340,16 @@ bool psmpc_ac::rsfi1_2_rsfi2()
 
 bool psmpc_ac::rsfi2_2_prep1()
 {
+    int no_random = circuit.getNrOfMultiplicationGates();
+    m_no_buckets = (no_random / (N-2*T))+1;
+
     int count = m_no_buckets * (2*T) / N;
     if(m_no_buckets * (2*T)%N > m_partyId)
         count++;
+
+    LC.debug("%s: NB19:  m_no_buckets = %d", __FUNCTION__, m_no_buckets);
+    LC.debug("%s: NB19:  count = %d", __FUNCTION__, count);
+    print_data();
 
     vector<GF28LT> x1(N),x2(N),y1(N),y2(N);
 
@@ -338,7 +360,10 @@ bool psmpc_ac::rsfi2_2_prep1()
 
         // Check that x1 is t-consistent and x2 is 2t-consistent and secret is the same
         if(!checkConsistency(x1,T))
-            return false;
+        {
+            LC.error("%s: cheat check failed.", __FUNCTION__);
+            return (m_run_flag = false);
+        }
     }
 
     for (int i = 0; i < N; i++) {
@@ -347,6 +372,9 @@ bool psmpc_ac::rsfi2_2_prep1()
     
     for(size_t i = 0; i < m_parties; ++i)
         m_parties_state[i].m_current_state = ps_prep1;
+
+    no_random = circuit.getNrOfMultiplicationGates();
+    m_no_buckets = (no_random / (N-2*T))+1;
 
     sharingBufTElements.resize(m_no_buckets*(N-2*T)); // my shares of the double-sharings
     sharingBuf2TElements.resize(m_no_buckets*(N-2*T)); // my shares of the double-sharings
@@ -358,6 +386,7 @@ bool psmpc_ac::rsfi2_2_prep1()
      */
 
     size_t round_data_size = (size_t) 2 * m_no_buckets;
+
     for (int i = 0; i < N; i++)
     {
         m_parties_state[i].m_aux.resize(round_data_size);
@@ -393,8 +422,17 @@ bool psmpc_ac::rsfi2_2_prep1()
 
 bool psmpc_ac::prep1_2_prep2()
 {
+    int no_random = circuit.getNrOfMultiplicationGates();
+    m_no_buckets = (no_random / (N-2*T))+1;
+
+    LC.debug("%s: NB20:  m_no_buckets = %d", __FUNCTION__, m_no_buckets);
+
     vector<GF28LT> x1(N),x2(N),y1(N),y2(N);
     int robin = 0;
+
+    std::vector< std::vector< GF28LT > > aux_temp(m_parties);
+    for(size_t i = 0; i < m_parties; ++i)
+        aux_temp[i].swap(m_parties_state[i].m_aux);
 
     // x1 : used for the N degree-t sharings
     // x2 : used for the N degree-2t sharings
@@ -403,8 +441,8 @@ bool psmpc_ac::prep1_2_prep2()
         // generate random degree-T polynomial
         for (int i = 0; i < N; i++)
         {
-            x1[i] = m_parties_state[i].m_aux[2 * k];
-            x2[i] = m_parties_state[i].m_aux[2 * k + 1];
+            x1[i] = aux_temp[i][2 * k];
+            x2[i] = aux_temp[i][2 * k + 1];
         }
 
         matrix_him.MatrixMult(x1, y1);
@@ -444,9 +482,12 @@ bool psmpc_ac::prep1_2_prep2()
 
 bool psmpc_ac::prep2_2_inprp()
 {
+    int no_random = circuit.getNrOfMultiplicationGates();
+    m_no_buckets = (no_random / (N-2*T))+1;
     int count = m_no_buckets * (2*T) / N;
     if(m_no_buckets * (2*T)%N > m_partyId)
         count++;
+    LC.debug("%s: NB21:  m_no_buckets = %d", __FUNCTION__, m_no_buckets);
 
     vector<GF28LT> x1(N),x2(N),y1(N),y2(N);
 
@@ -468,7 +509,10 @@ bool psmpc_ac::prep2_2_inprp()
 
         // Check that x1 is t-consistent and x2 is 2t-consistent and secret is the same
         if(!checkConsistency(x1,T) || !checkConsistency(x2,2*T) || (interpolate(x1)) != (interpolate(x2)))
-            return false;
+        {
+            LC.error("%s: cheat check failed.", __FUNCTION__);
+            return (m_run_flag = false);
+        }
     }
 
     for(size_t i = 0; i < m_parties; ++i)
@@ -558,6 +602,7 @@ bool psmpc_ac::inadj1_2_inadj2()
 {
     // calculate total number of values which received
     int count = m_parties * m_parties_state[m_id].m_aux.size();
+    m_no_buckets = count / (N - T) + 1;
 
     vector<GF28LT> valBufs;
     valBufs.reserve(count);
@@ -573,8 +618,8 @@ bool psmpc_ac::inadj1_2_inadj2()
     vector<GF28LT> x1(N);
     vector<GF28LT> y1(N);
 
-    m_no_buckets = count / (N - T) + 1;
     int index = 0;
+    LC.debug("%s: NB22:  m_no_buckets = %d", __FUNCTION__, m_no_buckets);
 
     for(size_t k = 0; k < m_no_buckets; k++)
     {
@@ -614,6 +659,7 @@ bool psmpc_ac::inadj2_2_outpt()
 {
     GF28LT temp1;
 
+    LC.debug("%s: NB23:  m_no_buckets = %d", __FUNCTION__, m_no_buckets);
     for(size_t k=0; k < m_no_buckets; k++)
     {
         temp1 = m_parties_state[0].m_aux[k];
@@ -708,7 +754,19 @@ bool psmpc_ac::outpt_2_done()
         m_parties_state[i].m_current_state = ps_done;
 
     LC.notice("%s: Protocol done; success.",__FUNCTION__);
-    sleep(1);
     return (m_run_flag = false);
 }
 
+void psmpc_ac::print_data() const
+{
+    for(size_t i = 0; i< m_parties; ++i)
+    {
+        LC.debug("%s party %lu aux size %lu", __FUNCTION__,i, m_parties_state[i].m_aux.size());
+        for (size_t j = 0; j<m_parties_state[i].m_aux.size(); ++j)
+        {
+            string ___element = field->elementToString(m_parties_state[i].m_aux[j]);
+            LC.debug("%s party %lu aux[%lu]=%s", __FUNCTION__, i, j, ___element.c_str());
+        }
+    }
+
+}
