@@ -10,7 +10,7 @@
 #define LC log4cpp::Category::getInstance(m_logcat)
 
 psmpc_ac::psmpc_ac(int argc, char* argv [], const char * logcat)
-: ProtocolParty<GF28LT>(argc, argv), ac_protocol(logcat), m_no_buckets(0), m_no_random(0)
+: ProtocolParty<GF28LT>(argc, argv, false), ac_protocol(logcat), m_no_buckets(0), m_no_random(0)
 {
 
 }
@@ -167,6 +167,7 @@ bool psmpc_ac::round_up()
         return false;
     else
         LC.debug("%s: All parties are on the same state %u", __FUNCTION__, current_state);
+    m_parties_state[m_id].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send = 0;
 
     switch(current_state)
     {
@@ -255,6 +256,12 @@ bool psmpc_ac::on_round_send_and_recv(party_t &peer)
              __FUNCTION__, peer.m_id, peer.m_current_state, peer.rnd_data_2send, peer.rnd_data_2recv);
     if(peer.rnd_data_sent < peer.rnd_data_2send)
     {
+        if (peer.rnd_data_2send > peer.m_aux.size())
+        {
+            LC.fatal("%s: peer id %lu not enough data in aux buffer %lu/%lu"
+                     ,__FUNCTION__, peer.m_id, peer.m_aux.size(), peer.rnd_data_2send);
+            exit(__LINE__);
+        }
         if (!send_aux(peer))
         {
             LC.error("%s: failed sending data to party %lu; Perfect Secure failed.", __FUNCTION__, peer.m_id);
@@ -279,19 +286,21 @@ bool psmpc_ac::on_round_send_and_recv(party_t &peer)
 
 bool psmpc_ac::rsfi1_2_rsfi2()
 {
-    m_parties_state[m_id].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send = 0;
-
     vector <GF28LT> x1(N), y1(N);
     sharingBufInputsTElements.resize((size_t) m_no_buckets * (N - 2 * T));
     int robin = 0;
+
+    for (int i = 0; i < N; i++)
+        m_parties_state[i].m_aux.clear();
+
+    for(size_t i = 0; i < m_parties; ++i)
+        m_parties_state[i].m_current_state = ps_rsfi2;
+
     for(int k=0; k < m_no_buckets; k++)
     {
         // generate random degree-T polynomial
         for (int i = 0; i < N; i++)
             x1[i] = m_parties_state[i].m_aux[k];
-
-        for (int i = 0; i < N; i++)
-            m_parties_state[i].m_aux.clear();
 
         matrix_him.MatrixMult(x1, y1);
 
@@ -309,20 +318,13 @@ bool psmpc_ac::rsfi1_2_rsfi2()
     }
 
     for (size_t j = 0; j < N; j++)
-    {
         m_parties_state[j].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send;
-    }
-
-    for(size_t i = 0; i < m_parties; ++i)
-        m_parties_state[i].m_current_state = ps_rsfi2;
 
     return true;
 }
 
 bool psmpc_ac::rsfi2_2_prep1()
 {
-    m_parties_state[m_id].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send = 0;
-
     int count = m_no_buckets * (2*T) / N;
     if(m_no_buckets * (2*T)%N > m_partyId)
         count++;
@@ -391,8 +393,6 @@ bool psmpc_ac::rsfi2_2_prep1()
 
 bool psmpc_ac::prep1_2_prep2()
 {
-    m_parties_state[m_id].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send = 0;
-
     vector<GF28LT> x1(N),x2(N),y1(N),y2(N);
     int robin = 0;
 
@@ -444,8 +444,6 @@ bool psmpc_ac::prep1_2_prep2()
 
 bool psmpc_ac::prep2_2_inprp()
 {
-    m_parties_state[m_id].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send = 0;
-
     int count = m_no_buckets * (2*T) / N;
     if(m_no_buckets * (2*T)%N > m_partyId)
         count++;
@@ -496,21 +494,19 @@ bool psmpc_ac::prep2_2_inprp()
 
 bool psmpc_ac::inprp_2_inadj1()
 {
-    m_parties_state[m_id].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send = 0;
-
     vector<GF28LT> x1(N);
     int counter = 0;
     GF28LT secret;
+
     // reconstruct my random input values
     for(int k = 0; k < numOfInputGates; k++)
     {
         if (circuit.getGates()[k].party == m_partyId)
         {
-
             for (int i = 0; i < N; i++)
                 x1[i] = m_parties_state[i].m_aux[counter];
-
             counter++;
+
             if (!checkConsistency(x1, T))
             {
                 LC.error("%s: cheat check failed.", __FUNCTION__);
@@ -560,8 +556,6 @@ bool psmpc_ac::inprp_2_inadj1()
 
 bool psmpc_ac::inadj1_2_inadj2()
 {
-    m_parties_state[m_id].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send = 0;
-
     // calculate total number of values which received
     int count = m_parties * m_parties_state[m_id].m_aux.size();
 
@@ -618,8 +612,6 @@ bool psmpc_ac::inadj1_2_inadj2()
 
 bool psmpc_ac::inadj2_2_outpt()
 {
-    m_parties_state[m_id].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send = 0;
-
     GF28LT temp1;
 
     for(size_t k=0; k < m_no_buckets; k++)

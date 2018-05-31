@@ -86,6 +86,18 @@ int main(int argc, char* argv[])
     }
     else if(fieldType.compare("GF2_8LookupTable") == 0)
     {
+//        ProtocolParty<GF2_8LookupTable> protocol(argc, argv);
+//        auto t1 = high_resolution_clock::now();
+//
+//        protocol.run();
+//
+//        auto t2 = high_resolution_clock::now();
+//
+//        auto duration = duration_cast<milliseconds>(t2-t1).count();
+//
+//        cout << "time in milliseconds for " << times << " runs: " << duration << endl;
+//
+//        cout << "end main" << '\n';
         int id = stoi(parser.getValueByKey(parameters, "partyID"));
         int parties = stoi(parser.getValueByKey(parameters, "partiesNumber"));
         std::string partiesFile = parser.getValueByKey(parameters, "partiesFile");

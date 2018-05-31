@@ -68,7 +68,7 @@ protected:
     string s;
 
 public:
-    ProtocolParty(int argc, char* argv []);
+    ProtocolParty(int argc, char* argv [], bool commOn=true);
     void split(const string &s, char delim, vector<string> &elems);
     vector<string> split(const string &s, char delim);
 
@@ -282,7 +282,7 @@ public:
 
 
 template <class FieldType>
-ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("PerfectSecureMPC", argc, argv)
+ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv [], bool commOn) : Protocol ("PerfectSecureMPC", argc, argv)
 {
 
     string circuitFile = this->getParser().getValueByKey(arguments, "circuitFile");
@@ -325,8 +325,8 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
     numOfOutputGates = circuit.getNrOfOutputGates();
     myInputs.resize(numOfInputGates);
     shareIndex = 0;//numOfInputGates;
-
-//    parties = MPCCommunication::setCommunication(io_service, m_partyId, N, partiesFileName);
+    if(commOn)
+        parties = MPCCommunication::setCommunication(io_service, m_partyId, N, partiesFileName);
 
     readMyInputs();
 
