@@ -340,8 +340,7 @@ bool psmpc_ac::rsfi1_2_rsfi2()
 
 bool psmpc_ac::rsfi2_2_prep1()
 {
-    int no_random = circuit.getNrOfMultiplicationGates();
-    m_no_buckets = (no_random / (N-2*T))+1;
+    //m_no_buckets used here with the same value calculated in psmpc_ac::rsfi1_2_rsfi2()
 
     int count = m_no_buckets * (2*T) / N;
     if(m_no_buckets * (2*T)%N > m_partyId)
