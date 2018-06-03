@@ -300,7 +300,7 @@ bool psmpc_ac::rsfi1_2_rsfi2()
     int no_random = circuit.getNrOfInputGates();
     m_no_buckets = (no_random / (N-2*T))+1;
 
-    LC.debug("%s: NB18:  m_no_buckets = %d", __FUNCTION__, m_no_buckets);
+//    LC.debug("%s: NB18:  m_no_buckets = %d", __FUNCTION__, m_no_buckets);
 
     sharingBufInputsTElements.resize((size_t) m_no_buckets * (N - 2 * T));
     int robin = 0;
@@ -347,9 +347,9 @@ bool psmpc_ac::rsfi2_2_prep1()
     if(m_no_buckets * (2*T)%N > m_partyId)
         count++;
 
-    LC.debug("%s: NB19:  m_no_buckets = %d", __FUNCTION__, m_no_buckets);
-    LC.debug("%s: NB19:  count = %d", __FUNCTION__, count);
-    print_data();
+//    LC.debug("%s: NB19:  m_no_buckets = %d", __FUNCTION__, m_no_buckets);
+//    LC.debug("%s: NB19:  count = %d", __FUNCTION__, count);
+//    print_data();
 
     vector<GF28LT> x1(N),x2(N),y1(N),y2(N);
 
@@ -425,7 +425,7 @@ bool psmpc_ac::prep1_2_prep2()
     int no_random = circuit.getNrOfMultiplicationGates();
     m_no_buckets = (no_random / (N-2*T))+1;
 
-    LC.debug("%s: NB20:  m_no_buckets = %d", __FUNCTION__, m_no_buckets);
+//    LC.debug("%s: NB20:  m_no_buckets = %d", __FUNCTION__, m_no_buckets);
 
     vector<GF28LT> x1(N),x2(N),y1(N),y2(N);
     int robin = 0;
@@ -487,7 +487,7 @@ bool psmpc_ac::prep2_2_inprp()
     int count = m_no_buckets * (2*T) / N;
     if(m_no_buckets * (2*T)%N > m_partyId)
         count++;
-    LC.debug("%s: NB21:  m_no_buckets = %d", __FUNCTION__, m_no_buckets);
+//    LC.debug("%s: NB21:  m_no_buckets = %d", __FUNCTION__, m_no_buckets);
 
     vector<GF28LT> x1(N),x2(N),y1(N),y2(N);
 
@@ -619,7 +619,7 @@ bool psmpc_ac::inadj1_2_inadj2()
     vector<GF28LT> y1(N);
 
     int index = 0;
-    LC.debug("%s: NB22:  m_no_buckets = %d", __FUNCTION__, m_no_buckets);
+//    LC.debug("%s: NB22:  m_no_buckets = %d", __FUNCTION__, m_no_buckets);
 
     for(size_t k = 0; k < m_no_buckets; k++)
     {
@@ -659,7 +659,7 @@ bool psmpc_ac::inadj2_2_outpt()
 {
     GF28LT temp1;
 
-    LC.debug("%s: NB23:  m_no_buckets = %d", __FUNCTION__, m_no_buckets);
+//    LC.debug("%s: NB23:  m_no_buckets = %d", __FUNCTION__, m_no_buckets);
     for(size_t k=0; k < m_no_buckets; k++)
     {
         temp1 = m_parties_state[0].m_aux[k];
