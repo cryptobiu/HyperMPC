@@ -372,7 +372,7 @@ bool psmpc_ac::rsfi2_2_prep1()
     for(size_t i = 0; i < m_parties; ++i)
         m_parties_state[i].m_current_state = ps_prep1;
 
-    no_random = circuit.getNrOfMultiplicationGates();
+    int no_random = circuit.getNrOfMultiplicationGates();
     m_no_buckets = (no_random / (N-2*T))+1;
 
     sharingBufTElements.resize(m_no_buckets*(N-2*T)); // my shares of the double-sharings
