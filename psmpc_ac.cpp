@@ -38,20 +38,6 @@ void psmpc_ac::handle_party_conn(const size_t party_id, const bool connected)
             LC.error("%s: party id %lu premature disconnection while in state %lu; Perfect Secure failed.", __FUNCTION__, party_id, (size_t)peer.m_current_state);
             m_run_flag = false;
     	}
-    	else if(peer.m_current_state < ps_done)
-    	{
-        	if(peer.m_disconn_defs >= 2)
-        	{
-                LC.error("%s: party id %lu premature disconnection while in state %lu; Perfect Secure failed.", __FUNCTION__, party_id, (size_t)peer.m_current_state);
-                m_run_flag = false;
-        	}
-        	else
-        	{
-        		peer.m_disconn_defs++;
-                LC.warn("%s: peer %lu disconnection event while in output state; deferring (%lu)", __FUNCTION__, party_id, peer.m_disconn_defs);
-                report_party_comm(party_id, false);
-        	}
-    	}
         else
         {
             LC.notice("%s: party %lu is now disconnected.", __FUNCTION__, party_id);
