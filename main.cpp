@@ -1,5 +1,6 @@
 
 #include <stdlib.h>
+#include "comm_client_factory.h"
 #include "ProtocolParty.h"
 #include "GF2_8LookupTable.h"
 #include "psmpc_ac.h"

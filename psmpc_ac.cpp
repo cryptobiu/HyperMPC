@@ -4,13 +4,14 @@
 
 #include <log4cpp/Category.hh>
 
+#include "comm_client_factory.h"
 #include "psmpc_ac.h"
 #include "comm_client.h"
 
 #define LC log4cpp::Category::getInstance(m_logcat)
 
 psmpc_ac::psmpc_ac(int argc, char* argv [], const char * logcat)
-: ProtocolParty<GF28LT>(argc, argv, false), ac_protocol(logcat), m_no_buckets(-1)
+: ProtocolParty<GF28LT>(argc, argv, false), ac_protocol(comm_client_factory::cc_tcp_mesh, logcat), m_no_buckets(-1)
 {
 
 }
