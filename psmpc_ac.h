@@ -34,11 +34,13 @@ class psmpc_ac : private ProtocolParty<GF28LT>, public ac_protocol
         party_state_t m_current_state;
         std::vector<u_int8_t> m_data;
         bool m_connected;
+        size_t m_disconn_defs;
         size_t m_id;
         std::vector<GF28LT> m_aux;
         size_t rnd_data_sent, rnd_data_rcvd, rnd_data_2send, rnd_data_2recv;
 
-        __party_t () : m_current_state(ps_nil), m_connected(false), m_id((size_t)-1)
+        __party_t () : m_current_state(ps_nil), m_connected(false)
+        			 , m_disconn_defs(0), m_id((size_t)-1)
                      , rnd_data_sent(0), rnd_data_rcvd(0)
                      , rnd_data_2send(0), rnd_data_2recv(0)
         {}
