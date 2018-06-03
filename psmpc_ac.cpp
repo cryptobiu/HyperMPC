@@ -753,7 +753,7 @@ bool psmpc_ac::outpt_2_done()
         m_parties_state[i].m_current_state = ps_done;
 
     LC.notice("%s: Protocol done; success.",__FUNCTION__);
-    size_t ms_to_sleep = 2000 + 5 * m_parties;
+    size_t ms_to_sleep = 5000 + 50 * m_parties;
     usleep(ms_to_sleep * 1000);
     return (m_run_flag = false);
 }
