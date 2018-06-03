@@ -176,7 +176,7 @@ bool psmpc_ac::round_up()
     if(!all_on_the_same_page(current_state))
         return false;
     else
-        LC.debug("%s: All parties are on the same state %u", __FUNCTION__, current_state);
+        LC.notice("%s: All parties are on the same state %u", __FUNCTION__, current_state);
     m_parties_state[m_id].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send = 0;
 
     switch(current_state)
