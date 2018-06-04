@@ -5,10 +5,12 @@
 #ifndef SECRET_SHARING_PSMPC_AC_H
 #define SECRET_SHARING_PSMPC_AC_H
 
+#include <semaphore.h>
 
 #include "ProtocolParty.h"
 #include "GF2_8LookupTable.h"
 #include "comm_client_cb_api.h"
+#include "lfq.h"
 #include "ac_protocol.h"
 
 typedef GF2_8LookupTable GF28LT;

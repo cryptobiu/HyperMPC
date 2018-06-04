@@ -5,8 +5,8 @@
 #include <log4cpp/Category.hh>
 
 #include "comm_client_factory.h"
-#include "psmpc_ac.h"
 #include "comm_client.h"
+#include "psmpc_ac_gf28lt.h"
 
 #define LC log4cpp::Category::getInstance(m_logcat)
 

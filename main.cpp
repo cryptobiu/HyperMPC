@@ -3,8 +3,6 @@
 #include "comm_client_factory.h"
 #include "ProtocolParty.h"
 #include "GF2_8LookupTable.h"
-#include "psmpc_ac.h"
-
 #include <log4cpp/Category.hh>
 #include <log4cpp/FileAppender.hh>
 #include <log4cpp/SimpleLayout.hh>
@@ -12,6 +10,7 @@
 #include <log4cpp/SimpleLayout.hh>
 #include <log4cpp/BasicLayout.hh>
 #include <log4cpp/PatternLayout.hh>
+#include "psmpc_ac_gf28lt.h"
 
 
 /**

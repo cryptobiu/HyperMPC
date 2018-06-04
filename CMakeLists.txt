@@ -8,7 +8,7 @@ INCLUDE_DIRECTORIES($ENV{HOME}/ntl-9.10.0/include $ENV{HOME} $ENV{HOME}/libscapi
         $ENV{HOME}/libscapi/install/include/OTExtensionBristol $ENV{HOME}/ACP/comm_client)
 
 set(SOURCE_FILES main.cpp ProtocolParty.cpp ProtocolParty.h TemplateField.h TemplateField.cpp ProtocolTimer.cpp
-        ProtocolTimer.h ZpGMPElement.cpp ZpGMPElement.h  GF2_8LookupTable.cpp GF2_8LookupTable.h psmpc_ac.cpp)
+        ProtocolTimer.h ZpGMPElement.cpp ZpGMPElement.h  GF2_8LookupTable.cpp GF2_8LookupTable.h psmpc_ac_gf28lt.cpp)
 
 link_directories(/usr/ssl/lib/ $ENV{HOME}/libscapi/install/lib $ENV{HOME}/ACP/comm_client)
 
