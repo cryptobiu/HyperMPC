@@ -13,9 +13,9 @@
 #include "lfq.h"
 #include "ac_protocol.h"
 
-typedef GF2_8LookupTable GF28LT;
+typedef ZpMersenneIntElement M31;
 
-class psmpc_ac_gf28lt : private ProtocolParty<GF28LT>, public ac_protocol
+class psmpc_ac_m31 : private ProtocolParty<M31>, public ac_protocol
 {
     typedef enum
     {
@@ -37,7 +37,7 @@ class psmpc_ac_gf28lt : private ProtocolParty<GF28LT>, public ac_protocol
         std::vector<u_int8_t> m_data;
         bool m_connected;
         size_t m_id;
-        std::vector<GF28LT> m_aux;
+        std::vector<M31> m_aux;
         size_t rnd_data_sent, rnd_data_rcvd, rnd_data_2send, rnd_data_2recv;
 
         __party_t () : m_current_state(ps_nil), m_connected(false)
@@ -72,8 +72,8 @@ class psmpc_ac_gf28lt : private ProtocolParty<GF28LT>, public ac_protocol
     bool recv_aux(party_t &peer, const size_t required_elements);
 
 public:
-    psmpc_ac_gf28lt(int argc, char* argv [], const char * logcat);
-    virtual ~psmpc_ac_gf28lt();
+    psmpc_ac_m31(int argc, char* argv [], const char * logcat);
+    virtual ~psmpc_ac_m31();
 
 protected:
     virtual void handle_party_conn(const size_t party_id, const bool connected);
