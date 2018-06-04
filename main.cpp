@@ -83,7 +83,9 @@ int main(int argc, char* argv[])
             char buffer[32];
             snprintf(buffer, 32, "psmpc_%04d.log", id);
             init_log(buffer, "./", 500, "ps");
-            psmpc_ac_m31 ps(argc, argv, "ps");
+            comm_client::cc_args_t args;
+            args.logcat = "ps.m31";
+            psmpc_ac_m31 ps(argc, argv, &args);
             ps.run_ac_protocol(id ,parties, partiesFile.c_str(), 180);
         }
     }
@@ -130,7 +132,9 @@ int main(int argc, char* argv[])
             char buffer[32];
             snprintf(buffer, 32, "psmpc_%04d.log", id);
             init_log(buffer, "./", 500, "ps");
-            psmpc_ac_gf28lt ps(argc, argv, "ps");
+            comm_client::cc_args_t args;
+            args.logcat = "ps.gf28lt";
+            psmpc_ac_gf28lt ps(argc, argv, &args);
             ps.run_ac_protocol(id ,parties, partiesFile.c_str(), 180);
         }
     }

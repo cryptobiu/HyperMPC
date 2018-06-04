@@ -10,8 +10,8 @@
 
 #define LC log4cpp::Category::getInstance(m_logcat)
 
-psmpc_ac_m31::psmpc_ac_m31(int argc, char* argv [], const char * logcat)
-: ProtocolParty<M31>(argc, argv, false), ac_protocol(comm_client_factory::cc_tcp_mesh, logcat), m_no_buckets(-1)
+psmpc_ac_m31::psmpc_ac_m31(int argc, char* argv [], comm_client::cc_args_t * args)
+: ProtocolParty<M31>(argc, argv, false), ac_protocol(comm_client_factory::cc_tcp_mesh, args), m_no_buckets(-1)
 {
 
 }

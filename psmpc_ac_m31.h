@@ -68,7 +68,7 @@ class psmpc_ac_m31 : private ProtocolParty<M31>, public ac_protocol
     bool recv_aux(party_t &peer, const size_t required_elements);
 
 public:
-    psmpc_ac_m31(int argc, char* argv [], const char * logcat);
+    psmpc_ac_m31(int argc, char* argv [], comm_client::cc_args_t * args);
     virtual ~psmpc_ac_m31();
 
 protected:
