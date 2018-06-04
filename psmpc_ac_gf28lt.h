@@ -1,9 +1,5 @@
-//
-// Created by liork on 5/27/18.
-//
 
-#ifndef SECRET_SHARING_PSMPC_AC_H
-#define SECRET_SHARING_PSMPC_AC_H
+#pragma once
 
 #include <semaphore.h>
 
@@ -87,5 +83,3 @@ protected:
     int output_phase_comm(const size_t peer_id, size_t &to_send, size_t &to_recv);
 };
 
-
-#endif //SECRET_SHARING_PSMPC_AC_H
