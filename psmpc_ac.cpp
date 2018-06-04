@@ -33,7 +33,7 @@ void psmpc_ac::handle_party_conn(const size_t party_id, const bool connected)
     }
     else
     {
-    	if(peer.m_current_state < ps_inadj2)
+    	if(ps_done != peer.m_current_state)
     	{
             LC.error("%s: party id %lu premature disconnection while in state %lu; Perfect Secure failed.", __FUNCTION__, party_id, (size_t)peer.m_current_state);
             m_run_flag = false;
@@ -151,9 +151,8 @@ bool psmpc_ac::party_run_around(const size_t party_id)
         case ps_inadj1:
         case ps_inadj2:
         case ps_outpt:
-            return on_round_send_and_recv(peer);
         case ps_done:
-            return true;
+            return on_round_send_and_recv(peer);
         default:
             LC.error("%s: invalid party state value %u.", __FUNCTION__, peer.m_current_state);
             exit(__LINE__);
@@ -193,6 +192,7 @@ bool psmpc_ac::round_up()
         case ps_outpt:
             return outpt_2_done();
         case ps_done:
+            LC.notice("%s: Protocol done; success.",__FUNCTION__);
             return (m_run_flag = false);
     }
 
@@ -733,8 +733,14 @@ bool psmpc_ac::outpt_2_done()
     for(size_t i = 0; i < m_parties; ++i)
         m_parties_state[i].m_current_state = ps_done;
 
-    LC.notice("%s: Protocol done; success.",__FUNCTION__);
-    return (m_run_flag = false);
+    static const u_int8_t done_token[] = { 'd', 'o', 'n', 'e' };
+    for(size_t i = 0; i < m_parties; ++i)
+    {
+    	m_parties_state[i].m_aux.assign(done_token, done_token + 4);
+    	m_parties_state[i].rnd_data_2recv = m_parties_state[i].rnd_data_2send = 4;
+    }
+
+    return true;
 }
 
 void psmpc_ac::print_data() const
