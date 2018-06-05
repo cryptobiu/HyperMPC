@@ -218,19 +218,21 @@ bool psmpc_ac_m31::send_aux(party_t &peer)
     size_t elem_size = field->getElementSizeInBytes();
     u_int8_t buffer[4096];
     size_t offset = 0;
-    for (std::vector<M31>::iterator j = peer.m_aux.begin(); j != peer.m_aux.end(); ++j)
-    {
-        field->elementToBytes(buffer + offset, *j);
-        offset += elem_size;
 
-        if ((offset + elem_size) > 4096 || peer.m_aux.end() == (j + 1))
-        {
-            if (0 != m_cc->send(peer.m_id, buffer, offset))
-            {
-                return false;
-            }
-            offset = 0;
-        }
+    for(size_t i = 0; i < peer.m_aux.size(); ++i)
+    {
+    	field->elementToBytes(buffer + offset, peer.m_aux[i]);
+    	offset += elem_size;
+
+    	 if ((offset + elem_size) > 4096 || peer.m_aux.size() == (i + 1))
+    	 {
+             if (0 != m_cc->send(peer.m_id, buffer, offset))
+                 return false;
+
+             peer.m_aux.erase(peer.m_aux.begin(), peer.m_aux.begin() + (i + 1));
+             peer.rnd_data_sent += (i + 1);
+             break;
+    	 }
     }
     return true;
 }
@@ -256,21 +258,23 @@ bool psmpc_ac_m31::on_round_send_and_recv(party_t &peer)
 {
     LC.debug("%s: peer %lu current state %lu; 2snd %lu; 2rcv %lu;",
              __FUNCTION__, peer.m_id, peer.m_current_state, peer.rnd_data_2send, peer.rnd_data_2recv);
-    if(peer.rnd_data_sent < peer.rnd_data_2send)
+
+    if(peer.rnd_data_2send > peer.rnd_data_sent)
     {
-        if (peer.rnd_data_2send > peer.m_aux.size())
-        {
-            LC.fatal("%s: peer id %lu not enough data in aux buffer %lu/%lu"
-                     ,__FUNCTION__, peer.m_id, peer.m_aux.size(), peer.rnd_data_2send);
-            exit(__LINE__);
-        }
+    	if((peer.rnd_data_2send - peer.rnd_data_sent) != peer.m_aux.size())
+    	{
+            LC.error("%s: peer %lu send mismatch: 2send = %lu; sent = %lu; send buffer = %lu.",
+            		__FUNCTION__, peer.m_id, peer.rnd_data_2send, peer.rnd_data_sent, peer.m_aux.size());
+            return (m_run_flag = false);
+    	}
         if (!send_aux(peer))
         {
             LC.error("%s: failed sending data to party %lu; Perfect Secure failed.", __FUNCTION__, peer.m_id);
             return (m_run_flag = false);
         }
-        peer.m_aux.clear();
-        peer.rnd_data_sent = peer.rnd_data_2send;
+        if(!peer.m_aux.empty())
+        	return false;
+        peer.rnd_data_2send = peer.rnd_data_sent = 0;
     }
 
     if(peer.rnd_data_rcvd < peer.rnd_data_2recv)
@@ -282,7 +286,7 @@ bool psmpc_ac_m31::on_round_send_and_recv(party_t &peer)
             peer.rnd_data_rcvd = peer.rnd_data_2recv;
     }
 
-    peer.rnd_data_2recv = peer.rnd_data_2send = peer.rnd_data_rcvd = peer.rnd_data_sent = 0;
+    peer.rnd_data_2recv = peer.rnd_data_rcvd = 0;
     return true;
 }
 
