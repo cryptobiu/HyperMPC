@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
             comm_client::cc_args_t args;
             args.logcat = "ps.m31";
             psmpc_ac_m31 ps(argc, argv, &args);
-            ps.run_ac_protocol(id ,parties, partiesFile.c_str(), 180);
+            ps.run_ac_protocol(id ,parties, partiesFile.c_str(), 600);
         }
     }
 
