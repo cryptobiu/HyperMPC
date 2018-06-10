@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
             comm_client::cc_args_t args;
             args.logcat = "ps.m31";
             psmpc_ac_m31 ps(argc, argv, &args);
-            sleep(id);
+            usleep(id * 200000);
             ps.run_ac_protocol(id ,parties, partiesFile.c_str(), 600);
         }
     }
@@ -136,7 +136,7 @@ int main(int argc, char* argv[])
             comm_client::cc_args_t args;
             args.logcat = "ps.gf28lt";
             psmpc_ac_gf28lt ps(argc, argv, &args);
-            sleep(id);
+            usleep(id * 200000);
             ps.run_ac_protocol(id ,parties, partiesFile.c_str(), 180);
         }
     }
