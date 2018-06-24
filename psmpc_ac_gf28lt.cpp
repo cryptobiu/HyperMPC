@@ -193,6 +193,7 @@ bool psmpc_ac_gf28lt::round_up()
             return outpt_2_done();
         case ps_done:
             LC.notice("%s: Protocol done; success.",__FUNCTION__);
+            LC.notice("%s: Protocol output : %s" , __FUNCTION__, m_output.c_str());
             return (m_run_flag = false);
     }
 
@@ -739,6 +740,8 @@ bool psmpc_ac_gf28lt::outpt_2_done()
                 LC.error("%s: cheat check failed.", __FUNCTION__);
                 return (m_run_flag = false);
             }
+            else
+                m_output = field->elementToString(interpolate(x1));
         }
     }
 
