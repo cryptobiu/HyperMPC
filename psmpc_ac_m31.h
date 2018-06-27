@@ -6,7 +6,6 @@
 #include "ProtocolParty.h"
 #include "GF2_8LookupTable.h"
 #include "comm_client_cb_api.h"
-#include "lfq.h"
 #include "ac_protocol.h"
 
 typedef ZpMersenneIntElement M31;
