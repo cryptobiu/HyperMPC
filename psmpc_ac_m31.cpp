@@ -697,7 +697,6 @@ bool psmpc_ac_m31::inadj2_2_outpt()
             db = m_parties_state[a_gate.party].m_aux[counters[a_gate.party]];
             counters[a_gate.party] += 1;
             gateShareArr[a_gate.output] = gateShareArr[a_gate.output] + db; // adjustment
-            LC.debug("%s: k = %lu; share = %s", __FUNCTION__, k, field->elementToString(gateShareArr[a_gate.output]).c_str());
         }
     }
 
@@ -716,9 +715,9 @@ bool psmpc_ac_m31::inadj2_2_outpt()
          const TGate & a_gate(circuit.getGates()[k]);
          if(OUTPUT == a_gate.gateType)
          {
-             LC.debug("%s: circuit.getGates()[k].input1 = %d", __FUNCTION__, circuit.getGates()[k].input1);
-             LC.debug("%s: gateShareArr[circuit.getGates()[k].input1] = %s", __FUNCTION__,
-                      field->elementToString(gateShareArr[circuit.getGates()[k].input1]).c_str());
+//             LC.debug("%s: circuit.getGates()[k].input1 = %d", __FUNCTION__, circuit.getGates()[k].input1);
+//             LC.debug("%s: gateShareArr[circuit.getGates()[k].input1] = %s", __FUNCTION__,
+//                      field->elementToString(gateShareArr[circuit.getGates()[k].input1]).c_str());
 
              // send to party (which need this gate) your share for this gate
              //m_parties_state[circuit.getGates()[k].party].m_aux.push_back(gateShareArr[circuit.getGates()[k].input1]);

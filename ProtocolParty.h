@@ -694,7 +694,9 @@ void ProtocolParty<FieldType>::runOnline() {
 
     t1 = high_resolution_clock::now();
     timer->startSubTask("ComputationPhase", iteration);
+
     computationPhase(m);
+
     timer->endSubTask("ComputationPhase", iteration);
     t2 = high_resolution_clock::now();
 
@@ -728,7 +730,9 @@ void ProtocolParty<FieldType>::computationPhase(HIM<FieldType> &m) {
         currentCirciutLayer = i;
         count = processNotMult();
         count += processMultiplications(m);
+
     }
+
 }
 
 /**
@@ -847,7 +851,6 @@ void ProtocolParty<FieldType>::inputAdjustment(string &diff)
             db = recBufsdiffElements[circuit.getGates()[k].party][counters[circuit.getGates()[k].party]];
             counters[circuit.getGates()[k].party] += 1;
             gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].output] + db; // adjustment
-            cout << "k=" << k << "; share=" << gateShareArr[circuit.getGates()[k].output] << endl;
         }
     }
 
@@ -1822,42 +1825,56 @@ int ProtocolParty<FieldType>::processNotMult(){
     int count=0;
     for(int k=circuit.getLayers()[currentCirciutLayer]; k < circuit.getLayers()[currentCirciutLayer+1]; k++)
     {
-
-
-        // add gate
-        if(circuit.getGates()[k].gateType == MULT)
+        switch(circuit.getGates()[k].gateType)
         {
-            ;//do nothing
+            case MULT:
+                cout << "currentCirciutLayer = " << currentCirciutLayer << "; k = " << k << "; type = mult" << endl;
+                break;
+            case ADD:
+                gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] + gateShareArr[circuit.getGates()[k].input2];
+                count++;
+                cout << "currentCirciutLayer = " << currentCirciutLayer << "; k = " << k << "; type = add"
+                    << "; gateShareArr[circuit.getGates()[k].input1] = " << gateShareArr[circuit.getGates()[k].input1]
+                     << "; gateShareArr[circuit.getGates()[k].input2] = " << gateShareArr[circuit.getGates()[k].input2]
+                     << "; gateShareArr[circuit.getGates()[k].output] = " << gateShareArr[circuit.getGates()[k].output] <<  endl;
+                break;
+            case SUB:
+                gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] - gateShareArr[circuit.getGates()[k].input2];
+                count++;
+                cout << "currentCirciutLayer = " << currentCirciutLayer << "; k = " << k << "; type = sub"
+                    << "; gateShareArr[circuit.getGates()[k].input1] = " << gateShareArr[circuit.getGates()[k].input1]
+                    << "; gateShareArr[circuit.getGates()[k].input2] = " << gateShareArr[circuit.getGates()[k].input2]
+                    << "; gateShareArr[circuit.getGates()[k].output] = " << gateShareArr[circuit.getGates()[k].output] <<  endl;
+                break;
+            case SCALAR:
+                {
+                    long scalar(circuit.getGates()[k].input2);
+                    FieldType e = field->GetElement(scalar);
+                    gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] * e;
+                    count++;
+                    cout << "currentCirciutLayer = " << currentCirciutLayer << "; k = " << k << "; type = scalar"
+                    << "; gateShareArr[circuit.getGates()[k].input1] = " << gateShareArr[circuit.getGates()[k].input1]
+                     << "; gateShareArr[circuit.getGates()[k].input2] = " << gateShareArr[circuit.getGates()[k].input2]
+                     << "; gateShareArr[circuit.getGates()[k].output] = " << gateShareArr[circuit.getGates()[k].output]
+                     << "; scalar = " << scalar << "; e = " << e <<  endl;
+                }
+                break;
+            case SCALAR_ADD:
+                {
+                    long scalar(circuit.getGates()[k].input2);
+                    FieldType e = field->GetElement(scalar);
+                    gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] + e;
+                    count++;
+                    cout << "currentCirciutLayer = " << currentCirciutLayer << "; k = " << k << "; type = scalar-add"
+                         << "; gateShareArr[circuit.getGates()[k].input1] = " << gateShareArr[circuit.getGates()[k].input1]
+                         << "; gateShareArr[circuit.getGates()[k].input2] = " << gateShareArr[circuit.getGates()[k].input2]
+                         << "; gateShareArr[circuit.getGates()[k].output] = " << gateShareArr[circuit.getGates()[k].output]
+                         << "; scalar = " << scalar << "; e = " << e <<  endl;
+                }
+                break;
+            default:
+                cerr << "ProtocolParty<FieldType>::processNotMult(): unsupported gate type " << circuit.getGates()[k].gateType << endl;
         }
-        // add gate
-        else if(circuit.getGates()[k].gateType == ADD)
-        {
-            gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] + gateShareArr[circuit.getGates()[k].input2];
-            count++;
-        }
-
-        else if(circuit.getGates()[k].gateType == SUB)//sub gate
-        {
-            gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] - gateShareArr[circuit.getGates()[k].input2];
-            count++;
-        }
-        else if(circuit.getGates()[k].gateType == SCALAR)
-        {
-            long scalar(circuit.getGates()[k].input2);
-            FieldType e = field->GetElement(scalar);
-            gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] * e;
-
-            count++;
-        }
-        else if(circuit.getGates()[k].gateType == SCALAR_ADD)
-        {
-            long scalar(circuit.getGates()[k].input2);
-            FieldType e = field->GetElement(scalar);
-            gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] + e;
-
-            count++;
-        }
-
 
     }
     return count;
@@ -1898,6 +1915,12 @@ int ProtocolParty<FieldType>::processMultiplications(HIM<FieldType> &m)
             index++;
             // for now gateShareArr[k] is random sharing, needs to be adjusted (later)
             gateShareArr[circuit.getGates()[k].output] = r1;
+
+            cout << "currentCirciutLayer = " << currentCirciutLayer << "; k = " << k << "; type = mult"
+                 << "; gateShareArr[circuit.getGates()[k].input1] = " << gateShareArr[circuit.getGates()[k].input1]
+                 << "; gateShareArr[circuit.getGates()[k].input2] = " << gateShareArr[circuit.getGates()[k].input2]
+                 << "; r1 = " << r1 << "; r2 = " << r2 << "; p2 = " << p2 << "; d2 = " << d2
+                 << "; gateShareArr[circuit.getGates()[k].output] = " << gateShareArr[circuit.getGates()[k].output] <<  endl;
         }
 
     }
