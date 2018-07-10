@@ -386,7 +386,6 @@ bool ProtocolParty<FieldType>::broadcast(int party_id, vector<byte> myMessage, v
     vector<vector<byte>> recBufs2Bytes(N);
     vector<vector<FieldType>> recBufs2Elements(N);
 
-
     // Ps sends his values to all parties and received there values.
     //comm->roundfunction2(myMessage, recBufsdiffBytes); // Values are in recBufsdiff
     roundFunctionSyncBroadcast(myMessage, recBufsdiffBytes);
@@ -401,6 +400,7 @@ bool ProtocolParty<FieldType>::broadcast(int party_id, vector<byte> myMessage, v
         }
     }
 
+    //p18
 
     if(flag_print) {
         cout << "recBufsdiff" << endl;
@@ -418,6 +418,8 @@ bool ProtocolParty<FieldType>::broadcast(int party_id, vector<byte> myMessage, v
     {
         count+=recBufsElements[i].size();
     }
+
+    //p19
 
 
     vector<FieldType> valBufs(count);
@@ -499,6 +501,7 @@ bool ProtocolParty<FieldType>::broadcast(int party_id, vector<byte> myMessage, v
             Y1[i] = *(field->GetZero());
         }
     }
+    //p20
 
     if(flag_print) {
         cout << "index  2 time :" << index << '\n';
@@ -518,7 +521,6 @@ bool ProtocolParty<FieldType>::broadcast(int party_id, vector<byte> myMessage, v
         }
     }
 
-
     roundFunctionSync(sendBufsBytes, recBufs2Bytes,3);
     //comm->roundfunctionI(sendBufsBytes, recBufs2Bytes,3);
 
@@ -530,6 +532,7 @@ bool ProtocolParty<FieldType>::broadcast(int party_id, vector<byte> myMessage, v
         }
     }
 
+    //p21
 
     if(flag_print) {
         cout  << "after roundfunction3 " << endl;
@@ -559,6 +562,7 @@ bool ProtocolParty<FieldType>::broadcast(int party_id, vector<byte> myMessage, v
             }
         }
     }
+
 
     return true;
 }
@@ -719,19 +723,11 @@ void ProtocolParty<FieldType>::computationPhase(HIM<FieldType> &m) {
     //processRandoms();
 
     int numOfLayers = circuit.getLayers().size();
-    for(int i=0; i<numOfLayers-1;i++){
-//        count = processSmul();
-//        count += processAdditions();
-//        count += processSubtractions();
-//        count += processMultiplications(m);
-
+    for(int i=0; i<numOfLayers-1;i++)
+    {
         currentCirciutLayer = i;
         count = processNotMult();
-       // cout<<"count mot mult: " << count << "for layer: " << currentCirciutLayer <<"\n";
         count += processMultiplications(m);
-       // cout<<"count mult" << count << "for layer: " << currentCirciutLayer<<"\n";
-
-
     }
 }
 
@@ -781,6 +777,8 @@ void ProtocolParty<FieldType>::inputAdjustment(string &diff)
         }
     }
 
+    // p17
+
     int fieldByteSize = field->getElementSizeInBytes();
 
     sendBufBytes.resize(diffElements.size()*fieldByteSize);
@@ -820,6 +818,7 @@ void ProtocolParty<FieldType>::inputAdjustment(string &diff)
            // cout << "recBufsdiff" << k << "  " << recBufsdiff[k] << endl;
         }
     }
+
     // handle after broadcast
     FieldType db;
 
@@ -831,6 +830,8 @@ void ProtocolParty<FieldType>::inputAdjustment(string &diff)
             recBufsdiffElements[i][j] = field->bytesToElement(recBufsdiffBytes[i].data() + ( j * fieldByteSize));
         }
     }
+
+    //p22
 
 
     vector<int> counters(N);
@@ -846,9 +847,11 @@ void ProtocolParty<FieldType>::inputAdjustment(string &diff)
             db = recBufsdiffElements[circuit.getGates()[k].party][counters[circuit.getGates()[k].party]];
             counters[circuit.getGates()[k].party] += 1;
             gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].output] + db; // adjustment
-
+            cout << "k=" << k << "; share=" << gateShareArr[circuit.getGates()[k].output] << endl;
         }
     }
+
+    //p23
 
 
 }
@@ -1190,12 +1193,7 @@ bool ProtocolParty<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, H
             sendBufsElements[i][2*k+1] = y2[i];
         }
 
-
-
-
     }//end print one
-
-
 
     if(flag_print) {
         for (int i = 0; i < N; i++) {
@@ -1323,7 +1321,6 @@ bool ProtocolParty<FieldType>::preparationPhase(/*VDM<FieldType> &matrix_vand, H
         }
     }
 
-    printData(sendBufsElements);
     if(flag_print) {
         cout << "before round" << endl;}
     //comm->roundfunctionI(sendBufs1Bytes, recBufsBytes,5);
@@ -1444,10 +1441,8 @@ bool ProtocolParty<FieldType>::RandomSharingForInputs()
 
         }
 
-
-
-
     }//end print one
+
 
     if(flag_print) {
         for (int i = 0; i < N; i++) {
@@ -1566,9 +1561,6 @@ bool ProtocolParty<FieldType>::RandomSharingForInputs()
         }
     }
 
-
-    printData(sendBufsElements);
-
     if(flag_print)
         cout << "before round" << endl;
 
@@ -1596,7 +1588,6 @@ bool ProtocolParty<FieldType>::RandomSharingForInputs()
                 BufsElement[i].push_back(field->bytesToElement(recBufsBytes[i].data() + (k * fieldBytesSize)));
             }
         }
-        printData(BufsElement);
     }
 
 
@@ -1662,6 +1653,7 @@ bool ProtocolParty<FieldType>::inputPreparation()
             //cout << sendBufs[i] << endl;
         }
     }
+
 
     int fieldByteSize = field->getElementSizeInBytes();
 
@@ -1983,11 +1975,15 @@ void ProtocolParty<FieldType>::outputPhase()
     {
         if(circuit.getGates()[k].gateType == OUTPUT)
         {
+            cout << "circuit.getGates()[k].input1 = " << circuit.getGates()[k].input1 << endl;
+            cout << "gateShareArr[circuit.getGates()[k].input1] = " << gateShareArr[circuit.getGates()[k].input1] << endl;
             // send to party (which need this gate) your share for this gate
             sendBufsElements[circuit.getGates()[k].party].push_back(gateShareArr[circuit.getGates()[k].input1]);
         }
     }
 
+    //p24
+    printData(sendBufsElements);
 
     int fieldByteSize = field->getElementSizeInBytes();
     for(int i=0; i < N; i++)
@@ -2207,25 +2203,23 @@ ProtocolParty<FieldType>::~ProtocolParty()
 template <class FieldType>
 void ProtocolParty<FieldType>::printData(const vector<vector<FieldType>> & BufsElements) const
 {
+    char buffer[128];
+    snprintf(buffer, 128, "prt%dprt.log", m_partyId);
+    FILE* pf = fopen(buffer, "a");
+    if(NULL!= pf)
     {
-        char buffer[128];
-        snprintf(buffer, 128, "prt%dprt.log", m_partyId);
-        FILE* pf = fopen(buffer, "w");
-        if(NULL!= pf)
+        for(size_t i = 0; i< N; ++i)
         {
-            for(size_t i = 0; i< N; ++i)
+            snprintf(buffer, 128, "%s party %lu aux size %lu\n", __FUNCTION__,i, BufsElements[i].size());
+            fputs(buffer, pf);
+            for (size_t j = 0; j < BufsElements[i].size(); ++j)
             {
-                snprintf(buffer, 128, "%s party %lu aux size %lu\n", __FUNCTION__,i, BufsElements[i].size());
+                string ___element = field->elementToString(BufsElements[i][j]);
+                snprintf(buffer, 128, "%s party %lu aux[%lu]=%s\n", __FUNCTION__, i, j, ___element.c_str());
                 fputs(buffer, pf);
-                for (size_t j = 0; j < BufsElements[i].size(); ++j)
-                {
-                    string ___element = field->elementToString(BufsElements[i][j]);
-                    snprintf(buffer, 128, "%s party %lu aux[%lu]=%s\n", __FUNCTION__, i, j, ___element.c_str());
-                    fputs(buffer, pf);
-                }
             }
-            fclose(pf);
         }
+        fclose(pf);
     }
 }
 

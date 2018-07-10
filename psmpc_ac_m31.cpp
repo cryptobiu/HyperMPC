@@ -193,6 +193,7 @@ bool psmpc_ac_m31::round_up()
             return outpt_2_done();
         case ps_done:
             LC.notice("%s: Protocol done; success.",__FUNCTION__);
+            LC.notice("%s: Protocol output : %s" , __FUNCTION__, m_output.c_str());
             return (m_run_flag = false);
     }
 
@@ -335,6 +336,7 @@ bool psmpc_ac_m31::rsfi1_2_rsfi2()
             sharingBufInputsTElements[k*(N-2*T) + i - 2*T] = y1[i];
     }
 
+
     for (size_t j = 0; j < N; j++)
         m_parties_state[j].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send;
 
@@ -467,6 +469,7 @@ bool psmpc_ac_m31::prep1_2_prep2()
         x2[0] = *(field->GetZero());
     }
 
+
     for(size_t i = 0; i < m_parties; ++i)
     {
         m_parties_state[i].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send;
@@ -523,6 +526,8 @@ bool psmpc_ac_m31::prep2_2_inprp()
         m_parties_state[i].m_aux.push_back(gateShareArr[circuit.getGates()[k].output]);
         m_parties_state[i].rnd_data_2send++;
     }
+
+    //All clear at this point
 
     for(size_t i = 0; i < m_parties; ++i)
         m_parties_state[i].rnd_data_2recv = m_parties_state[m_id].rnd_data_2send;
@@ -582,6 +587,7 @@ bool psmpc_ac_m31::inprp_2_inadj1()
             }
         }
     }
+    // p17
 
     for(size_t i = 0; i < m_parties; ++i)
     {
@@ -594,9 +600,15 @@ bool psmpc_ac_m31::inprp_2_inadj1()
 
 bool psmpc_ac_m31::inadj1_2_inadj2()
 {
+    //p18
+    for(size_t i = 0; i < m_parties; ++i)
+        m_parties_state[i].m_aux2 = m_parties_state[i].m_aux;
+
     // calculate total number of values which received
     int count = m_parties * m_parties_state[m_id].m_aux.size();
     m_no_buckets = count / (N - T) + 1;
+
+    //p19
 
     vector<M31> valBufs;
     valBufs.reserve(count);
@@ -642,14 +654,18 @@ bool psmpc_ac_m31::inadj1_2_inadj2()
         }
     }
 
+    //p20
+
     for(size_t i = 0; i < N; i++)
         m_parties_state[i].rnd_data_2send = m_parties_state[i].rnd_data_2recv = (size_t)m_no_buckets;
-
+    //All clear at this point
     return true;
 }
 
 bool psmpc_ac_m31::inadj2_2_outpt()
 {
+    //p21
+
     M31 temp1;
 
     for(size_t k=0; k < m_no_buckets; k++)
@@ -666,19 +682,26 @@ bool psmpc_ac_m31::inadj2_2_outpt()
 
         }
     }
+    for(size_t i = 0; i < N; i++)
+        m_parties_state[i].m_aux = m_parties_state[i].m_aux2;
 
+    //p22
     M31 db;
     vector<int> counters(N, 0);
 
     for (size_t k = 0; k < numOfInputGates; k++)
     {
+        const TGate & a_gate(circuit.getGates()[k]);
         if(circuit.getGates()[k].gateType == INPUT)
         {
-            db = m_parties_state[circuit.getGates()[k].party].m_aux[counters[circuit.getGates()[k].party]];
-            counters[circuit.getGates()[k].party] += 1;
-            gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].output] + db; // adjustment
+            db = m_parties_state[a_gate.party].m_aux[counters[a_gate.party]];
+            counters[a_gate.party] += 1;
+            gateShareArr[a_gate.output] = gateShareArr[a_gate.output] + db; // adjustment
+            LC.debug("%s: k = %lu; share = %s", __FUNCTION__, k, field->elementToString(gateShareArr[a_gate.output]).c_str());
         }
     }
+
+    //p23
 
     for(size_t i =0; i < m_parties;++i)
         m_parties_state[i].m_aux.clear();
@@ -690,20 +713,26 @@ bool psmpc_ac_m31::inadj2_2_outpt()
 
     for(int k=M-numOfOutputGates; k < M; k++)
     {
-        const TGate & a_gate(circuit.getGates()[k]);
-        if(OUTPUT == a_gate.gateType)
-        {
+         const TGate & a_gate(circuit.getGates()[k]);
+         if(OUTPUT == a_gate.gateType)
+         {
+             LC.debug("%s: circuit.getGates()[k].input1 = %d", __FUNCTION__, circuit.getGates()[k].input1);
+             LC.debug("%s: gateShareArr[circuit.getGates()[k].input1] = %s", __FUNCTION__,
+                      field->elementToString(gateShareArr[circuit.getGates()[k].input1]).c_str());
 
-            // send to party (which need this gate) your share for this gate
-            //m_parties_state[circuit.getGates()[k].party].m_aux.push_back(gateShareArr[circuit.getGates()[k].input1]);
-            m_parties_state[a_gate.party].m_aux.push_back(a_gate.input1);
-        }
-        else
-        {
-            LC.error("%s: gate %lu should be output; Perfect Secure failed.", __FUNCTION__, k);
-            return (m_run_flag = false);
-        }
+             // send to party (which need this gate) your share for this gate
+             //m_parties_state[circuit.getGates()[k].party].m_aux.push_back(gateShareArr[circuit.getGates()[k].input1]);
+             m_parties_state[a_gate.party].m_aux.push_back(gateShareArr[a_gate.input1]);
+         }
+         else
+         {
+             LC.error("%s: gate %lu should be output; Perfect Secure failed.", __FUNCTION__, k);
+             return (m_run_flag = false);
+         }
     }
+
+    //p24
+    print_data();
 
     for(size_t i = 0; i < m_parties; ++i)
     {
@@ -738,6 +767,8 @@ bool psmpc_ac_m31::outpt_2_done()
             {
                 LC.error("%s: cheat check failed.", __FUNCTION__);
                 return (m_run_flag = false);
+            } else{
+                m_output += field->elementToString(interpolate(x1));
             }
         }
     }

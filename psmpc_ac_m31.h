@@ -33,6 +33,7 @@ class psmpc_ac_m31 : private ProtocolParty<M31>, public ac_protocol
         bool m_connected;
         size_t m_id;
         std::vector<M31> m_aux;
+        std::vector<M31> m_aux2;
         size_t rnd_data_sent, rnd_data_rcvd, rnd_data_2send, rnd_data_2recv;
 
         __party_t () : m_current_state(ps_nil), m_connected(false)
@@ -45,6 +46,7 @@ class psmpc_ac_m31 : private ProtocolParty<M31>, public ac_protocol
     ///common structs
     vector<party_t> m_parties_state;
     int m_no_buckets;
+    std::string m_output;
 
     bool party_run_around(const size_t party_id);
     bool on_round_send_and_recv(party_t &peer);
