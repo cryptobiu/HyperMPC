@@ -54,7 +54,6 @@ int main(int argc, char* argv[])
     auto parameters = parser.parseArguments("", argc, argv);
     int times = stoi(parser.getValueByKey(parameters, "internalIterationsNumber"));
     string fieldType = parser.getValueByKey(parameters, "fieldType");
-    srand(5);
     
     if(fieldType.compare("ZpMersenne") == 0)
     {

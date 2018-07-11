@@ -587,7 +587,6 @@ bool psmpc_ac_m31::inprp_2_inadj1()
             }
         }
     }
-    // p17
 
     for(size_t i = 0; i < m_parties; ++i)
     {
@@ -600,15 +599,12 @@ bool psmpc_ac_m31::inprp_2_inadj1()
 
 bool psmpc_ac_m31::inadj1_2_inadj2()
 {
-    //p18
     for(size_t i = 0; i < m_parties; ++i)
         m_parties_state[i].m_aux2 = m_parties_state[i].m_aux;
 
     // calculate total number of values which received
     int count = m_parties * m_parties_state[m_id].m_aux.size();
     m_no_buckets = count / (N - T) + 1;
-
-    //p19
 
     vector<M31> valBufs;
     valBufs.reserve(count);
@@ -654,11 +650,9 @@ bool psmpc_ac_m31::inadj1_2_inadj2()
         }
     }
 
-    //p20
-
     for(size_t i = 0; i < N; i++)
         m_parties_state[i].rnd_data_2send = m_parties_state[i].rnd_data_2recv = (size_t)m_no_buckets;
-    //All clear at this point
+
     return true;
 }
 
@@ -684,7 +678,7 @@ bool psmpc_ac_m31::inadj2_2_outpt()
     }
     for(size_t i = 0; i < N; i++)
         m_parties_state[i].m_aux = m_parties_state[i].m_aux2;
-    
+
     M31 db;
     vector<int> counters(N, 0);
 
