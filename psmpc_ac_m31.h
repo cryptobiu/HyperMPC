@@ -68,6 +68,8 @@ class psmpc_ac_m31 : private ProtocolParty<M31>, public ac_protocol
     bool send_aux(party_t &peer);
     bool recv_aux(party_t &peer, const size_t required_elements);
 
+    void do_send_and_recv(const vector< vector< byte > > & _2send, vector< vector< byte > > & _2recv);
+
 public:
     psmpc_ac_m31(int argc, char* argv [], comm_client::cc_args_t * args);
     virtual ~psmpc_ac_m31();

@@ -63,11 +63,14 @@ protected:
     vector<FieldType> sharingBufInputsTElements; // prepared T-sharings (my shares)
     int shareIndex;
 
-    void printData(const vector<vector<FieldType>> & BufsElements) const;
+    void printDataElements(const vector<vector<FieldType>> & BufsElements) const;
+    void printDataBytes(const char * label, const vector< vector< byte > > & BufsBytes) const;
 
 
     vector<int> myInputs;
     string s;
+
+    virtual void do_send_and_recv(const vector< vector< byte > > & _2send, vector< vector< byte > > & _2recv);
 
 public:
     ProtocolParty(int argc, char* argv [], bool commOn=true);
@@ -75,8 +78,8 @@ public:
     vector<string> split(const string &s, char delim);
 
 
-    void roundFunctionSync(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int round);
-    void exchangeData(vector<vector<byte>> &sendBufs,vector<vector<byte>> &recBufs, int first, int last);
+    void roundFunctionSync(const vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int round);
+    void exchangeData(const vector<vector<byte>> &sendBufs,vector<vector<byte>> &recBufs, int first, int last);
     void roundFunctionSyncBroadcast(vector<byte> &message, vector<vector<byte>> &recBufs);
     void recData(vector<byte> &message, vector<vector<byte>> &recBufs, int first, int last);
 
@@ -1033,7 +1036,13 @@ void ProtocolParty<FieldType>::publicReconstruction(vector<FieldType> &myShares,
 
     //cout<<"before round function 1"<<endl;
     //comm->roundfunctionI(sendBufsBytes, recBufsBytes,1);
-    roundFunctionSync(sendBufsBytes, recBufsBytes,1);
+    //roundFunctionSync(sendBufsBytes, recBufsBytes,1);
+
+    printDataBytes("send", sendBufsBytes);
+
+    do_send_and_recv(sendBufsBytes, recBufsBytes);
+
+    printDataBytes("recv", recBufsBytes);
 
     //cout<<"after round function 1"<<endl;
     if(flag_print) {
@@ -1074,6 +1083,8 @@ void ProtocolParty<FieldType>::publicReconstruction(vector<FieldType> &myShares,
         }
     }
 
+//    printData(sendBufsElements2);
+
     for(int i=0; i < N; i++)
     {
         sendBufs2Bytes[i].resize(no_buckets*fieldByteSize );
@@ -1092,7 +1103,9 @@ void ProtocolParty<FieldType>::publicReconstruction(vector<FieldType> &myShares,
             //cout << sendBufs2[i] << endl;
         } }
     //comm->roundfunctionI(sendBufs2Bytes, recBufs2Bytes,8);
-    roundFunctionSync(sendBufs2Bytes, recBufs2Bytes,8);
+    //roundFunctionSync(sendBufs2Bytes, recBufs2Bytes,8);
+    do_send_and_recv(sendBufs2Bytes, recBufs2Bytes);
+
     if(flag_print) {
         cout << "recBufs2[i]" << endl;
         for(int i = 0; i < N; i++)
@@ -1828,23 +1841,23 @@ int ProtocolParty<FieldType>::processNotMult(){
         switch(circuit.getGates()[k].gateType)
         {
             case MULT:
-                cout << "currentCirciutLayer = " << currentCirciutLayer << "; k = " << k << "; type = mult" << endl;
+//                cout << "currentCirciutLayer = " << currentCirciutLayer << "; k = " << k << "; type = mult" << endl;
                 break;
             case ADD:
                 gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] + gateShareArr[circuit.getGates()[k].input2];
                 count++;
-                cout << "currentCirciutLayer = " << currentCirciutLayer << "; k = " << k << "; type = add"
-                    << "; gateShareArr[circuit.getGates()[k].input1] = " << gateShareArr[circuit.getGates()[k].input1]
-                     << "; gateShareArr[circuit.getGates()[k].input2] = " << gateShareArr[circuit.getGates()[k].input2]
-                     << "; gateShareArr[circuit.getGates()[k].output] = " << gateShareArr[circuit.getGates()[k].output] <<  endl;
+//                cout << "currentCirciutLayer = " << currentCirciutLayer << "; k = " << k << "; type = add"
+//                    << "; gateShareArr[circuit.getGates()[k].input1] = " << gateShareArr[circuit.getGates()[k].input1]
+//                     << "; gateShareArr[circuit.getGates()[k].input2] = " << gateShareArr[circuit.getGates()[k].input2]
+//                     << "; gateShareArr[circuit.getGates()[k].output] = " << gateShareArr[circuit.getGates()[k].output] <<  endl;
                 break;
             case SUB:
                 gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] - gateShareArr[circuit.getGates()[k].input2];
                 count++;
-                cout << "currentCirciutLayer = " << currentCirciutLayer << "; k = " << k << "; type = sub"
-                    << "; gateShareArr[circuit.getGates()[k].input1] = " << gateShareArr[circuit.getGates()[k].input1]
-                    << "; gateShareArr[circuit.getGates()[k].input2] = " << gateShareArr[circuit.getGates()[k].input2]
-                    << "; gateShareArr[circuit.getGates()[k].output] = " << gateShareArr[circuit.getGates()[k].output] <<  endl;
+//                cout << "currentCirciutLayer = " << currentCirciutLayer << "; k = " << k << "; type = sub"
+//                    << "; gateShareArr[circuit.getGates()[k].input1] = " << gateShareArr[circuit.getGates()[k].input1]
+//                    << "; gateShareArr[circuit.getGates()[k].input2] = " << gateShareArr[circuit.getGates()[k].input2]
+//                    << "; gateShareArr[circuit.getGates()[k].output] = " << gateShareArr[circuit.getGates()[k].output] <<  endl;
                 break;
             case SCALAR:
                 {
@@ -1852,11 +1865,11 @@ int ProtocolParty<FieldType>::processNotMult(){
                     FieldType e = field->GetElement(scalar);
                     gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] * e;
                     count++;
-                    cout << "currentCirciutLayer = " << currentCirciutLayer << "; k = " << k << "; type = scalar"
-                    << "; gateShareArr[circuit.getGates()[k].input1] = " << gateShareArr[circuit.getGates()[k].input1]
-                     << "; gateShareArr[circuit.getGates()[k].input2] = " << gateShareArr[circuit.getGates()[k].input2]
-                     << "; gateShareArr[circuit.getGates()[k].output] = " << gateShareArr[circuit.getGates()[k].output]
-                     << "; scalar = " << scalar << "; e = " << e <<  endl;
+//                    cout << "currentCirciutLayer = " << currentCirciutLayer << "; k = " << k << "; type = scalar"
+//                    << "; gateShareArr[circuit.getGates()[k].input1] = " << gateShareArr[circuit.getGates()[k].input1]
+//                     << "; gateShareArr[circuit.getGates()[k].input2] = " << gateShareArr[circuit.getGates()[k].input2]
+//                     << "; gateShareArr[circuit.getGates()[k].output] = " << gateShareArr[circuit.getGates()[k].output]
+//                     << "; scalar = " << scalar << "; e = " << e <<  endl;
                 }
                 break;
             case SCALAR_ADD:
@@ -1865,11 +1878,11 @@ int ProtocolParty<FieldType>::processNotMult(){
                     FieldType e = field->GetElement(scalar);
                     gateShareArr[circuit.getGates()[k].output] = gateShareArr[circuit.getGates()[k].input1] + e;
                     count++;
-                    cout << "currentCirciutLayer = " << currentCirciutLayer << "; k = " << k << "; type = scalar-add"
-                         << "; gateShareArr[circuit.getGates()[k].input1] = " << gateShareArr[circuit.getGates()[k].input1]
-                         << "; gateShareArr[circuit.getGates()[k].input2] = " << gateShareArr[circuit.getGates()[k].input2]
-                         << "; gateShareArr[circuit.getGates()[k].output] = " << gateShareArr[circuit.getGates()[k].output]
-                         << "; scalar = " << scalar << "; e = " << e <<  endl;
+//                    cout << "currentCirciutLayer = " << currentCirciutLayer << "; k = " << k << "; type = scalar-add"
+//                         << "; gateShareArr[circuit.getGates()[k].input1] = " << gateShareArr[circuit.getGates()[k].input1]
+//                         << "; gateShareArr[circuit.getGates()[k].input2] = " << gateShareArr[circuit.getGates()[k].input2]
+//                         << "; gateShareArr[circuit.getGates()[k].output] = " << gateShareArr[circuit.getGates()[k].output]
+//                         << "; scalar = " << scalar << "; e = " << e <<  endl;
                 }
                 break;
             default:
@@ -1916,11 +1929,11 @@ int ProtocolParty<FieldType>::processMultiplications(HIM<FieldType> &m)
             // for now gateShareArr[k] is random sharing, needs to be adjusted (later)
             gateShareArr[circuit.getGates()[k].output] = r1;
 
-            cout << "currentCirciutLayer = " << currentCirciutLayer << "; k = " << k << "; type = mult"
-                 << "; gateShareArr[circuit.getGates()[k].input1] = " << gateShareArr[circuit.getGates()[k].input1]
-                 << "; gateShareArr[circuit.getGates()[k].input2] = " << gateShareArr[circuit.getGates()[k].input2]
-                 << "; r1 = " << r1 << "; r2 = " << r2 << "; p2 = " << p2 << "; d2 = " << d2
-                 << "; gateShareArr[circuit.getGates()[k].output] = " << gateShareArr[circuit.getGates()[k].output] <<  endl;
+//            cout << "currentCirciutLayer = " << currentCirciutLayer << "; k = " << k << "; type = mult"
+//                 << "; gateShareArr[circuit.getGates()[k].input1] = " << gateShareArr[circuit.getGates()[k].input1]
+//                 << "; gateShareArr[circuit.getGates()[k].input2] = " << gateShareArr[circuit.getGates()[k].input2]
+//                 << "; r1 = " << r1 << "; r2 = " << r2 << "; p2 = " << p2 << "; d2 = " << d2
+//                 << "; gateShareArr[circuit.getGates()[k].output] = " << gateShareArr[circuit.getGates()[k].output] <<  endl;
         }
 
     }
@@ -2006,7 +2019,7 @@ void ProtocolParty<FieldType>::outputPhase()
     }
 
     //p24
-    printData(sendBufsElements);
+//    printData(sendBufsElements);
 
     int fieldByteSize = field->getElementSizeInBytes();
     for(int i=0; i < N; i++)
@@ -2057,7 +2070,7 @@ void ProtocolParty<FieldType>::outputPhase()
 
 
 template <class FieldType>
-void ProtocolParty<FieldType>::roundFunctionSync(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int round) {
+void ProtocolParty<FieldType>::roundFunctionSync(const vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int round) {
 
     //cout<<"in roundFunctionSync "<< round<< endl;
 
@@ -2099,53 +2112,44 @@ void ProtocolParty<FieldType>::roundFunctionSync(vector<vector<byte>> &sendBufs,
 
 
 template <class FieldType>
-void ProtocolParty<FieldType>::exchangeData(vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int first, int last){
+void ProtocolParty<FieldType>::exchangeData(const vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int first, int last){
 
 
     //cout<<"in exchangeData";
-    for (int i=first; i < last; i++) {
-
-        if ((m_partyId) < parties[i]->getID()) {
-
-
-            //send shares to my input bits
+    for (int i=first; i < last; i++)
+    {
+        if ((m_partyId) < parties[i]->getID())
+        {
             parties[i]->getChannel()->write(sendBufs[parties[i]->getID()].data(), sendBufs[parties[i]->getID()].size());
-            //cout<<"write the data:: my Id = " << m_partyId - 1<< "other ID = "<< parties[i]->getID() <<endl;
-
-
-            //receive shares from the other party and set them in the shares array
             parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
-            //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
-
-        } else{
-
-
-            //receive shares from the other party and set them in the shares array
-            parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
-            //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
-
-
-
-            //send shares to my input bits
-            parties[i]->getChannel()->write(sendBufs[parties[i]->getID()].data(), sendBufs[parties[i]->getID()].size());
-            //cout<<"write the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID() <<endl;
-
-
         }
-
+        else
+        {
+            parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
+            parties[i]->getChannel()->write(sendBufs[parties[i]->getID()].data(), sendBufs[parties[i]->getID()].size());
+        }
     }
-
-
 }
 
-
-
-
+template <class FieldType>
+void ProtocolParty<FieldType>::do_send_and_recv(const vector< vector< byte > > & _2send, vector< vector< byte > > & _2recv)
+{
+    //print send buffers for each party
+//    for (size_t i = 0; i < N; ++i)
+//    {
+//        std::stringstream ss;
+//        ss << std::hex << std::setfill('0');
+//
+//        for(size_t j = 0; j < _2send[i].size(); ++j)
+//            ss << std::setw(2) << static_cast<unsigned>(_2send[i][j]);
+//
+////        cout << __FUNCTION__ << ": _2send[" << i << "]=<" << ss.str() << ">" << endl;
+//    }
+    roundFunctionSync(_2send, _2recv, 5);
+}
 
 template <class FieldType>
 void ProtocolParty<FieldType>::roundFunctionSyncBroadcast(vector<byte> &message, vector<vector<byte>> &recBufs) {
-
-    //cout<<"in roundFunctionSyncBroadcast "<< endl;
 
     int numThreads = parties.size();
     int numPartiesForEachThread;
@@ -2159,6 +2163,7 @@ void ProtocolParty<FieldType>::roundFunctionSyncBroadcast(vector<byte> &message,
 
     timer->writeValue(message.size() * numThreads);
     recBufs[m_partyId] = message;
+
     //recieve the data using threads
     vector<thread> threads(numThreads);
     for (int t=0; t<numThreads; t++) {
@@ -2179,38 +2184,22 @@ void ProtocolParty<FieldType>::roundFunctionSyncBroadcast(vector<byte> &message,
 template <class FieldType>
 void ProtocolParty<FieldType>::recData(vector<byte> &message, vector<vector<byte>> &recBufs, int first, int last){
 
+    for (int i=first; i < last; i++)
+    {
 
-    for (int i=first; i < last; i++) {
-
-        if ((m_partyId) < parties[i]->getID()) {
-
-
-            //send shares to my input bits
+        if ((m_partyId) < parties[i]->getID())
+        {
             parties[i]->getChannel()->write(message.data(), message.size());
-            //cout<<"write the data:: my Id = " << m_partyId - 1<< "other ID = "<< parties[i]->getID() <<endl;
+            parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());;
 
-
-            //receive shares from the other party and set them in the shares array
+        }
+        else
+        {
             parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
-            //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
-
-        } else {
-
-
-            //receive shares from the other party and set them in the shares array
-            parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
-            //cout<<"read the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID()<<endl;
-
-
-
-            //send shares to my input bits
             parties[i]->getChannel()->write(message.data(), message.size());
-            //cout<<"write the data:: my Id = " << m_partyId-1<< "other ID = "<< parties[i]->getID() <<endl;
-
 
         }
     }
-
 
 }
 
@@ -2224,7 +2213,7 @@ ProtocolParty<FieldType>::~ProtocolParty()
 }
 
 template <class FieldType>
-void ProtocolParty<FieldType>::printData(const vector<vector<FieldType>> & BufsElements) const
+void ProtocolParty<FieldType>::printDataElements(const vector<vector<FieldType>> & BufsElements) const
 {
     char buffer[128];
     snprintf(buffer, 128, "prt%dprt.log", m_partyId);
@@ -2246,5 +2235,29 @@ void ProtocolParty<FieldType>::printData(const vector<vector<FieldType>> & BufsE
     }
 }
 
+
+template <class FieldType>
+void ProtocolParty<FieldType>::printDataBytes(const char * label, const vector< vector< byte > > & BufsBytes) const
+{
+
+    char buffer[1024];
+    snprintf(buffer, 1024, "prt%dprt.log", m_partyId);
+    FILE* pf = fopen(buffer, "a");
+    if(NULL!= pf)
+    {
+        for (size_t i = 0; i < N; ++i)
+        {
+            std::stringstream ss;
+            ss << std::hex << std::setfill('0');
+
+            for(size_t j = 0; j < BufsBytes[i].size(); ++j)
+                ss << std::setw(2) << static_cast<unsigned>(BufsBytes[i][j]);
+
+            snprintf(buffer, 1024, "%s %s[%lu]=<%s>\n", __FUNCTION__, label, i, ss.str().c_str());
+            fputs(buffer, pf);
+        }
+        fclose(pf);
+    }
+}
 
 #endif /* PROTOCOL_H_ */

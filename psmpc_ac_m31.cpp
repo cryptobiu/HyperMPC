@@ -684,8 +684,7 @@ bool psmpc_ac_m31::inadj2_2_outpt()
     }
     for(size_t i = 0; i < N; i++)
         m_parties_state[i].m_aux = m_parties_state[i].m_aux2;
-
-    //p22
+    
     M31 db;
     vector<int> counters(N, 0);
 
@@ -715,12 +714,7 @@ bool psmpc_ac_m31::inadj2_2_outpt()
          const TGate & a_gate(circuit.getGates()[k]);
          if(OUTPUT == a_gate.gateType)
          {
-//             LC.debug("%s: circuit.getGates()[k].input1 = %d", __FUNCTION__, circuit.getGates()[k].input1);
-//             LC.debug("%s: gateShareArr[circuit.getGates()[k].input1] = %s", __FUNCTION__,
-//                      field->elementToString(gateShareArr[circuit.getGates()[k].input1]).c_str());
-
              // send to party (which need this gate) your share for this gate
-             //m_parties_state[circuit.getGates()[k].party].m_aux.push_back(gateShareArr[circuit.getGates()[k].input1]);
              m_parties_state[a_gate.party].m_aux.push_back(gateShareArr[a_gate.input1]);
          }
          else
@@ -729,9 +723,6 @@ bool psmpc_ac_m31::inadj2_2_outpt()
              return (m_run_flag = false);
          }
     }
-
-    //p24
-    print_data();
 
     for(size_t i = 0; i < m_parties; ++i)
     {
@@ -797,4 +788,45 @@ void psmpc_ac_m31::print_data() const
         }
     }
 
+}
+
+void psmpc_ac_m31::do_send_and_recv(const vector< vector< byte > > & _2send, vector< vector< byte > > & _2recv)
+{
+    for (size_t i = 0; i < m_parties; ++i)
+    {
+        if(i == m_id) continue;
+        if (0 != m_cc->send(i, _2send[i].data(), _2send[i].size()))
+        {
+            LC.error("%s: comm client send() failed.", __FUNCTION__);
+            m_run_flag = false;
+        }
+        _2recv[i].clear();
+    }
+
+    bool recv_done;
+    do{
+        recv_done = true;
+        for (size_t i = 0; i < m_parties; ++i)
+        {
+            if(i == m_id) continue;
+
+            const size_t required_size =  _2send[i].size();
+            if(required_size > _2recv[i].size())
+            {
+                //get from peer as much as needed and available
+                party_t & peer(m_parties_state[i]);
+                size_t _2get = required_size - _2recv[i].size();
+                if(peer.m_data.size() < _2get) _2get = peer.m_data.size();
+                _2recv[i].insert(_2recv[i].end(), peer.m_data.begin(), peer.m_data.begin() + _2get);
+                peer.m_data.erase(peer.m_data.begin(), peer.m_data.begin() + _2get);
+            }
+
+            recv_done = recv_done && (required_size == _2recv[i].size());
+        }
+
+        if(!recv_done)
+            handle_comm_events();
+    }while(!recv_done);
+
+    _2recv[m_id] = _2send[m_id];
 }
