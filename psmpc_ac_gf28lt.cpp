@@ -808,7 +808,7 @@ void psmpc_ac_gf28lt::do_send_and_recv(const vector< vector< byte > > & _2send, 
         }
 
         if(!recv_done)
-            handle_comm_events();
+            handle_a_comm_event();
     }while(!recv_done);
 
     _2recv[m_id] = _2send[m_id];
