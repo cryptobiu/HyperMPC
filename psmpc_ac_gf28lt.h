@@ -65,6 +65,7 @@ class psmpc_ac_gf28lt : private ProtocolParty<GF28LT>, public ac_protocol
 
     bool send_aux(party_t &peer);
     bool recv_aux(party_t &peer, const size_t required_elements);
+    void do_send_and_recv(const vector< vector< byte > > & _2send, vector< vector< byte > > & _2recv);
 
     std::string m_output;
 

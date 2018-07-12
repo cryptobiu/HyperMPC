@@ -739,9 +739,9 @@ bool psmpc_ac_gf28lt::outpt_2_done()
             {
                 LC.error("%s: cheat check failed.", __FUNCTION__);
                 return (m_run_flag = false);
+            } else{
+                m_output += field->elementToString(interpolate(x1));
             }
-            else
-                m_output = field->elementToString(interpolate(x1));
         }
     }
 
@@ -751,8 +751,8 @@ bool psmpc_ac_gf28lt::outpt_2_done()
     static const u_int8_t done_token[] = { 'd', 'o', 'n', 'e' };
     for(size_t i = 0; i < m_parties; ++i)
     {
-    	m_parties_state[i].m_aux.assign(done_token, done_token + 4);
-    	m_parties_state[i].rnd_data_2recv = m_parties_state[i].rnd_data_2send = 4;
+        m_parties_state[i].m_aux.assign(done_token, done_token + 4);
+        m_parties_state[i].rnd_data_2recv = m_parties_state[i].rnd_data_2send = 4;
     }
 
     return true;
@@ -770,4 +770,46 @@ void psmpc_ac_gf28lt::print_data() const
         }
     }
 
+}
+
+
+void psmpc_ac_gf28lt::do_send_and_recv(const vector< vector< byte > > & _2send, vector< vector< byte > > & _2recv)
+{
+    for (size_t i = 0; i < m_parties; ++i)
+    {
+        if(i == m_id) continue;
+        if (0 != m_cc->send(i, _2send[i].data(), _2send[i].size()))
+        {
+            LC.error("%s: comm client send() failed.", __FUNCTION__);
+            m_run_flag = false;
+        }
+        _2recv[i].clear();
+    }
+
+    bool recv_done;
+    do{
+        recv_done = true;
+        for (size_t i = 0; i < m_parties; ++i)
+        {
+            if(i == m_id) continue;
+
+            const size_t required_size =  _2send[i].size();
+            if(required_size > _2recv[i].size())
+            {
+                //get from peer as much as needed and available
+                party_t & peer(m_parties_state[i]);
+                size_t _2get = required_size - _2recv[i].size();
+                if(peer.m_data.size() < _2get) _2get = peer.m_data.size();
+                _2recv[i].insert(_2recv[i].end(), peer.m_data.begin(), peer.m_data.begin() + _2get);
+                peer.m_data.erase(peer.m_data.begin(), peer.m_data.begin() + _2get);
+            }
+
+            recv_done = recv_done && (required_size == _2recv[i].size());
+        }
+
+        if(!recv_done)
+            handle_comm_events();
+    }while(!recv_done);
+
+    _2recv[m_id] = _2send[m_id];
 }
