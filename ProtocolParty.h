@@ -17,7 +17,7 @@
 
 #define flag_print false
 #define flag_print_timings true
-#define flag_print_output false
+#define flag_print_output true
 
 
 using namespace std;
@@ -35,7 +35,7 @@ protected:
     int times; //number of times to run the run function
     int iteration; //number of the current iteration
 
-    Measurement* timer;
+    //Measurement* timer;
     int N, M, T, m_partyId;
     int numOfInputGates, numOfOutputGates;
     string inputsFile, outputFile;
@@ -299,6 +299,7 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv [], bool commOn) : 
 
     if(fieldType.compare("ZpMersenne") == 0) {
         field = new TemplateField<FieldType>(2147483647);
+        cout << "Mersenne filed object created" << endl;
     } else if(fieldType.compare("ZpMersenne61") == 0) {
         field = new TemplateField<FieldType>(0);
     } else if(fieldType.compare("GF2_8LookupTable") == 0) {
@@ -313,17 +314,16 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv [], bool commOn) : 
     T = n/3 - 1;
     this->inputsFile = this->getParser().getValueByKey(arguments, "inputFile");
     this->outputFile = this->getParser().getValueByKey(arguments, "outputFile");
+
+    cout << "Initialize input and outputs" << endl;
     if(n%3 > 0)
     {
         T++;
     }
 
-    vector<string> subTaskNames{"Offline", "PreparationForInputPhase", "PreparationPhase", "inputPreparation", "Online",
-                                "InputAdjustment", "ComputationPhase", "OutputPhase"};
-    timer = new Measurement(*this, subTaskNames);
-
     s = to_string(m_partyId);
     circuit.readCircuit(circuitFile.c_str());
+    cout << "Circuit created" << endl;
     circuit.reArrangeCircuit();
     M = circuit.getNrOfGates();
     numOfInputGates = circuit.getNrOfInputGates();
@@ -334,6 +334,8 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv [], bool commOn) : 
         parties = MPCCommunication::setCommunication(io_service, m_partyId, N, partiesFileName);
 
     readMyInputs();
+
+    cout << "read my inputs" << endl;
 
     auto t1 = high_resolution_clock::now();
     initializationPhase(/*matrix_him, matrix_vand, m*/);
@@ -566,18 +568,21 @@ template <class FieldType>
 void ProtocolParty<FieldType>::readMyInputs()
 {
 
-    //cout<<"inputs file" << inputsFile<<endl;
-    ifstream myfile;
-    int input;
-    int i =0;
-    myfile.open(inputsFile);
-    do {
-        myfile >> input;
-        myInputs[i] = input;
-        i++;
-    } while(!(myfile.eof()));
-    myfile.close();
-    //cout<<"after read inputs" <<endl;
+    cout<<"inputs file " << inputsFile<<endl;
+//    ifstream myfile;
+//    int input;
+//    int i =0;
+//    cout << "Before loop" << endl;
+//    myfile.open(inputsFile, fstream::in);
+//    do {
+//        myfile >> input;
+//        myInputs[i] = input;
+//        i++;
+//    } while(!(myfile.eof()));
+//    myfile.close();
+    myInputs.resize(1);
+    myInputs[0] = stoi(inputsFile);
+    cout<<"after read inputs" <<endl;
 
 }
 
@@ -585,12 +590,12 @@ template <class FieldType>
 void ProtocolParty<FieldType>::run() {
     for (iteration=0; iteration<times; iteration++){
         auto t1start = high_resolution_clock::now();
-        timer->startSubTask("Offline", iteration);
+        //timer->startSubTask("Offline", iteration);
         runOffline();
-        timer->endSubTask("Offline", iteration);
-        timer->startSubTask("Online", iteration);
+        //timer->endSubTask("Offline", iteration);
+        //timer->startSubTask("Online", iteration);
         runOnline();
-        timer->endSubTask("Online", iteration);
+        //timer->endSubTask("Online", iteration);
         auto t2end = high_resolution_clock::now();
         auto duration = duration_cast<milliseconds>(t2end-t1start).count();
 
@@ -607,7 +612,7 @@ void ProtocolParty<FieldType>::runOffline() {
     shareIndex = 0;//numOfInputGates;
 
     auto t1 = high_resolution_clock::now();
-    timer->startSubTask("PreparationForInputPhase", iteration);
+    //timer->startSubTask("PreparationForInputPhase", iteration);
     if(RandomSharingForInputs() == false) {
         if(flag_print) {
             cout << "cheating!!!" << '\n';}
@@ -618,14 +623,14 @@ void ProtocolParty<FieldType>::runOffline() {
             cout << "no cheating!!!" << '\n' << "finish preparationForInputs Phase" << '\n';}
     }
 
-    timer->endSubTask("PreparationForInputPhase", iteration);
+    //timer->endSubTask("PreparationForInputPhase", iteration);
     auto t2 = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(t2-t1).count();
     if(flag_print_timings) {
         cout << "time in milliseconds preparationForInputsPhase: " << duration << endl;
     }
     t1 = high_resolution_clock::now();
-    timer->startSubTask("PreparationPhase", iteration);
+    //timer->startSubTask("PreparationPhase", iteration);
     if(preparationPhase() == false) {
         if(flag_print) {
             cout << "cheating!!!" << '\n';}
@@ -635,7 +640,7 @@ void ProtocolParty<FieldType>::runOffline() {
         if(flag_print) {
             cout << "no cheating!!!" << '\n' << "finish Preparation Phase" << '\n';}
     }
-    timer->endSubTask("PreparationPhase", iteration);
+    //timer->endSubTask("PreparationPhase", iteration);
     t2 = high_resolution_clock::now();
     duration = duration_cast<milliseconds>(t2-t1).count();
     if(flag_print_timings) {
@@ -643,7 +648,7 @@ void ProtocolParty<FieldType>::runOffline() {
     }
 
     t1 = high_resolution_clock::now();
-    timer->startSubTask("inputPreparation", iteration);
+    //timer->startSubTask("inputPreparation", iteration);
     if(inputPreparation() == false) {
         cout << "cheating!!!" << '\n';
         if(flag_print) {
@@ -654,7 +659,7 @@ void ProtocolParty<FieldType>::runOffline() {
         if(flag_print) {
             cout << "no cheating!!!" << '\n' << "finish Input Preparation" << '\n';}
     }
-    timer->endSubTask("inputPreparation", iteration);
+    //timer->endSubTask("inputPreparation", iteration);
     t2 = high_resolution_clock::now();
     duration = duration_cast<milliseconds>(t2-t1).count();
     if(flag_print_timings) {
@@ -674,9 +679,9 @@ void ProtocolParty<FieldType>::runOnline() {
     string sss = "";
 
     auto t1 = high_resolution_clock::now();
-    timer->startSubTask("InputAdjustment", iteration);
+    //timer->startSubTask("InputAdjustment", iteration);
     inputAdjustment(sss/*, matrix_him*/);
-    timer->endSubTask("InputAdjustment", iteration);
+    //timer->endSubTask("InputAdjustment", iteration);
     auto t2 = high_resolution_clock::now();
 
     auto duration = duration_cast<milliseconds>(t2-t1).count();
@@ -688,11 +693,11 @@ void ProtocolParty<FieldType>::runOnline() {
         cout << "after Input Adjustment " << '\n'; }
 
     t1 = high_resolution_clock::now();
-    timer->startSubTask("ComputationPhase", iteration);
+    //timer->startSubTask("ComputationPhase", iteration);
 
     computationPhase(m);
 
-    timer->endSubTask("ComputationPhase", iteration);
+    //timer->endSubTask("ComputationPhase", iteration);
     t2 = high_resolution_clock::now();
 
     duration = duration_cast<milliseconds>(t2-t1).count();
@@ -702,9 +707,9 @@ void ProtocolParty<FieldType>::runOnline() {
     }
 
     t1 = high_resolution_clock::now();
-    timer->startSubTask("OutputPhase", iteration);
+    //timer->startSubTask("OutputPhase", iteration);
     outputPhase();
-    timer->endSubTask("OutputPhase", iteration);
+    //timer->endSubTask("OutputPhase", iteration);
     t2 = high_resolution_clock::now();
 
     duration = duration_cast<milliseconds>(t2-t1).count();
@@ -2001,7 +2006,7 @@ void ProtocolParty<FieldType>::roundFunctionSync(const vector<vector<byte>> &sen
         commSize+= sendBufs[commIdx].size();
     }
 
-    timer->writeValue(commSize);
+    //timer->writeValue(commSize);
 
     recBufs[m_partyId] = sendBufs[m_partyId];//move(sendBufs[m_partyId-1]);
     //recieve the data using threads
@@ -2059,7 +2064,7 @@ void ProtocolParty<FieldType>::roundFunctionSyncBroadcast(vector<byte> &message,
         numPartiesForEachThread = (parties.size() + numThreads - 1)/ numThreads;
     }
 
-    timer->writeValue(message.size() * numThreads);
+    //timer->writeValue(message.size() * numThreads);
     recBufs[m_partyId] = message;
 
     //recieve the data using threads

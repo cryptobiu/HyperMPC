@@ -49,7 +49,7 @@ void init_log(const char * a_log_file, const char * a_log_dir, const int log_lev
 int main(int argc, char* argv[])
 {
 
-
+    srand(5);
     CmdParser parser;
     auto parameters = parser.parseArguments("", argc, argv);
     int times = stoi(parser.getValueByKey(parameters, "internalIterationsNumber"));
@@ -82,10 +82,14 @@ int main(int argc, char* argv[])
             char buffer[32];
             snprintf(buffer, 32, "psmpc_%04d.log", id);
             init_log(buffer, "./", 700, "ps");
-            comm_client::cc_args_t args;
-            args.logcat = "ps.m31";
-            psmpc_ac_m31 ps(argc, argv, &args);
+            comm_client::cc_args_t cc_args;
+            cc_args.logcat = "psmpc";
+            cc_args.proxy_addr = "34.239.19.87";
+            cc_args.proxy_port = (u_int16_t) 9000 + (id);
+            psmpc_ac_m31 ps(argc, argv, &cc_args);
+            log4cpp::Category::getInstance("ps").notice("Object Created");
             sleep(id);
+
             ps.run_ac_protocol(id ,parties, partiesFile.c_str(), 1200);
         }
     }
@@ -131,10 +135,13 @@ int main(int argc, char* argv[])
 
             char buffer[32];
             snprintf(buffer, 32, "psmpc_%04d.log", id);
-            init_log(buffer, "./", 700, "ps");
-            comm_client::cc_args_t args;
-            args.logcat = "ps.gf28lt";
-            psmpc_ac_gf28lt ps(argc, argv, &args);
+            init_log(buffer, "./", 500, "ps");
+            comm_client::cc_args_t cc_args;
+            cc_args.logcat = "psmpc";
+            cc_args.proxy_addr = "34.239.19.87";
+            cc_args.proxy_port = (u_int16_t) 9000 + (id);
+            psmpc_ac_gf28lt ps(argc, argv, &cc_args);
+            log4cpp::Category::getInstance("ps").notice("Object Created");
             sleep(id);
             ps.run_ac_protocol(id ,parties, partiesFile.c_str(), 180);
         }

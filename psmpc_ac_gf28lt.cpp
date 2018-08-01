@@ -11,7 +11,7 @@
 #define LC log4cpp::Category::getInstance(m_logcat)
 
 psmpc_ac_gf28lt::psmpc_ac_gf28lt(int argc, char* argv [],  comm_client::cc_args_t * args)
-: ProtocolParty<GF28LT>(argc, argv, false), ac_protocol(comm_client_factory::cc_tcp_mesh, args), m_no_buckets(-1)
+: ProtocolParty<GF28LT>(argc, argv, false), ac_protocol(comm_client_factory::cc_tcp_proxy, args), m_no_buckets(-1)
 {
 
 }
@@ -697,7 +697,7 @@ bool psmpc_ac_gf28lt::inadj2_2_outpt()
 
             // send to party (which need this gate) your share for this gate
             //m_parties_state[circuit.getGates()[k].party].m_aux.push_back(gateShareArr[circuit.getGates()[k].input1]);
-            m_parties_state[a_gate.party].m_aux.push_back(a_gate.input1);
+            m_parties_state[a_gate.party].m_aux.push_back(gateShareArr[a_gate.input1]);
         }
         else
         {
