@@ -1,4 +1,5 @@
 
+#include <dirent.h>
 #include <stdlib.h>
 #include "comm_client_factory.h"
 #include "ProtocolParty.h"
@@ -44,7 +45,9 @@
  * @return
  */
 
+
 void init_log(const char * a_log_file, const char * a_log_dir, const int log_level, const char * logcat);
+int getPortNumber();
 
 int main(int argc, char* argv[])
 {
@@ -85,7 +88,7 @@ int main(int argc, char* argv[])
             comm_client::cc_args_t cc_args;
             cc_args.logcat = "psmpc";
             cc_args.proxy_addr = "34.239.19.87";
-            cc_args.proxy_port = (u_int16_t) 9000 + (id);
+            cc_args.proxy_port = (u_int16_t)getPortNumber();
             psmpc_ac_m31 ps(argc, argv, &cc_args);
             log4cpp::Category::getInstance("ps").notice("Object Created");
             sleep(id);
@@ -139,7 +142,7 @@ int main(int argc, char* argv[])
             comm_client::cc_args_t cc_args;
             cc_args.logcat = "psmpc";
             cc_args.proxy_addr = "34.239.19.87";
-            cc_args.proxy_port = (u_int16_t) 9000 + (id);
+            cc_args.proxy_port = (u_int16_t)getPortNumber();
             psmpc_ac_gf28lt ps(argc, argv, &cc_args);
             log4cpp::Category::getInstance("ps").notice("Object Created");
             sleep(id);
@@ -227,4 +230,36 @@ void init_log(const char * a_log_file, const char * a_log_dir, const int log_lev
     log4cpp::Category::getInstance(logcat).addAppender(appender);
     log4cpp::Category::getInstance(logcat).setPriority((log4cpp::Priority::PriorityLevel)log_level);
     log4cpp::Category::getInstance(logcat).notice("log start");
+}
+
+void split(string &s, char delim, vector<string>& result)
+{
+    stringstream ss (s);
+    string item;
+    while(getline(ss, item, delim))
+        result.emplace_back(item);
+}
+
+int getPortNumber()
+{
+    struct dirent *entry;
+    DIR *dir = opendir(".");
+    if (dir == NULL)
+        return -1;
+
+    while( (entry = readdir(dir)) != NULL )
+    {
+        string fileName = entry->d_name;
+        if(fileName.find(".json") != string::npos)
+        {
+            vector<string> splitFileName;
+            split(fileName, '.', splitFileName);
+            return stoi(splitFileName[splitFileName.size()-2].substr(3,
+                    splitFileName[splitFileName.size()-2].size()-3));
+        }
+    }
+
+    return -1;
+
+
 }
