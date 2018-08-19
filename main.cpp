@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
             comm_client::cc_args_t cc_args;
             cc_args.logcat = "psmpc";
             cc_args.proxy_addr = "34.239.19.87";
-            cc_args.proxy_port = (u_int16_t)getPortNumber();
+            cc_args.proxy_port = (u_int16_t) 9000 + (id);;
             psmpc_ac_m31 ps(argc, argv, &cc_args);
             log4cpp::Category::getInstance("ps").notice("Object Created");
             sleep(id);
@@ -142,7 +142,7 @@ int main(int argc, char* argv[])
             comm_client::cc_args_t cc_args;
             cc_args.logcat = "psmpc";
             cc_args.proxy_addr = "34.239.19.87";
-            cc_args.proxy_port = (u_int16_t)getPortNumber();
+            cc_args.proxy_port = (u_int16_t) 9000 + (id);;
             psmpc_ac_gf28lt ps(argc, argv, &cc_args);
             log4cpp::Category::getInstance("ps").notice("Object Created");
             sleep(id);
