@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
 
             char buffer[32];
             snprintf(buffer, 32, "psmpc_%04d.log", id);
-            init_log(buffer, "./", 700, "ps");
+            init_log(buffer, "./", 500, "ps");
 	    comm_client::cc_args_t args;
             args.logcat = "ps.m31";
             psmpc_ac_m31 ps(argc, argv, &args);
