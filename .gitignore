@@ -5,5 +5,5 @@ callgrind*
 CMakeCache.txt
 cmake_install.cmake
 Makefile
-Secret_Sharing
-Secret_Sharing.cbp
+HyperMPC
+HyperMPC.cbp
