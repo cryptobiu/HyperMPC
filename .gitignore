@@ -8,3 +8,6 @@ Makefile
 HyperMPC
 HyperMPC.cbp
 *.log
+/build/
+.cproject
+.project

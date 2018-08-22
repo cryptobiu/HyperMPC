@@ -1,7 +1,6 @@
 
 #include <dirent.h>
 #include <stdlib.h>
-#include "comm_client_factory.h"
 #include "ProtocolParty.h"
 #include "GF2_8LookupTable.h"
 #include <log4cpp/Category.hh>
@@ -11,8 +10,6 @@
 #include <log4cpp/SimpleLayout.hh>
 #include <log4cpp/BasicLayout.hh>
 #include <log4cpp/PatternLayout.hh>
-#include "psmpc_ac_gf28lt.h"
-#include "psmpc_ac_m31.h"
 
 
 /**
@@ -60,42 +57,21 @@ int main(int argc, char* argv[])
     
     if(fieldType.compare("ZpMersenne") == 0)
     {
-        int ng = stoi(parser.getValueByKey(parameters, "NG"));
-        if (0 == ng)
-        {
-			ProtocolParty<ZpMersenneIntElement> protocol(argc, argv);
+		ProtocolParty<ZpMersenneIntElement> protocol(argc, argv);
 
-			auto t1 = high_resolution_clock::now();
-			protocol.run();
+		auto t1 = high_resolution_clock::now();
+		protocol.run();
 
-			auto t2 = high_resolution_clock::now();
+		auto t2 = high_resolution_clock::now();
 
-			auto duration = duration_cast<milliseconds>(t2-t1).count();
-			cout << "time in milliseconds for " << times << " runs: " << duration << endl;
+		auto duration = duration_cast<milliseconds>(t2-t1).count();
+		cout << "time in milliseconds for " << times << " runs: " << duration << endl;
 
-			cout << "end main" << '\n';
-        }
-        else
-        {
-            int id = stoi(parser.getValueByKey(parameters, "partyID"));
-            int parties = stoi(parser.getValueByKey(parameters, "partiesNumber"));
-            std::string partiesFile = parser.getValueByKey(parameters, "partiesFile");
-            std::string circuitName = parser.getValueByKey(parameters, "circuitFile");
-
-            char buffer[32];
-            snprintf(buffer, 32, "psmpc_%04d.log", id);
-            init_log(buffer, "./", 500, "ps");
-	    comm_client::cc_args_t args;
-            args.logcat = "ps.m31";
-            psmpc_ac_m31 ps(argc, argv, &args);
-            sleep(id);
-            ps.run_ac_protocol(id ,parties, partiesFile.c_str(), 1200);
-        }
+		cout << "end main" << '\n';
     }
 
     else if(fieldType.compare("ZpMersenne61") == 0)
     {
-
         ProtocolParty<ZpMersenneLongElement> protocol(argc, argv);
         auto t1 = high_resolution_clock::now();
         protocol.run();
@@ -109,41 +85,18 @@ int main(int argc, char* argv[])
     }
     else if(fieldType.compare("GF2_8LookupTable") == 0)
     {
-        int ng = stoi(parser.getValueByKey(parameters, "NG"));
-        if (0 == ng)
-        {
-            ProtocolParty<GF2_8LookupTable> protocol(argc, argv);
-            auto t1 = high_resolution_clock::now();
+        ProtocolParty<GF2_8LookupTable> protocol(argc, argv);
+        auto t1 = high_resolution_clock::now();
 
-            protocol.run();
+        protocol.run();
 
-            auto t2 = high_resolution_clock::now();
+        auto t2 = high_resolution_clock::now();
 
-            auto duration = duration_cast<milliseconds>(t2 - t1).count();
+        auto duration = duration_cast<milliseconds>(t2 - t1).count();
 
-            cout << "time in milliseconds for " << times << " runs: " << duration << endl;
+        cout << "time in milliseconds for " << times << " runs: " << duration << endl;
 
-            cout << "end main" << '\n';
-        }
-        else
-        {
-            int id = stoi(parser.getValueByKey(parameters, "partyID"));
-            int parties = stoi(parser.getValueByKey(parameters, "partiesNumber"));
-            std::string partiesFile = parser.getValueByKey(parameters, "partiesFile");
-            std::string circuitName = parser.getValueByKey(parameters, "circuitFile");
-
-            char buffer[32];
-            snprintf(buffer, 32, "psmpc_%04d.log", id);
-            init_log(buffer, "./", 500, "ps");
-            comm_client::cc_args_t cc_args;
-            cc_args.logcat = "psmpc";
-            cc_args.proxy_addr = "34.239.19.87";
-            cc_args.proxy_port = (u_int16_t) 9000 + (id);;
-            psmpc_ac_gf28lt ps(argc, argv, &cc_args);
-            log4cpp::Category::getInstance("ps").notice("Object Created");
-            sleep(id);
-            ps.run_ac_protocol(id ,parties, partiesFile.c_str(), 180);
-        }
+        cout << "end main" << '\n';
     }
 
     else if(fieldType.compare("GF2E") == 0)
