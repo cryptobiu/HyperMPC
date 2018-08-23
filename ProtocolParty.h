@@ -406,6 +406,53 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
     if(commOn)
         parties = MPCCommunication::setCommunication(io_service, m_partyId, N, partiesFileName);
         */
+    string partiesFile = this->getParser().getValueByKey(arguments,
+    			"partiesFile");
+
+    logcat = "pp";
+	char log_file_name[64];
+	snprintf(log_file_name, 64, "protocol_party_%03d.log", m_partyId);
+	init_log(log_file_name, "./logs", 700, logcat.c_str());
+	logcat_tim = logcat + ".tim";
+	logcat_out = logcat + ".out";
+
+	int errcode = 0;
+	if (0 != (errcode = pthread_mutex_init(&m_qlock, NULL))) {
+		char errmsg[256];
+		log4cpp::Category::getInstance(logcat).error(
+				"%s: pthread_mutex_init() failed with error %d : [%s].",
+				__FUNCTION__, errcode, strerror_r(errcode, errmsg, 256));
+		exit(__LINE__);
+	}
+	if (0 != (errcode = pthread_mutex_init(&m_elock, NULL))) {
+		char errmsg[256];
+		log4cpp::Category::getInstance(logcat).error(
+				"%s: pthread_mutex_init() failed with error %d : [%s].",
+				__FUNCTION__, errcode, strerror_r(errcode, errmsg, 256));
+		exit(__LINE__);
+	}
+	if (0 != (errcode = pthread_cond_init(&m_comm_e, NULL))) {
+		char errmsg[256];
+		log4cpp::Category::getInstance(logcat).error(
+				"%s: pthread_cond_init() failed with error %d : [%s].",
+				__FUNCTION__, errcode, strerror_r(errcode, errmsg, 256));
+		exit(__LINE__);
+	}
+
+	size_t pid = 0;
+	m_parties.resize(n);
+
+	comm_client::cc_args_t cc_args;
+	cc_args.logcat = "pp.hm.nt";
+	m_cc = comm_client_factory::create_comm_client(
+			comm_client_factory::cc_tcp_mesh, &cc_args);
+	if (0 != m_cc->start(m_partyId, n, partiesFile.c_str(), this)) {
+		log4cpp::Category::getInstance(logcat).error(
+				"%s: comm client start failed; run failure.", __FUNCTION__);
+		exit(__LINE__);
+	}
+
+	wait_for_peer_connections();
 
     readMyInputs();
 
@@ -2492,6 +2539,27 @@ void ProtocolParty<FieldType>::process_network_events() {
 		delete (*i);
 	}
 	comm_evts.clear();
+}
+
+template<class FieldType>
+void ProtocolParty<FieldType>::wait_for_peer_connections() {
+	bool all_parties_connected = false;
+
+	do {
+		process_network_events();
+		all_parties_connected = true;
+		for (int i = 0; i < N; ++i) {
+			if (i == m_partyId)
+				continue;
+			log4cpp::Category::getInstance(logcat).debug(
+					"%s: peer %d %sconnected.", __FUNCTION__, i,
+					((m_parties[i].conn) ? "" : "dis"));
+			all_parties_connected =
+					(all_parties_connected && m_parties[i].conn) ? true : false;
+		}
+	} while (!all_parties_connected);
+	log4cpp::Category::getInstance(logcat).debug("%s: all peers connected.",
+			__FUNCTION__);
 }
 
 #endif /* PROTOCOL_H_ */
