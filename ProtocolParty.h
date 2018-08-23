@@ -15,6 +15,22 @@
 #include <thread>
 #include <libscapi/include/cryptoInfra/Protocol.hpp>
 
+#include "comm_client_cb_api.h"
+#include "comm_client_factory.h"
+#include "comm_client.h"
+
+#include <log4cpp/Category.hh>
+#include <log4cpp/FileAppender.hh>
+#include <log4cpp/SimpleLayout.hh>
+#include <log4cpp/RollingFileAppender.hh>
+#include <log4cpp/SimpleLayout.hh>
+#include <log4cpp/BasicLayout.hh>
+#include <log4cpp/PatternLayout.hh>
+
+void init_log(const char * a_log_file, const char * a_log_dir,
+		const int log_level, const char * logcat);
+
+
 #define flag_print false
 #define flag_print_timings true
 #define flag_print_output true
@@ -24,7 +40,7 @@ using namespace std;
 using namespace std::chrono;
 
 template <class FieldType>
-class ProtocolParty : public Protocol, public HonestMajority, public MultiParty {
+class ProtocolParty : public Protocol, public HonestMajority, public MultiParty, public comm_client_cb_api {
 protected:
     /**
      * N - number of parties
@@ -51,7 +67,7 @@ protected:
 
     //Communication* comm;
     boost::asio::io_service io_service;
-    vector<shared_ptr<ProtocolPartyData>>  parties;
+    //vector<shared_ptr<ProtocolPartyData>>  parties;
 
     ArithmeticCircuit circuit;
     vector<FieldType> gateValueArr; // the value of the gate (for my input and output gates)
@@ -72,14 +88,62 @@ protected:
 
     virtual void do_send_and_recv(const vector< vector< byte > > & _2send, vector< vector< byte > > & _2recv);
 
+	//****************************************************************************************************//
+	std::string logcat, logcat_tim, logcat_out;
+	comm_client * m_cc;
+
+	typedef struct __peer_t {
+		bool conn;
+		std::vector<u_int8_t> data;
+
+		__peer_t() :
+				conn(false) {
+		}
+	} peer_t;
+	std::vector<peer_t> m_parties;
+
+	typedef enum {
+		comm_evt_nil = 0, comm_evt_conn, comm_evt_msg
+	} comm_evt_type_t;
+
+	class comm_evt {
+	public:
+		comm_evt() :
+				type(comm_evt_nil), party_id(-1) {
+		}
+		virtual ~comm_evt() {
+		}
+		comm_evt_type_t type;
+		unsigned int party_id;
+	};
+
+	class comm_conn_evt: public comm_evt {
+	public:
+		bool connected;
+	};
+
+	class comm_msg_evt: public comm_evt {
+	public:
+		std::vector<u_int8_t> msg;
+	};
+
+	pthread_mutex_t m_qlock, m_elock;
+	pthread_cond_t m_comm_e;
+	std::list<comm_evt *> m_comm_q;
+
+	void push_comm_event(comm_evt * evt);
+	void report_party_comm(const size_t party_id, const bool comm);
+	void process_network_events();
+	void wait_for_peer_connections();
+	//****************************************************************************************************//
 public:
-    ProtocolParty(int argc, char* argv [], bool commOn=true);
+    ProtocolParty(int argc, char* argv []);
     void split(const string &s, char delim, vector<string> &elems);
     vector<string> split(const string &s, char delim);
 
 
     void roundFunctionSync(const vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int round);
-    void exchangeData(const vector<vector<byte>> &sendBufs,vector<vector<byte>> &recBufs, int first, int last);
+    //void exchangeData(const vector<vector<byte>> &sendBufs,vector<vector<byte>> &recBufs, int first, int last);
     void roundFunctionSyncBroadcast(vector<byte> &message, vector<vector<byte>> &recBufs);
     void recData(vector<byte> &message, vector<vector<byte>> &recBufs, int first, int last);
 
@@ -283,11 +347,18 @@ public:
     void outputPhase();
 
     ~ProtocolParty();
+
+	//comm_client_cb_api
+	void on_comm_up_with_party(const unsigned int party_id);
+	void on_comm_down_with_party(const unsigned int party_id);
+	void on_comm_message(const unsigned int src_id, const unsigned char * msg,
+			const size_t size);
+
 };
 
 
 template <class FieldType>
-ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv [], bool commOn) : Protocol ("PerfectSecureMPC", argc, argv)
+ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("PerfectSecureMPC", argc, argv)
 {
 
     string circuitFile = this->getParser().getValueByKey(arguments, "circuitFile");
@@ -330,8 +401,11 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv [], bool commOn) : 
     numOfOutputGates = circuit.getNrOfOutputGates();
     myInputs.resize(numOfInputGates);
     shareIndex = 0;//numOfInputGates;
+
+    /*
     if(commOn)
         parties = MPCCommunication::setCommunication(io_service, m_partyId, N, partiesFileName);
+        */
 
     readMyInputs();
 
@@ -1988,6 +2062,7 @@ void ProtocolParty<FieldType>::outputPhase()
 template <class FieldType>
 void ProtocolParty<FieldType>::roundFunctionSync(const vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int round) {
 
+	/*
     int numThreads = parties.size();
     int numPartiesForEachThread;
 
@@ -2021,10 +2096,58 @@ void ProtocolParty<FieldType>::roundFunctionSync(const vector<vector<byte>> &sen
     for (int t=0; t<numThreads; t++){
         threads[t].join();
     }
+	*/
+	recBufs[m_partyId] = sendBufs[m_partyId];
 
+	for (size_t pid = 0; pid < m_parties.size(); ++pid) {
+		if (pid == m_partyId)
+			continue;
+		if (0 == m_cc->send(pid, sendBufs[pid].data(), sendBufs[pid].size()))
+			log4cpp::Category::getInstance(logcat).debug(
+					"%s: sent %lu bytes to party %lu", __FUNCTION__,
+					sendBufs[pid].size(), pid);
+		else {
+			log4cpp::Category::getInstance(logcat).error("%s: cc send failed.",
+					__FUNCTION__);
+			exit(__LINE__);
+		}
+	}
+
+	bool all_data_ready;
+	do {
+		process_network_events();
+
+		all_data_ready = true;
+		for (size_t pid = 0; pid < m_parties.size(); ++pid) {
+			if (pid == m_partyId)
+				continue;
+
+			log4cpp::Category::getInstance(logcat).debug(
+					"%s: expecting %lu bytes from party %lu; got %lu bytes so far.",
+					__FUNCTION__, recBufs[pid].size(), pid,
+					m_parties[pid].data.size());
+
+			all_data_ready =
+					(all_data_ready
+							&& m_parties[pid].data.size() >= recBufs[pid].size()) ?
+							true : false;
+		}
+	} while (!all_data_ready);
+
+	for (size_t pid = 0; pid < m_parties.size(); ++pid) {
+		if (pid == m_partyId)
+			continue;
+		log4cpp::Category::getInstance(logcat).debug(
+				"%s: reading %lu bytes from party %lu", __FUNCTION__,
+				recBufs[pid].size(), pid);
+		memcpy(recBufs[pid].data(), m_parties[pid].data.data(),
+				recBufs[pid].size());
+		m_parties[pid].data.erase(m_parties[pid].data.begin(),
+				m_parties[pid].data.begin() + recBufs[pid].size());
+	}
 }
 
-
+/*
 template <class FieldType>
 void ProtocolParty<FieldType>::exchangeData(const vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int first, int last){
 
@@ -2042,6 +2165,7 @@ void ProtocolParty<FieldType>::exchangeData(const vector<vector<byte>> &sendBufs
         }
     }
 }
+*/
 
 template <class FieldType>
 void ProtocolParty<FieldType>::do_send_and_recv(const vector< vector< byte > > & _2send, vector< vector< byte > > & _2recv)
@@ -2053,6 +2177,7 @@ void ProtocolParty<FieldType>::do_send_and_recv(const vector< vector< byte > > &
 template <class FieldType>
 void ProtocolParty<FieldType>::roundFunctionSyncBroadcast(vector<byte> &message, vector<vector<byte>> &recBufs) {
 
+	/*
     int numThreads = parties.size();
     int numPartiesForEachThread;
 
@@ -2079,10 +2204,58 @@ void ProtocolParty<FieldType>::roundFunctionSyncBroadcast(vector<byte> &message,
     for (int t=0; t<numThreads; t++){
         threads[t].join();
     }
+	*/
+	recBufs[m_partyId] = message;
 
+	for (size_t pid = 0; pid < m_parties.size(); ++pid) {
+		if (pid == m_partyId)
+			continue;
+		if (0 == m_cc->send(pid, message.data(), message.size()))
+			log4cpp::Category::getInstance(logcat).debug(
+					"%s: sent %lu bytes to party %lu", __FUNCTION__,
+					message.size(), pid);
+		else {
+			log4cpp::Category::getInstance(logcat).error("%s: cc send failed.",
+					__FUNCTION__);
+			exit(__LINE__);
+		}
+	}
+
+	bool all_data_ready;
+	do {
+		process_network_events();
+
+		all_data_ready = true;
+		for (size_t pid = 0; pid < m_parties.size(); ++pid) {
+			if (pid == m_partyId)
+				continue;
+
+			log4cpp::Category::getInstance(logcat).debug(
+					"%s: expecting %lu bytes from party %lu; got %lu bytes so far.",
+					__FUNCTION__, recBufs[pid].size(), pid,
+					m_parties[pid].data.size());
+
+			all_data_ready =
+					(all_data_ready
+							&& m_parties[pid].data.size() >= recBufs[pid].size()) ?
+							true : false;
+		}
+	} while (!all_data_ready);
+
+	for (size_t pid = 0; pid < m_parties.size(); ++pid) {
+		if (pid == m_partyId)
+			continue;
+		log4cpp::Category::getInstance(logcat).debug(
+				"%s: reading %lu bytes from party %lu", __FUNCTION__,
+				recBufs[pid].size(), pid);
+		memcpy(recBufs[pid].data(), m_parties[pid].data.data(),
+				recBufs[pid].size());
+		m_parties[pid].data.erase(m_parties[pid].data.begin(),
+				m_parties[pid].data.begin() + recBufs[pid].size());
+	}
 }
 
-
+/*
 template <class FieldType>
 void ProtocolParty<FieldType>::recData(vector<byte> &message, vector<vector<byte>> &recBufs, int first, int last){
 
@@ -2102,7 +2275,7 @@ void ProtocolParty<FieldType>::recData(vector<byte> &message, vector<vector<byte
         }
     }
 }
-
+*/
 
 template <class FieldType>
 ProtocolParty<FieldType>::~ProtocolParty()
@@ -2158,6 +2331,167 @@ void ProtocolParty<FieldType>::printDataBytes(const char * label, const vector< 
         }
         fclose(pf);
     }
+}
+
+template<class FieldType>
+void ProtocolParty<FieldType>::on_comm_up_with_party(
+		const unsigned int party_id) {
+	log4cpp::Category::getInstance(logcat).debug("%s: party %u connected.",
+			__FUNCTION__, party_id);
+	report_party_comm(party_id, true);
+}
+
+template<class FieldType>
+void ProtocolParty<FieldType>::on_comm_down_with_party(
+		const unsigned int party_id) {
+	log4cpp::Category::getInstance(logcat).debug("%s: party %u disconnected.",
+			__FUNCTION__, party_id);
+	report_party_comm(party_id, false);
+}
+
+template<class FieldType>
+void ProtocolParty<FieldType>::on_comm_message(const unsigned int src_id,
+		const unsigned char * msg, const size_t size) {
+	log4cpp::Category::getInstance(logcat).debug("%s: party %u sent %lu bytes.",
+			__FUNCTION__, src_id, size);
+	comm_msg_evt * pevt = new comm_msg_evt;
+	pevt->type = comm_evt_msg;
+	pevt->party_id = src_id;
+	pevt->msg.assign(msg, msg + size);
+	push_comm_event(pevt);
+}
+
+template<class FieldType>
+void ProtocolParty<FieldType>::report_party_comm(const size_t party_id,
+		const bool comm) {
+	comm_conn_evt * pevt = new comm_conn_evt;
+	pevt->type = comm_evt_conn;
+	pevt->party_id = party_id;
+	pevt->connected = comm;
+	push_comm_event(pevt);
+}
+
+template<class FieldType>
+void ProtocolParty<FieldType>::push_comm_event(comm_evt * evt) {
+	int errcode;
+	if (0 != (errcode = pthread_mutex_lock(&m_qlock))) {
+		char errmsg[256];
+		log4cpp::Category::getInstance(logcat).error(
+				"%s: pthread_mutex_lock() failed with error %d : [%s].",
+				__FUNCTION__, errcode, strerror_r(errcode, errmsg, 256));
+		exit(__LINE__);
+	}
+
+	m_comm_q.push_back(evt);
+
+	if (0 != (errcode = pthread_mutex_unlock(&m_qlock))) {
+		char errmsg[256];
+		log4cpp::Category::getInstance(logcat).error(
+				"%s: pthread_mutex_unlock() failed with error %d : [%s].",
+				__FUNCTION__, errcode, strerror_r(errcode, errmsg, 256));
+		exit(__LINE__);
+	}
+
+	if (0 != (errcode = pthread_mutex_lock(&m_elock))) {
+		char errmsg[256];
+		log4cpp::Category::getInstance(logcat).error(
+				"%s: pthread_mutex_lock() failed with error %d : [%s].",
+				__FUNCTION__, errcode, strerror_r(errcode, errmsg, 256));
+		exit(__LINE__);
+	}
+
+	if (0 != (errcode = pthread_cond_signal(&m_comm_e))) {
+		char errmsg[256];
+		log4cpp::Category::getInstance(logcat).error(
+				"%s: pthread_cond_signal() failed with error %d : [%s].",
+				__FUNCTION__, errcode, strerror_r(errcode, errmsg, 256));
+		exit(__LINE__);
+	}
+
+	if (0 != (errcode = pthread_mutex_unlock(&m_elock))) {
+		char errmsg[256];
+		log4cpp::Category::getInstance(logcat).error(
+				"%s: pthread_mutex_unlock() failed with error %d : [%s].",
+				__FUNCTION__, errcode, strerror_r(errcode, errmsg, 256));
+		exit(__LINE__);
+	}
+}
+
+template<class FieldType>
+void ProtocolParty<FieldType>::process_network_events() {
+	int errcode;
+	std::list<comm_evt *> comm_evts;
+	if (0 != (errcode = pthread_mutex_lock(&m_elock))) {
+		char errmsg[256];
+		log4cpp::Category::getInstance(logcat).error(
+				"%s: pthread_mutex_lock() failed with error %d : [%s].",
+				__FUNCTION__, errcode, strerror_r(errcode, errmsg, 256));
+		exit(__LINE__);
+	}
+
+	struct timespec to;
+	clock_gettime(CLOCK_REALTIME, &to);
+	to.tv_sec += 1;
+	if (0 != (errcode = pthread_cond_timedwait(&m_comm_e, &m_elock, &to))
+			&& ETIMEDOUT != errcode) {
+		char errmsg[256];
+		log4cpp::Category::getInstance(logcat).error(
+				"%s: pthread_cond_timedwait() failed with error %d : [%s].",
+				__FUNCTION__, errcode, strerror_r(errcode, errmsg, 256));
+		exit(__LINE__);
+	}
+
+	if (0 != (errcode = pthread_mutex_unlock(&m_elock))) {
+		char errmsg[256];
+		log4cpp::Category::getInstance(logcat).error(
+				"%s: pthread_mutex_unlock() failed with error %d : [%s].",
+				__FUNCTION__, errcode, strerror_r(errcode, errmsg, 256));
+		exit(__LINE__);
+	}
+
+	if (0 != (errcode = pthread_mutex_lock(&m_qlock))) {
+		char errmsg[256];
+		log4cpp::Category::getInstance(logcat).error(
+				"%s: pthread_mutex_lock() failed with error %d : [%s].",
+				__FUNCTION__, errcode, strerror_r(errcode, errmsg, 256));
+		exit(__LINE__);
+	}
+
+	comm_evts.swap(m_comm_q);
+
+	if (0 != (errcode = pthread_mutex_unlock(&m_qlock))) {
+		char errmsg[256];
+		log4cpp::Category::getInstance(logcat).error(
+				"%s: pthread_mutex_unlock() failed with error %d : [%s].",
+				__FUNCTION__, errcode, strerror_r(errcode, errmsg, 256));
+		exit(__LINE__);
+	}
+
+	for (typename std::list<comm_evt *>::iterator i = comm_evts.begin();
+			i != comm_evts.end(); ++i) {
+		switch ((*i)->type) {
+		case comm_evt_conn:
+			log4cpp::Category::getInstance(logcat).debug(
+					"%s: comm_evt_conn %lu conn=%s.", __FUNCTION__,
+					(*i)->party_id,
+					((((comm_conn_evt*) (*i))->connected) ? "true" : "false"));
+			m_parties[(*i)->party_id].conn = ((comm_conn_evt*) (*i))->connected;
+			break;
+		case comm_evt_msg:
+			log4cpp::Category::getInstance(logcat).debug(
+					"%s: comm_evt_msg %lu bytes=%lu.", __FUNCTION__,
+					(*i)->party_id, ((comm_msg_evt*) (*i))->msg.size());
+			m_parties[(*i)->party_id].data.insert(
+					m_parties[(*i)->party_id].data.end(),
+					((comm_msg_evt*) (*i))->msg.begin(),
+					((comm_msg_evt*) (*i))->msg.end());
+			break;
+		default:
+			break;
+		}
+		delete (*i);
+	}
+	comm_evts.clear();
 }
 
 #endif /* PROTOCOL_H_ */
