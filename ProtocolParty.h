@@ -9,7 +9,6 @@
 #include <fstream>
 #include <chrono>
 #include "TemplateField.h"
-#include <libscapi/include/comm/MPCCommunication.hpp>
 #include <libscapi/include/infra/Common.hpp>
 #include <libscapi/include/infra/Measurement.hpp>
 #include <thread>
@@ -64,10 +63,6 @@ protected:
     HIM<FieldType> matrix_him;
     VDM<FieldType> matrix_vand;
     HIM<FieldType> m;
-
-    //Communication* comm;
-    boost::asio::io_service io_service;
-    //vector<shared_ptr<ProtocolPartyData>>  parties;
 
     ArithmeticCircuit circuit;
     vector<FieldType> gateValueArr; // the value of the gate (for my input and output gates)
@@ -143,7 +138,6 @@ public:
 
 
     void roundFunctionSync(const vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int round);
-    //void exchangeData(const vector<vector<byte>> &sendBufs,vector<vector<byte>> &recBufs, int first, int last);
     void roundFunctionSyncBroadcast(vector<byte> &message, vector<vector<byte>> &recBufs);
     void recData(vector<byte> &message, vector<vector<byte>> &recBufs, int first, int last);
 
@@ -401,11 +395,6 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
     numOfOutputGates = circuit.getNrOfOutputGates();
     myInputs.resize(numOfInputGates);
     shareIndex = 0;//numOfInputGates;
-
-    /*
-    if(commOn)
-        parties = MPCCommunication::setCommunication(io_service, m_partyId, N, partiesFileName);
-        */
     string partiesFile = this->getParser().getValueByKey(arguments,
     			"partiesFile");
 
@@ -2109,41 +2098,6 @@ void ProtocolParty<FieldType>::outputPhase()
 template <class FieldType>
 void ProtocolParty<FieldType>::roundFunctionSync(const vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int round) {
 
-	/*
-    int numThreads = parties.size();
-    int numPartiesForEachThread;
-
-    if (parties.size() <= numThreads){
-        numThreads = parties.size();
-        numPartiesForEachThread = 1;
-    } else{
-        numPartiesForEachThread = (parties.size() + numThreads - 1)/ numThreads;
-    }
-
-
-    unsigned long int commSize = 0;
-    for (int commIdx = 0; commIdx < sendBufs.size(); commIdx++)
-    {
-        commSize+= sendBufs[commIdx].size();
-    }
-
-    //timer->writeValue(commSize);
-
-    recBufs[m_partyId] = sendBufs[m_partyId];//move(sendBufs[m_partyId-1]);
-    //recieve the data using threads
-    vector<thread> threads(numThreads);
-    for (int t=0; t<numThreads; t++) {
-        if ((t + 1) * numPartiesForEachThread <= parties.size()) {
-            threads[t] = thread(&ProtocolParty::exchangeData, this, ref(sendBufs), ref(recBufs),
-                                t * numPartiesForEachThread, (t + 1) * numPartiesForEachThread);
-        } else {
-            threads[t] = thread(&ProtocolParty::exchangeData, this, ref(sendBufs), ref(recBufs), t * numPartiesForEachThread, parties.size());
-        }
-    }
-    for (int t=0; t<numThreads; t++){
-        threads[t].join();
-    }
-	*/
 	recBufs[m_partyId] = sendBufs[m_partyId];
 
 	for (size_t pid = 0; pid < m_parties.size(); ++pid) {
@@ -2194,26 +2148,6 @@ void ProtocolParty<FieldType>::roundFunctionSync(const vector<vector<byte>> &sen
 	}
 }
 
-/*
-template <class FieldType>
-void ProtocolParty<FieldType>::exchangeData(const vector<vector<byte>> &sendBufs, vector<vector<byte>> &recBufs, int first, int last){
-
-    for (int i=first; i < last; i++)
-    {
-        if ((m_partyId) < parties[i]->getID())
-        {
-            parties[i]->getChannel()->write(sendBufs[parties[i]->getID()].data(), sendBufs[parties[i]->getID()].size());
-            parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
-        }
-        else
-        {
-            parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
-            parties[i]->getChannel()->write(sendBufs[parties[i]->getID()].data(), sendBufs[parties[i]->getID()].size());
-        }
-    }
-}
-*/
-
 template <class FieldType>
 void ProtocolParty<FieldType>::do_send_and_recv(const vector< vector< byte > > & _2send, vector< vector< byte > > & _2recv)
 {
@@ -2224,34 +2158,6 @@ void ProtocolParty<FieldType>::do_send_and_recv(const vector< vector< byte > > &
 template <class FieldType>
 void ProtocolParty<FieldType>::roundFunctionSyncBroadcast(vector<byte> &message, vector<vector<byte>> &recBufs) {
 
-	/*
-    int numThreads = parties.size();
-    int numPartiesForEachThread;
-
-    if (parties.size() <= numThreads){
-        numThreads = parties.size();
-        numPartiesForEachThread = 1;
-    } else{
-        numPartiesForEachThread = (parties.size() + numThreads - 1)/ numThreads;
-    }
-
-    //timer->writeValue(message.size() * numThreads);
-    recBufs[m_partyId] = message;
-
-    //recieve the data using threads
-    vector<thread> threads(numThreads);
-    for (int t=0; t<numThreads; t++) {
-        if ((t + 1) * numPartiesForEachThread <= parties.size()) {
-            threads[t] = thread(&ProtocolParty::recData, this, ref(message), ref(recBufs),
-                                t * numPartiesForEachThread, (t + 1) * numPartiesForEachThread);
-        } else {
-            threads[t] = thread(&ProtocolParty::recData, this, ref(message),  ref(recBufs), t * numPartiesForEachThread, parties.size());
-        }
-    }
-    for (int t=0; t<numThreads; t++){
-        threads[t].join();
-    }
-	*/
 	recBufs[m_partyId] = message;
 
 	for (size_t pid = 0; pid < m_parties.size(); ++pid) {
@@ -2302,34 +2208,10 @@ void ProtocolParty<FieldType>::roundFunctionSyncBroadcast(vector<byte> &message,
 	}
 }
 
-/*
-template <class FieldType>
-void ProtocolParty<FieldType>::recData(vector<byte> &message, vector<vector<byte>> &recBufs, int first, int last){
-
-    for (int i=first; i < last; i++)
-    {
-        if ((m_partyId) < parties[i]->getID())
-        {
-            parties[i]->getChannel()->write(message.data(), message.size());
-            parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());;
-
-        }
-        else
-        {
-            parties[i]->getChannel()->read(recBufs[parties[i]->getID()].data(), recBufs[parties[i]->getID()].size());
-            parties[i]->getChannel()->write(message.data(), message.size());
-
-        }
-    }
-}
-*/
-
 template <class FieldType>
 ProtocolParty<FieldType>::~ProtocolParty()
 {
     delete field;
-    io_service.stop();
-//    delete timer;
 }
 
 template <class FieldType>
