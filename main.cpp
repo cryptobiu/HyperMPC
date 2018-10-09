@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
     string fieldType = parser.getValueByKey(parameters, "fieldType");
 
     
-    if(fieldType.compare("ZpMersenne") == 0)
+    if(fieldType.compare("ZpMersenne31") == 0)
     {
         ProtocolParty<ZpMersenneIntElement> protocol(argc, argv);
 
