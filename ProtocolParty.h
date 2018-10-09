@@ -292,7 +292,7 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
     int n = stoi(this->getParser().getValueByKey(arguments, "partiesNumber"));
     string partiesFileName = this->getParser().getValueByKey(arguments, "partiesFile");
 
-    if(fieldType.compare("ZpMersenne") == 0) {
+    if(fieldType.compare("ZpMersenne31") == 0) {
         field = new TemplateField<FieldType>(2147483647);
     } else if(fieldType.compare("ZpMersenne61") == 0) {
         field = new TemplateField<FieldType>(0);
@@ -327,7 +327,7 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
     shareIndex = 0;//numOfInputGates;
 
     parties = MPCCommunication::setCommunication(io_service, m_partyId, N, partiesFileName);
-    
+
     readMyInputs();
     cout << "Finished to read inputs" << endl;
 
