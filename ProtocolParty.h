@@ -326,7 +326,20 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
     myInputs.resize(numOfInputGates);
     shareIndex = 0;//numOfInputGates;
 
-    parties = MPCCommunication::setCommunication(io_service, m_partyId, N, partiesFileName);
+    readMyInputs();
+    cout << "Finished to read inputs" << endl;
+
+    auto t1 = high_resolution_clock::now();
+    initializationPhase(/*matrix_him, matrix_vand, m*/);
+
+    auto t2 = high_resolution_clock::now();
+
+    auto duration = duration_cast<milliseconds>(t2-t1).count();
+    if(flag_print_timings) {
+        cout << "time in milliseconds initializationPhase: " << duration << endl;
+    }
+    
+     parties = MPCCommunication::setCommunication(io_service, m_partyId, N, partiesFileName);
     
     // don't delete this loop!!!!!
     string tmp = "init times";
@@ -340,19 +353,6 @@ ProtocolParty<FieldType>::ProtocolParty(int argc, char* argv []) : Protocol ("Pe
             parties[i]->getChannel()->read(tmpBytes, tmp.size());
             parties[i]->getChannel()->write(tmp);
         }
-    }
-
-    readMyInputs();
-    cout << "Finished to read inputs" << endl;
-
-    auto t1 = high_resolution_clock::now();
-    initializationPhase(/*matrix_him, matrix_vand, m*/);
-
-    auto t2 = high_resolution_clock::now();
-
-    auto duration = duration_cast<milliseconds>(t2-t1).count();
-    if(flag_print_timings) {
-        cout << "time in milliseconds initializationPhase: " << duration << endl;
     }
 }
 
