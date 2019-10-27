@@ -57,6 +57,7 @@ int main(int argc, char* argv[])
 
         cout << "end main" << '\n';
     }
+#ifdef __x86_64__
 
     else if(fieldType.compare("ZpMersenne61") == 0)
     {
@@ -72,6 +73,9 @@ int main(int argc, char* argv[])
 
         cout << "end main" << '\n';
     }
+
+#endif
+
     else if(fieldType.compare("GF2_8LookupTable") == 0)
     {
 
