@@ -19,5 +19,5 @@ link_directories(/usr/ssl/lib/ $ENV{HOME}/libscapi/install/lib)
 add_executable(HyperMPC ${SOURCE_FILES})
 
 TARGET_LINK_LIBRARIES(HyperMPC  $ENV{HOME}/libscapi/install/lib/libntl.a
-        $ENV{HOME}/libscapi/libscapi_strip.a gmp
+        $ENV{HOME}/libscapi/libscapi.a gmp
         boost_system boost_thread pthread crypto dl ssl z)
