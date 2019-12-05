@@ -1,1 +1,1 @@
-cd .. && ./HyperMPC -partyID ${i} -partiesNumber ${3} -inputFile ${4} -outputFile output.txt -circuitFile ${5} -partiesFile ${6} -fieldType ${7} -internalIterationsNumber ${8} &
+cd .. && ./HyperMPC -partyID ${1} -partiesNumber ${2} -inputFile ${3} -outputFile output.txt -circuitFile ${4} -fieldType ${5} -partiesFile ${6} -internalIterationsNumber ${7} &
